@@ -7,7 +7,7 @@ import "./AkropolisToken.sol";
 
 contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
 
-    uint256 public constant AKR_RATE = 10;
+    uint256 public constant AET_RATE = 10;
     uint256 public constant HARD_CAP = 10000 ether;
 
     // Akropolis Token which is distributed during the sale
@@ -23,9 +23,9 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
     ) public
         CappedCrowdsale(HARD_CAP)
         FinalizableCrowdsale()
-        Crowdsale(_startTime, _endTime, AKR_RATE, _wallet)
+        Crowdsale(_startTime, _endTime, AET_RATE, _wallet)
     {
-        require(AKR_RATE > 0);
+        require(AET_RATE > 0);
         require(_wallet != 0x0);
         require(address(_token) != 0x0);
 
@@ -40,7 +40,7 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
 
     function getRate() pure internal returns(uint256) {
         // the fixed rate going to be adjusted to make the tokens evenly distributed
-        return AKR_RATE;
+        return AET_RATE;
     }
 
     // low level token purchase function

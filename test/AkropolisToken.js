@@ -20,8 +20,8 @@ contract('Akropolis Token', function ([owner, holder]) {
 	it('should have the correct setup', async function () {
 		(await token.name()).should.be.equal("Akropolis Token");
 		(await token.decimals()).should.be.bignumber.equal(18);
-		(await token.symbol()).should.be.equal("AKR");
-		(await token.version()).should.be.equal("AKR 1.0");
+		(await token.symbol()).should.be.equal("AET");
+		(await token.version()).should.be.equal("AET 1.0");
 	});
 
 })

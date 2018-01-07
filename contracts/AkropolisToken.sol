@@ -13,7 +13,7 @@ contract AkropolisToken is MintableToken, PausableToken {
 
     uint8 public decimals = 18;
 
-    string public symbol = "AKR";
+    string public symbol = "AET";
 
-    string public version = 'AKR 1.0';
+    string public version = 'AET 1.0';
 }
