@@ -20,15 +20,15 @@ Then install all of the node-js dependencies
 
 Connection to blockchain node is defined in truffle.js:
 
-module.exports = {
-	networks: {
-		development: {
-			host: 'localhost',
-			port: 8545,
-			network_id: '*' // Match any network id
-		}
-	}
-}
+    module.exports = {
+        networks: {
+            development: {
+                host: 'localhost',
+                port: 8545,
+                network_id: '*' // Match any network id
+            }
+        }
+    }
 
 We recommend using popular Ethereum test client [Ganache](https://github.com/trufflesuite/ganache) as a default testing node:
 
