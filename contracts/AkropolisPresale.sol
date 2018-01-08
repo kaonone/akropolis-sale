@@ -12,6 +12,7 @@ contract AkropolisPresale is Ownable, Pausable {
 
     event PresaleAllocationRegistered(address indexed investor, uint256 value);
     event PresaleAllocationDistributed(address indexed investor, uint256 value);
+    event TokensReclaimed(address indexed newTokenOwner, uint256 valueReclaimed);
 
     enum AllocationStatus {REGISTERED, DISTRIBUTED}
 
@@ -82,6 +83,7 @@ contract AkropolisPresale is Ownable, Pausable {
     function reclaimTokens(address _newTokenOwner) public onlyOwner {
         uint256 total = token.balanceOf(this);
         token.transfer(_newTokenOwner, total);
+        TokensReclaimed(_newTokenOwner, total);
     }
 
     function getAllocatedTokens(address _investor) public view returns(uint256) {
