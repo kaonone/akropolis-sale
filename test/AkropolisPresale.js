@@ -22,6 +22,18 @@ contract('Akropolis Presale', function ([owner, admin, investor, foundation, oth
 
 	it('should not allow registering allocations for anyone other than admin', async function () {
 		await presale.registerAllocation(investor, 100).should.be.rejectedWith('revert');
+        await presale.registerAllocation(other, 100).should.be.rejectedWith('revert');
+	});
+
+	it('should not allow setting admin for anyone other than the owner', async function() {
+		await presale.setAdmin(admin, {from: admin}).should.be.rejectedWith('revert');
+		await presale.setAdmin(admin, {from: investor}).should.be.rejectedWith('revert');
+		await presale.setAdmin(admin, {from: other}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow setting empty admin', async function() {
+		await presale.setAdmin(0x0).should.be.rejectedWith('revert');
 	});
 
 
@@ -47,6 +59,18 @@ contract('Akropolis Presale', function ([owner, admin, investor, foundation, oth
 
 		let tokenAddress = await presale.token();
 		(await tokenAddress).should.be.equal(token.address);
+	});
+
+
+	it('should not allow setting token for anyone other than the owner', async function() {
+		await presale.setToken(token.address, {from: admin}).should.be.rejectedWith('revert');
+		await presale.setToken(token.address, {from: investor}).should.be.rejectedWith('revert');
+		await presale.setToken(token.address, {from: other}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow setting empty token address', async function() {
+		await presale.setToken(0x0).should.be.rejectedWith('revert');
 	});
 
 
