@@ -15,6 +15,7 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
     AkropolisToken token;
 
     event WalletChange(address wallet);
+    event TokenReleased(address indexed newTokenHolder);
 
     function AkropolisCrowdsale(
     uint256 _startTime,
@@ -65,6 +66,7 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
         require(isFinalized);
         token.unpause();
         token.transferOwnership(_newTokenOwner);
+        TokenReleased(_newTokenOwner);
     }
 
     function createTokenContract() internal returns(MintableToken) {
