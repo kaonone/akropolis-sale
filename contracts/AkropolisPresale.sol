@@ -5,6 +5,7 @@ import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
 import "./AkropolisToken.sol";
 
+
 contract AkropolisPresale is Ownable, Pausable {
 
     uint256 public constant MAX_ALLOCATION_VALUE = 1000 ether;
@@ -36,18 +37,15 @@ contract AkropolisPresale is Ownable, Pausable {
         _;
     }
 
-
     function setToken(AkropolisToken _token) public onlyOwner {
         require(address(_token) != 0x0);
         token = _token;
     }
 
-
     function setAdmin(AkropolisToken _admin) public onlyOwner {
         require(address(_admin) != 0x0);
         admin = _admin;
     }
-
 
     /**
     * @dev Register the amount of tokens allocated for an investor.
@@ -63,7 +61,6 @@ contract AkropolisPresale is Ownable, Pausable {
 
         PresaleAllocationRegistered(_investor, _value);
     }
-
 
     /**
     * @dev Mints the allocated tokens and transfer them to the investor account.
