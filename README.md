@@ -1,6 +1,6 @@
 # Akropolis Token Sale Smart Contracts
 
-This project is a collection of smart contracts that manage the process of AET tokens distribution.
+This project is a collection of smart contracts that manage the process of AET (Akropolis External Token) ERC-20 token distribution. This will include the sale, token generation, and allocation of tokens to participating parties, as well as full test coverage for the code. 
 
 ### Overview
 
@@ -8,17 +8,17 @@ The Akropolis project is building the largest alternative pensions infrastructur
 We are creating decentralised pensions on the blockchain, built by and for the people, creating a safer financial future for humanity.
 
 ### Installation
-This project requires [node-js](https://github.com/nodejs/node) runtime and uses [truffle](https://github.com/trufflesuite/truffle) as the Ethereum smart contract development framework.
+This project requires [node-js](https://github.com/nodejs/node) runtime and uses [truffle](https://github.com/trufflesuite/truffle) as the Ethereum smart contract development framework. You will need to have [node](https://github.com/nodejs/node) installed first, in order to use the node package manager (npm).
 
-In order to run it, install truffle first:
+In order to run the project, install the truffle suite:
 
     npm install -g truffle
 
-Then install all of the node-js dependencies
+Then install all of the node-js dependencies from within the git directory.
 
     npm install
 
-Connection to blockchain node is defined in truffle.js:
+The connection to the blockchain node is defined in truffle.js, and as default is configured to be used locally:
 
     module.exports = {
         networks: {
@@ -30,7 +30,7 @@ Connection to blockchain node is defined in truffle.js:
         }
     }
 
-We recommend using popular Ethereum test client [Ganache](https://github.com/trufflesuite/ganache) as a default testing node:
+We recommend using popular Ethereum test client [Ganache](https://github.com/trufflesuite/ganache) as a default local testing node:
 
     npm install -g ganache
 
