@@ -40,7 +40,11 @@ Note: For Windows users, you may need to change the truffle.js filename in repos
 
 ### Running tests
 
-To run all of the smart contract tests, use the following truffle command in your console:
+To run all of the smart contract tests, execute the testing script:
+
+    yarn test
+
+Alternatively, you may also call the truffle command directly:
 
     truffle test
 
