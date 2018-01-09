@@ -1,6 +1,8 @@
 # Akropolis Token Sale Smart Contracts
 
-This project is a collection of smart contracts that manage the process of AET (Akropolis External Token) ERC-20 token distribution. This will include the sale, token generation, and allocation of tokens to participating parties, as well as full test coverage for the code. 
+[![CircleCI](https://circleci.com/gh/akropolisio/akropolis-sale.svg?style=shield&circle-token=1eed5934980f11f4263725f70af918e3f22b5c0c)](https://circleci.com/gh/akropolisio/akropolis-sale)
+
+This project is a collection of smart contracts that manage the process of AET (Akropolis External Token) ERC-20 token distribution. This will include the sale, token generation, and allocation of tokens to participating parties, as well as full test coverage for the code.
 
 ### Overview
 
