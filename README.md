@@ -8,7 +8,9 @@ The Akropolis project is building the largest alternative pensions infrastructur
 We are creating decentralised pensions on the blockchain, built by and for the people, creating a safer financial future for humanity.
 
 ### Installation
-This project requires [node-js](https://github.com/nodejs/node) runtime and uses [truffle](https://github.com/trufflesuite/truffle) as the Ethereum smart contract development framework. You will need to have [node](https://github.com/nodejs/node) installed first, in order to use the node package manager (npm).
+This project requires [node-js](https://github.com/nodejs/node) runtime and uses [truffle](https://github.com/trufflesuite/truffle) as the Ethereum smart contract development framework.
+You will need to have [node](https://github.com/nodejs/node) installed first, in order to use the node package manager (npm).
+We also recommend installing [yarn](https://yarnpkg.com/en/docs/install) to effectively manage dependencies.
 
 In order to run the project, install the truffle suite:
 
