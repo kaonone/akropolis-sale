@@ -1,0 +1,11 @@
+{
+  "extends": "default",
+  "rules": {
+    "avoid-throw": "error",
+    "avoid-suicide": "error",
+    "avoid-sha3": "warn",
+    "indent": ["error", 4],
+    "quotes": ["error", "double"],
+    "max-line-length": ["error", 120]
+  }
+}
