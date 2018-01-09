@@ -5,6 +5,7 @@ import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
 import "./AkropolisToken.sol";
 
+
 contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
 
     uint256 public constant AET_RATE = 10;
@@ -14,6 +15,7 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
     AkropolisToken token;
 
     event WalletChange(address wallet);
+    event TokenReleased(address indexed newTokenHolder);
 
     function AkropolisCrowdsale(
     uint256 _startTime,
@@ -31,16 +33,6 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
 
         token = _token;
         token.pause();
-    }
-
-    function createTokenContract() internal returns(MintableToken) {
-        return token;
-    }
-
-
-    function getRate() pure internal returns(uint256) {
-        // the fixed rate going to be adjusted to make the tokens evenly distributed
-        return AET_RATE;
     }
 
     // low level token purchase function
@@ -64,16 +56,25 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
         forwardFunds();
     }
 
-    function changeWallet(address _wallet) onlyOwner public {
+    function changeWallet(address _wallet) public onlyOwner {
         require(_wallet != 0x0);
         wallet = _wallet;
         WalletChange(_wallet);
     }
 
-    function releaseToken(address _newTokenOwner) onlyOwner public {
+    function releaseToken(address _newTokenOwner) public onlyOwner {
         require(isFinalized);
         token.unpause();
         token.transferOwnership(_newTokenOwner);
+        TokenReleased(_newTokenOwner);
     }
 
+    function createTokenContract() internal returns(MintableToken) {
+        return token;
+    }
+
+    function getRate() internal pure returns(uint256) {
+        // the fixed rate going to be adjusted to make the tokens evenly distributed
+        return AET_RATE;
+    }
 }
