@@ -44,7 +44,7 @@ contract('Akropolis Crowdsale', function ([owner, investor, wallet]) {
 	});
 
 	it('should buy tokens after the start', async function() {
-		await await increaseTimeTo(startTime);
+		await increaseTimeTo(startTime);
 		await crowdsale.send(ether(1), {from: investor}).should.be.fulfilled;
 	});
 
