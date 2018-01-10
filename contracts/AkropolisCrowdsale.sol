@@ -11,16 +11,12 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
     uint256 public constant AET_RATE = 10;
     uint256 public constant HARD_CAP = 10000 ether;
 
-    // Akropolis Token which is distributed during the sale
-    AkropolisToken token;
-
     event WalletChange(address wallet);
 
     function AkropolisCrowdsale(
     uint256 _startTime,
     uint256 _endTime,
-    address _wallet,
-    AkropolisToken _token
+    address _wallet
     ) public
         CappedCrowdsale(HARD_CAP)
         FinalizableCrowdsale()
@@ -28,10 +24,8 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
     {
         require(AET_RATE > 0);
         require(_wallet != 0x0);
-        require(address(_token) != 0x0);
 
-        token = _token;
-        token.pause();
+        AkropolisToken(token).pause();
     }
 
     // low level token purchase function
@@ -63,12 +57,11 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
 
     function releaseToken(address _newTokenOwner) public onlyOwner {
         require(isFinalized);
-        token.unpause();
         token.transferOwnership(_newTokenOwner);
     }
 
     function createTokenContract() internal returns(MintableToken) {
-        return token;
+        return new AkropolisToken();
     }
 
     function getRate() internal pure returns(uint256) {
