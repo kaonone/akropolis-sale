@@ -9,7 +9,11 @@ if [ ! $ganache_running ]; then
   > /dev/null &
   ganache_pid=$!
 fi
+if [ "$SOLIDITY_COVERAGE" = true ]; then
+ node_modules/.bin/solidity-coverage
+else
 truffle test "$@"
+fi
 if [ ! $ganache_running ]; then
   kill -9 $ganache_pid
 fi
