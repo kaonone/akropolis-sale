@@ -2,6 +2,7 @@
 
 const AkropolisToken = artifacts.require('./AkropolisToken.sol')
 const AkropolisPresale = artifacts.require('./AkropolisPresale.sol')
+const LinearTokenVesting = artifacts.require('./LinearTokenVesting.sol')
 
 const BigNumber = web3.BigNumber;
 
@@ -10,7 +11,12 @@ const should = require('chai')
 	.use(require('chai-bignumber')(BigNumber))
 	.should()
 
-contract('Akropolis Presale', function ([owner, admin, investor, foundation, other]) {
+contract('Akropolis Presale', function ([owner, admin, investor, investorWithVesting, foundation, other]) {
+
+	const ALLOCATED_VALUE = 100;
+	const UPDATED_VALUE = 200;
+	const ALLOCATED_VESTING = 200;
+	const VESTING_PERIOD = 1000;
 
 	let token;
 	let presale;
@@ -21,8 +27,8 @@ contract('Akropolis Presale', function ([owner, admin, investor, foundation, oth
 	});
 
 	it('should not allow registering allocations for anyone other than admin', async function () {
-		await presale.registerAllocation(investor, 100).should.be.rejectedWith('revert');
-        await presale.registerAllocation(other, 100).should.be.rejectedWith('revert');
+		await presale.registerAllocation(investor, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD).should.be.rejectedWith('revert');
+    await presale.registerAllocation(other, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD).should.be.rejectedWith('revert');
 	});
 
 	it('should not allow setting admin for anyone other than the owner', async function() {
@@ -39,18 +45,32 @@ contract('Akropolis Presale', function ([owner, admin, investor, foundation, oth
 
 	it('should allow the admin to register allocations', async function () {
 		await presale.setAdmin(admin);
-		await presale.registerAllocation(investor, 100, {from: admin});
+		await presale.registerAllocation(investor, ALLOCATED_VALUE, 0, 0, {from: admin});
 
 		let allocated = await presale.getAllocatedTokens(investor);
-		(await allocated).should.be.bignumber.equal(100);
+		allocated[0].should.be.bignumber.equal(ALLOCATED_VALUE);
+		allocated[1].should.be.bignumber.equal(0);
+		allocated[2].should.be.bignumber.equal(0);
 	});
 
 
 	it('should allow the admin to change allocations', async function () {
-		await presale.registerAllocation(investor, 200, {from: admin});
+		await presale.registerAllocation(investor, UPDATED_VALUE, 0, 0, {from: admin});
 
 		let allocated = await presale.getAllocatedTokens(investor);
-		(await allocated).should.be.bignumber.equal(200);
+		allocated[0].should.be.bignumber.equal(UPDATED_VALUE);
+		allocated[1].should.be.bignumber.equal(0);
+		allocated[2].should.be.bignumber.equal(0);
+	});
+
+	it('should allow the admin to register allocation with vesting', async function () {
+		await presale.setAdmin(admin);
+		await presale.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
+
+		let allocated = await presale.getAllocatedTokens(investorWithVesting);
+		allocated[0].should.be.bignumber.equal(ALLOCATED_VALUE);
+		allocated[1].should.be.bignumber.equal(ALLOCATED_VESTING);
+		allocated[2].should.be.bignumber.equal(VESTING_PERIOD);
 	});
 
 
@@ -58,7 +78,7 @@ contract('Akropolis Presale', function ([owner, admin, investor, foundation, oth
 		await presale.setToken(token.address, {from: owner});
 
 		let tokenAddress = await presale.token();
-		(await tokenAddress).should.be.equal(token.address);
+		tokenAddress.should.be.equal(token.address);
 	});
 
 
@@ -74,21 +94,32 @@ contract('Akropolis Presale', function ([owner, admin, investor, foundation, oth
 	});
 
 
-	it('should setup the token', async function () {
-		await presale.setToken(token.address, {from: owner});
+	it('should allow the owner to distribute the tokens', async function () {
+		await token.mint(presale.address, 600, {from: owner});
+		(await token.balanceOf(presale.address)).should.be.bignumber.equal(600);
 
-		let tokenAddress = await presale.token();
-		(await tokenAddress).should.be.equal(token.address);
+		await presale.distributeAllocation(investor, {from: owner});
+
+		(await token.balanceOf(investor)).should.be.bignumber.equal(UPDATED_VALUE);
+		(await token.balanceOf(presale.address)).should.be.bignumber.equal(400);
 	});
 
 
-	it('should allow the owner to distribute the tokens', async function () {
-		await token.mint(presale.address, 300, {from: owner});
-		(await token.balanceOf(presale.address)).should.be.bignumber.equal(300);
+	it('should allow the owner to distribute the tokens with vesting', async function () {
+		await presale.distributeAllocation(investorWithVesting, {from: owner});
 
-		await presale.distributeAllocation(investor, {from: owner});
-		(await token.balanceOf(investor)).should.be.bignumber.equal(200);
+		(await token.balanceOf(investorWithVesting)).should.be.bignumber.equal(ALLOCATED_VALUE);
 		(await token.balanceOf(presale.address)).should.be.bignumber.equal(100);
+	});
+
+
+	it('should setup correct vesting', async function () {
+		let vesting = LinearTokenVesting.at(await presale.getVesting(investorWithVesting));
+
+		(await vesting.beneficiary()).should.be.equal(investorWithVesting);
+		(await vesting.duration()).should.be.bignumber.equal(VESTING_PERIOD);
+		(await token.balanceOf(vesting.address)).should.be.bignumber.equal(ALLOCATED_VESTING);
+		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
 	});
 
 
