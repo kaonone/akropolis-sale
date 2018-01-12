@@ -4,9 +4,10 @@ import "zeppelin-solidity/contracts/crowdsale/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
 import "./AkropolisToken.sol";
+import "./WhitelistedCrowdsale.sol";
 
 
-contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
+contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
 
     uint256 public constant AET_RATE = 10;
     uint256 public constant HARD_CAP = 10000 ether;
@@ -20,7 +21,7 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
     ) public
         CappedCrowdsale(HARD_CAP)
         FinalizableCrowdsale()
-        Crowdsale(_startTime, _endTime, AET_RATE, _wallet)
+        WhitelistedCrowdsale(_startTime, _endTime, AET_RATE, _wallet)
     {
         require(AET_RATE > 0);
         require(_wallet != 0x0);
