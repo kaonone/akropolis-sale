@@ -34,7 +34,7 @@ contract LinearTokenVesting is Ownable {
      * @param _duration duration in seconds of the period in which the tokens will vest
      */
     function LinearTokenVesting(address _beneficiary, uint256 _duration) public {
-        require(_beneficiary != address(0));
+        require(_beneficiary != 0x0);
         require(_duration >= 0);
 
         beneficiary = _beneficiary;
