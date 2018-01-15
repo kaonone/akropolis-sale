@@ -7,3 +7,5 @@ environments
 
 # IDE
 .idea
+#Coverage Env
+coverageEnv

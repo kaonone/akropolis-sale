@@ -1,13 +1,19 @@
 # Akropolis Token Sale Smart Contracts
 
 [![CircleCI](https://circleci.com/gh/akropolisio/akropolis-sale.svg?style=shield&circle-token=1eed5934980f11f4263725f70af918e3f22b5c0c)](https://circleci.com/gh/akropolisio/akropolis-sale)
-
+[![Coverage Status](https://coveralls.io/github/akropolisio/akropolis-sale/badge.svg?branch=master)](https://coveralls.io/github/akropolisio/akropolis-sale?branch=master)
 This project is a collection of smart contracts that manage the process of AET (Akropolis External Token) ERC-20 token distribution. This will include the sale, token generation, and allocation of tokens to participating parties, as well as full test coverage for the code.
 
 ### Overview
 
 The Akropolis project is building the largest alternative pensions infrastructure in the world.
-We are creating decentralised pensions on the blockchain, built by and for the people, creating a safer financial future for humanity.
+We are decentralising the world's pensions with the blockchain, to help solve the global pensions deficit crisis.
+Built by and for the people, greater transparency benefits individual investors, providing safer financial futures.
+
+### Development and Community Resources
+**Web:** [Akropolis.io](https://akropolis.io)
+
+**Telegram**: [Akropolis Official Channel](tg://join?invite=E2TUOVJlO0fWDgfnQmsHDQ) 
 
 ### Installation
 This project requires [node-js](https://github.com/nodejs/node) runtime and uses [truffle](https://github.com/trufflesuite/truffle) as the Ethereum smart contract development framework.

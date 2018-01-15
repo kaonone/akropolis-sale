@@ -16,6 +16,12 @@ jobs:
 
     working_directory: ~/repo
 
+    sudo: required
+    env:
+      - SOLIDITY_COVERAGE=true
+    fast-finish: true
+    allow failures:
+      -env: SOLIDITY_COVERAGE=true
     steps:
       - checkout
 
