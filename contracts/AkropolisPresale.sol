@@ -3,21 +3,27 @@ pragma solidity ^0.4.18;
 import "zeppelin-solidity/contracts/crowdsale/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
+import "zeppelin-solidity/contracts/token/SafeERC20.sol";
 import "./AkropolisToken.sol";
+import "./LinearTokenVesting.sol";
 
 
 contract AkropolisPresale is Ownable, Pausable {
+    using SafeERC20 for AkropolisToken;
 
     uint256 public constant MAX_ALLOCATION_VALUE = 1000 ether;
 
-    event PresaleAllocationRegistered(address indexed investor, uint256 value);
-    event PresaleAllocationDistributed(address indexed investor, uint256 value);
+    event PresaleAllocationRegistered(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
+    event PresaleAllocationDistributed(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
     event TokensReclaimed(address indexed newTokenOwner, uint256 valueReclaimed);
 
     enum AllocationStatus {REGISTERED, DISTRIBUTED}
 
     struct Allocation {
         uint256 value;
+        uint256 vestingValue;
+        uint256 vestingPeriod;
+        address vestingContract;
         AllocationStatus status;
     }
 
@@ -52,15 +58,17 @@ contract AkropolisPresale is Ownable, Pausable {
     * @dev Register the amount of tokens allocated for an investor.
     * The amount my be changed before the tokens are distributed.
     */
-    function registerAllocation(address _investor, uint256 _value) public onlyAdmin {
+    function registerAllocation(address _investor, uint256 _value, uint256 _vestingValue, uint256 _vestingPeriod) public onlyAdmin {
         require(_investor != 0x0);
         require(_value > 0);
         require(_value <= MAX_ALLOCATION_VALUE);
+        require( (_vestingValue == 0 && _vestingPeriod == 0) || (_vestingValue > 0 && _vestingPeriod > 0) );
+
         require(allocations[_investor].status != AllocationStatus.DISTRIBUTED);
 
-        allocations[_investor] = Allocation(_value, AllocationStatus.REGISTERED);
+        allocations[_investor] = Allocation(_value, _vestingValue, _vestingPeriod, 0, AllocationStatus.REGISTERED);
 
-        PresaleAllocationRegistered(_investor, _value);
+        PresaleAllocationRegistered(_investor, _value, _vestingValue, _vestingPeriod);
     }
 
     /**
@@ -71,10 +79,16 @@ contract AkropolisPresale is Ownable, Pausable {
         require(allocation.value > 0);
         require(allocation.status == AllocationStatus.REGISTERED);
 
-        token.transfer(_investor, allocation.value);
+        token.safeTransfer(_investor, allocation.value);
+        if (allocation.vestingValue > 0) {
+            LinearTokenVesting vesting = new LinearTokenVesting(_investor, allocation.vestingPeriod);
+            vesting.transferOwnership(owner);
+            token.safeTransfer(address(vesting), allocation.vestingValue);
+            allocation.vestingContract = address(vesting);
+        }
         allocation.status = AllocationStatus.DISTRIBUTED;
 
-        PresaleAllocationDistributed(_investor, allocation.value);
+        PresaleAllocationDistributed(_investor, allocation.value, allocation.vestingValue, allocation.vestingPeriod);
     }
 
     /**
@@ -86,11 +100,22 @@ contract AkropolisPresale is Ownable, Pausable {
         TokensReclaimed(_newTokenOwner, total);
     }
 
-    function getAllocatedTokens(address _investor) public view returns(uint256) {
+    /**
+    * @dev Returns the value of allocated tokens in the following format
+    * [allocated tokens, allocated vesting, vesting period]
+    */
+    function getAllocatedTokens(address _investor) public view returns(uint256[3]) {
         if (allocations[_investor].status == AllocationStatus.REGISTERED) {
-            return allocations[_investor].value;
-        } else {
-            0;
+            return [allocations[_investor].value, allocations[_investor].vestingValue, allocations[_investor].vestingPeriod];
+        }
+    }
+
+    /**
+    * @dev Returns the address of a vesting contract for a given investor
+    */
+    function getVesting(address _investor) public view returns(address) {
+        if (allocations[_investor].status == AllocationStatus.DISTRIBUTED) {
+            return allocations[_investor].vestingContract;
         }
     }
 
