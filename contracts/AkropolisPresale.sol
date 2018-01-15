@@ -49,7 +49,7 @@ contract AkropolisPresale is Ownable, Pausable {
         token = _token;
     }
 
-    function setAdmin(AkropolisToken _admin) public onlyOwner {
+    function setAdmin(address _admin) public onlyOwner {
         require(address(_admin) != 0x0);
         admin = _admin;
     }

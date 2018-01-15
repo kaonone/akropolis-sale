@@ -16,7 +16,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis Crowdsale', function ([owner, investor, wallet]) {
+contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet]) {
 
 	let token, crowdsale;
 	let startTime, endTime, afterEndTime;
@@ -33,19 +33,30 @@ contract('Akropolis Crowdsale', function ([owner, investor, wallet]) {
 		token = AkropolisToken.at(await crowdsale.token());
 	});
 
+
 	it('should create the sale with the correct parameters', async function () {
 		(await crowdsale.startTime()).should.be.bignumber.equal(startTime);
 		(await crowdsale.endTime()).should.be.bignumber.equal(endTime);
 		(await crowdsale.wallet()).should.be.equal(wallet);
 	});
 
+
 	it('should not accept money before the start', async function() {
-		await crowdsale.send(ether(1), {from: investor}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.rejectedWith('revert');
 	});
 
-	it('should buy tokens after the start', async function() {
+
+	it('should not accept non-whitelisted users after the start', async function() {
 		await increaseTimeTo(startTime);
-		await crowdsale.send(ether(1), {from: investor}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should accept whitelisted users', async function() {
+		await crowdsale.setAdmin(admin);
+		await crowdsale.addToWhitelist(buyer, {from: admin});
+
+		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.fulfilled;
 	});
 
 
