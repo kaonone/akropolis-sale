@@ -45,15 +45,15 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(0);
 
 		//Time passed: 20%
-		await await increaseTimeTo(start + 0.2 * DURATION);
+		await increaseTimeTo(start + 0.2 * DURATION);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(20);
 
 		//Time passed: 50%
-		await await increaseTimeTo(start + 0.5 * DURATION);
+		await increaseTimeTo(start + 0.5 * DURATION);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(50);
 	});
 
-	it('should realease vested amount', async function () {
+	it('should release vested amount', async function () {
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(50);
 		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(50);
 
@@ -65,7 +65,7 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 		(await token.balanceOf(beneficiary)).should.be.bignumber.equal(50);
 	});
 
-	it('should realease total vesting', async function () {
+	it('should release total vesting', async function () {
 		await await increaseTimeTo(start + DURATION);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
 		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(50);
