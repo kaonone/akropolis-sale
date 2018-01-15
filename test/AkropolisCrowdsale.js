@@ -59,4 +59,29 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet]) {
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.fulfilled;
 	});
 
+
+	it('should not allow for invalid wallet change address', async function() {
+		await crowdsale.changeWallet(0x0, {from: owner}).should.be.rejectedWith('revert');
+	})
+
+
+	it('should not allow wallet change by anyone but owner', async function() {
+		await crowdsale.changeWallet(wallet, {from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.changeWallet(wallet, {from: investor}).should.be.rejectedWith('revert');
+	})
+
+
+	it('should not allow releasing token by anyone but owner', async function() {
+		await crowdsale.releaseToken(wallet, {from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.releaseToken(wallet, {from: investor}).should.be.rejectedWith('revert');
+	})
+
+
+	it('should allow owner to change wallet', async function() {
+		await crowdsale.changeWallet(investor, {from: owner}).should.be.fulfilled;
+		(await crowdsale.wallet()).should.be.equal(investor);
+		await crowdsale.changeWallet(wallet, {from: owner}).should.be.fulfilled;
+		(await crowdsale.wallet()).should.be.equal(wallet);
+	})
+
 });
