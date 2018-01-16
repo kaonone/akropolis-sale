@@ -29,6 +29,11 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 	});
 
 
+	it('should not allow vesting without duration', async function () {
+		vesting = await LinearTokenVesting.new(beneficiary, 0).should.be.rejectedWith('revert');
+	});
+
+
     it('should not allow vesting without beneficiary', async function () {
         vesting = await LinearTokenVesting.new(0x0, DURATION).should.be.rejectedWith('revert');
     });
