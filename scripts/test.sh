@@ -10,6 +10,7 @@ if [ ! $ganache_running ]; then
   ganache_pid=$!
 fi
 npm run coverage
+cat coverage/lcov.info | node_modules/.bin/coveralls
 if [ ! $ganache_running ]; then
   kill -9 $ganache_pid
 fi
