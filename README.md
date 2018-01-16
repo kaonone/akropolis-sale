@@ -1,6 +1,7 @@
 # Akropolis Token Sale Smart Contracts
 
 [![CircleCI](https://circleci.com/gh/akropolisio/akropolis-sale.svg?style=shield&circle-token=1eed5934980f11f4263725f70af918e3f22b5c0c)](https://circleci.com/gh/akropolisio/akropolis-sale)
+[![Coverage Status](https://coveralls.io/repos/github/akropolisio/akropolis-sale/badge.svg?branch=master&t=4byc3V)](https://coveralls.io/github/akropolisio/akropolis-sale?branch=master)
 
 This project is a collection of smart contracts that manage the process of AET (Akropolis External Token) ERC-20 token distribution. This will include the sale, token generation, and allocation of tokens to participating parties, as well as full test coverage for the code.
 
