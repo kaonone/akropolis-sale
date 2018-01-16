@@ -9,7 +9,7 @@ if [ ! $ganache_running ]; then
   > /dev/null &
   ganache_pid=$!
 fi
-truffle test "$@"
+npm run coverage
 if [ ! $ganache_running ]; then
   kill -9 $ganache_pid
 fi
