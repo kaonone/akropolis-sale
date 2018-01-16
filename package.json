@@ -10,7 +10,7 @@
   "scripts": {
     "test": "scripts/test.sh",
     "console": "truffle console",
-    "coverage": "scripts/coverage.sh",
+    "coverage": "./node_modules/.bin/solidity-coverage",
     "coveralls": "scripts/coveralls.sh",
     "build": "webpack",
     "dev": "webpack-dev-server"
