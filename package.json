@@ -40,6 +40,8 @@
     "html-webpack-plugin": "^2.30.1",
     "json-loader": "^0.5.7",
     "style-loader": "^0.13.2",
+    "solc": "0.4.18",
+    "solidity-coverage": "^0.4.8",
     "truffle": "^4.0.4",
     "web3": "^0.18.4",
     "webpack": "^2.7.0",
