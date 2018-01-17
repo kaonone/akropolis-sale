@@ -66,7 +66,7 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 	});
 
 	it('should release total vesting', async function () {
-		await await increaseTimeTo(start + DURATION);
+		await increaseTimeTo(start + DURATION);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
 		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(50);
 
