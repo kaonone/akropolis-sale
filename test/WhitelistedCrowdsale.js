@@ -40,9 +40,9 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet]) {
 
 
 	it('should not allow anyone but the owner to define an admin', async function () {
-        await crowdsale.setAdmin(admin, {from: buyer}).should.be.rejectedWith('revert');
-        await crowdsale.setAdmin(admin, {from: wallet}).should.be.rejectedWith('revert');
-        await crowdsale.setAdmin(admin, {from: admin}).should.be.rejectedWith('revert');
+		await crowdsale.setAdmin(admin, {from: buyer}).should.be.rejectedWith('revert');
+		await crowdsale.setAdmin(admin, {from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.setAdmin(admin, {from: admin}).should.be.rejectedWith('revert');
 	})
 
 
@@ -53,8 +53,8 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet]) {
 
 	it('should not allow anyone but the admin to add to whitelist', async function () {
 		await crowdsale.addToWhitelist(buyer, {from: buyer}).should.be.rejectedWith('revert');
-        await crowdsale.addToWhitelist(buyer, {from: wallet}).should.be.rejectedWith('revert');
-        await crowdsale.addToWhitelist(wallet, {from: owner}).should.be.rejectedWith('revert');
+		await crowdsale.addToWhitelist(buyer, {from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.addToWhitelist(wallet, {from: owner}).should.be.rejectedWith('revert');
 	});
 
 
@@ -66,11 +66,11 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet]) {
 	});
 
 
-    it('should not allow anyone but the admin to remove addresses from whitelist', async function () {
-        await crowdsale.removeFromWhitelist(buyer, {from: buyer}).should.be.rejectedWith('revert');
-        await crowdsale.removeFromWhitelist(buyer, {from: wallet}).should.be.rejectedWith('revert');
-        await crowdsale.removeFromWhitelist(buyer, {from: owner}).should.be.rejectedWith('revert');
-    });
+	it('should not allow anyone but the admin to remove addresses from whitelist', async function () {
+		await crowdsale.removeFromWhitelist(buyer, {from: buyer}).should.be.rejectedWith('revert');
+		await crowdsale.removeFromWhitelist(buyer, {from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.removeFromWhitelist(buyer, {from: owner}).should.be.rejectedWith('revert');
+	});
 
 
 	it('should allow admin to remove buyer from the whitelist', async function () {

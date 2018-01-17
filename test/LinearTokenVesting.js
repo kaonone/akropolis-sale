@@ -34,8 +34,8 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 	});
 
 
-    it('should not allow vesting without beneficiary', async function () {
-        vesting = await LinearTokenVesting.new(0x0, DURATION).should.be.rejectedWith('revert');
+	it('should not allow vesting without beneficiary', async function () {
+		vesting = await LinearTokenVesting.new(0x0, DURATION).should.be.rejectedWith('revert');
     });
 
 
@@ -92,16 +92,15 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 	});
 
 
-    it('should not release tokens if there are no unreleased tokens', async function () {
-        (await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
-    	await vesting.release(token.address).should.be.rejectedWith('revert');
+	it('should not release tokens if there are no unreleased tokens', async function () {
+		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
+		await vesting.release(token.address).should.be.rejectedWith('revert');
 	})
 
 
-    it('should not vest more than the total vested amount, after the duration', async function() {
-        await increaseTimeTo(start + 1.5 * DURATION);
-        (await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
-    });
-
+	it('should not vest more than the total vested amount, after the duration', async function() {
+		await increaseTimeTo(start + 1.5 * DURATION);
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
+	});
 
 })
