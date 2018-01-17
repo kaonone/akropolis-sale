@@ -28,6 +28,17 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 		token = await AkropolisToken.new();
 	});
 
+
+	it('should not allow vesting without duration', async function () {
+		vesting = await LinearTokenVesting.new(beneficiary, 0).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow vesting without beneficiary', async function () {
+		vesting = await LinearTokenVesting.new(0x0, DURATION).should.be.rejectedWith('revert');
+    });
+
+
 	it('should define vesting', async function () {
 		vesting = await LinearTokenVesting.new(beneficiary, DURATION);
 		start = latestTime();
@@ -53,6 +64,7 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(50);
 	});
 
+
 	it('should release vested amount', async function () {
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(50);
 		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(50);
@@ -65,8 +77,9 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 		(await token.balanceOf(beneficiary)).should.be.bignumber.equal(50);
 	});
 
+
 	it('should release total vesting', async function () {
-		await await increaseTimeTo(start + DURATION);
+		await increaseTimeTo(start + DURATION);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
 		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(50);
 
@@ -76,6 +89,18 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
 		(await token.balanceOf(vesting.address)).should.be.bignumber.equal(0);
 		(await token.balanceOf(beneficiary)).should.be.bignumber.equal(VESTING_AMOUNT);
+	});
+
+
+	it('should not release tokens if there are no unreleased tokens', async function () {
+		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
+		await vesting.release(token.address).should.be.rejectedWith('revert');
+	})
+
+
+	it('should not vest more than the total vested amount, after the duration', async function() {
+		await increaseTimeTo(start + 1.5 * DURATION);
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
 	});
 
 })
