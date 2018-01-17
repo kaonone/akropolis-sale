@@ -20,7 +20,7 @@ function ether (n) {
 contract('IncreasingCapCrowdsale Crowdsale', function ([owner, other, wallet]) {
 
 	let token, crowdsale;
-	let startTime, endTime, afterEndTime;
+	let startTime, endTime;
 
 	before(async function () {
 		// Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc

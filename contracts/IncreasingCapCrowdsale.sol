@@ -5,6 +5,11 @@ import "zeppelin-solidity/contracts/crowdsale/CappedCrowdsale.sol";
 /**
  * @title IncreasingCapCrowdsale
  * @dev Adding a dynamic cap per buyer that is gradually increased with time.
+ * The logic is as follows:
+ * Round 1: baseCap and maxCap
+ * Round 2: baseCap x 2 and maxCap
+ * Round 3: baseCap x 4 and maxCap
+ * Round 4: the only restriction is maxCap
  */
 contract IncreasingCapCrowdsale is CappedCrowdsale, Ownable {
 
@@ -14,7 +19,8 @@ contract IncreasingCapCrowdsale is CappedCrowdsale, Ownable {
     // Maximum contribution cap for participants expressed in wei
     uint256 public maxCap;
 
-    // Duration of a round of distribution, after each round we gradually increase the buyer's cap
+    // Duration of a round of distribution in seconds,
+    // after each round we gradually increase the buyer's cap
     uint256 public roundDuration;
 
     function IncreasingCapCrowdsale(uint256 _cap) public
