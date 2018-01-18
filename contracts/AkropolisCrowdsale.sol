@@ -1,25 +1,27 @@
 pragma solidity ^0.4.18;
 
-import "zeppelin-solidity/contracts/crowdsale/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
 import "./AkropolisToken.sol";
 import "./WhitelistedCrowdsale.sol";
+import "./IncreasingCapCrowdsale.sol";
 
 
-contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
+contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
 
     uint256 public constant AET_RATE = 10;
     uint256 public constant HARD_CAP = 10000 ether;
 
     event WalletChange(address wallet);
 
+    mapping(address => uint256) public contributions;
+
     function AkropolisCrowdsale(
     uint256 _startTime,
     uint256 _endTime,
     address _wallet
     ) public
-        CappedCrowdsale(HARD_CAP)
+        IncreasingCapCrowdsale(HARD_CAP)
         FinalizableCrowdsale()
         WhitelistedCrowdsale(_startTime, _endTime, AET_RATE, _wallet)
     {
@@ -47,7 +49,15 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
         token.mint(beneficiary, tokens);
         TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
+        contributions[beneficiary] = contributions[beneficiary].add(weiRaised);
+
         forwardFunds();
+    }
+
+    // overriding Crowdsale#validPurchase to add checking if a buyer is within the cap
+    // @return true if buyers can buy at the moment
+    function validPurchase() internal constant returns (bool) {
+        return super.validPurchase() && msg.value <= getAvailableCap(msg.sender);
     }
 
     function changeWallet(address _wallet) public onlyOwner {
@@ -68,5 +78,9 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
     function getRate() internal pure returns(uint256) {
         // the fixed rate going to be adjusted to make the tokens evenly distributed
         return AET_RATE;
+    }
+
+    function getAvailableCap(address _buyer) public view returns(uint256) {
+        return getCurrentCap().sub(contributions[_buyer]);
     }
 }
