@@ -14,7 +14,7 @@ const should = require('chai')
 	.use(require('chai-bignumber')(BigNumber))
 	.should();
 
-contract('Linear Token Vesting', function ([owner, beneficiary]) {
+contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 
 	const DURATION = duration.days(100);
 	const VESTING_AMOUNT = 100;
@@ -63,6 +63,12 @@ contract('Linear Token Vesting', function ([owner, beneficiary]) {
 		await increaseTimeTo(start + 0.5 * DURATION);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(50);
 	});
+
+
+	it('should not release tokens to unknown address', async function () {
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(50);
+		await vesting.release(token.address, {from: unknown}).should.be.rejectedWith('revert');
+	})
 
 
 	it('should release vested amount', async function () {
