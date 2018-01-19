@@ -96,12 +96,12 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet, notAdd
 	});
 
 
-	it('should not allow removing a null address', async function () {
+	it('should not allow removing the same address more than once', async function () {
 		await crowdsale.removeFromWhitelist(0x0, {from: admin}).should.be.rejectedWith('revert');
 	});
 
 
-	it('should not allow removing a user that is was not added to the whitelist', async function () {
+	it('should not allow removing a user that has not been added to the whitelist', async function () {
 		await crowdsale.removeFromWhitelist(notAdded, {from: admin}).should.be.rejectedWith('revert');
 	});
 
