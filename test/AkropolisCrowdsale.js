@@ -16,7 +16,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4]) {
+contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4, newTokenOwner]) {
 
 	let token, crowdsale;
 	let startTime, endTime, afterEndTime;
@@ -143,6 +143,27 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		await crowdsale.buyTokens(bonusBuyer4, {from: buyer, value: ether(1)});
 
 		(await token.balanceOf(bonusBuyer4)).should.be.bignumber.equal(ether(10));
+	});
+
+
+	it('should not release token in crowdsale is not finalized', async function() {
+		await crowdsale.releaseToken(newTokenOwner, {from: owner}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should release the token to the new owner', async function() {
+		await increaseTimeTo(endTime + 1);
+		await crowdsale.finalize({from: owner});
+		await crowdsale.releaseToken(newTokenOwner, {from: owner}).should.be.fulfilled;
+
+		(await token.owner()).should.be.equal(newTokenOwner);
+	});
+
+
+	it('should not release the token by anyone other than owner', async function() {
+		await crowdsale.releaseToken(newTokenOwner, {from: admin}).should.be.rejectedWith('revert');
+		await crowdsale.releaseToken(newTokenOwner, {from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.releaseToken(newTokenOwner, {from: buyer}).should.be.rejectedWith('revert');
 	});
 
 });
