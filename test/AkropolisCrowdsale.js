@@ -16,7 +16,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet]) {
+contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4, newTokenOwner]) {
 
 	let token, crowdsale;
 	let startTime, endTime, afterEndTime;
@@ -100,6 +100,70 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet]) {
 
 	it('should not allow exceeding the available cap', async function() {
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(2.01)}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should calculate bonus (Round 1)', async function() {
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
+		(await crowdsale.getCurrentBonus()).should.be.bignumber.equal(20);
+
+		await crowdsale.buyTokens(bonusBuyer1, {from: buyer, value: ether(1)});
+
+		(await token.balanceOf(bonusBuyer1)).should.be.bignumber.equal(ether(12));
+	});
+
+
+	it('should calculate bonus (Round 2)', async function() {
+		await increaseTimeTo(startTime + duration.days(1));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
+		(await crowdsale.getCurrentBonus()).should.be.bignumber.equal(10);
+
+		await crowdsale.buyTokens(bonusBuyer2, {from: buyer, value: ether(1)});
+
+		(await token.balanceOf(bonusBuyer2)).should.be.bignumber.equal(ether(11));
+	});
+
+
+	it('should calculate bonus (Round 3)', async function() {
+		await increaseTimeTo(startTime + duration.days(2));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
+		(await crowdsale.getCurrentBonus()).should.be.bignumber.equal(5);
+
+		await crowdsale.buyTokens(bonusBuyer3, {from: buyer, value: ether(1)});
+
+		(await token.balanceOf(bonusBuyer3)).should.be.bignumber.equal(ether(10.5));
+	});
+
+
+	it('should calculate bonus (Round 4)', async function() {
+		await increaseTimeTo(startTime + duration.days(3));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
+		(await crowdsale.getCurrentBonus()).should.be.bignumber.equal(0);
+
+		await crowdsale.buyTokens(bonusBuyer4, {from: buyer, value: ether(1)});
+
+		(await token.balanceOf(bonusBuyer4)).should.be.bignumber.equal(ether(10));
+	});
+
+
+	it('should not release token in crowdsale is not finalized', async function() {
+		await crowdsale.releaseToken(newTokenOwner, {from: owner}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should release the token to the new owner', async function() {
+		await increaseTimeTo(endTime + 1);
+		await crowdsale.finalize({from: owner});
+		await crowdsale.releaseToken(newTokenOwner, {from: owner}).should.be.fulfilled;
+
+		(await token.owner()).should.be.equal(newTokenOwner);
+	});
+
+
+	it('should not release the token by anyone other than owner', async function() {
+		await crowdsale.releaseToken(newTokenOwner, {from: admin}).should.be.rejectedWith('revert');
+		await crowdsale.releaseToken(newTokenOwner, {from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.releaseToken(newTokenOwner, {from: buyer}).should.be.rejectedWith('revert');
 	});
 
 });

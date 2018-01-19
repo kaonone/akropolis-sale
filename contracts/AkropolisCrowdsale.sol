@@ -39,9 +39,7 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         uint256 weiAmount = msg.value;
         uint256 updatedWeiRaised = weiRaised.add(weiAmount);
 
-        uint256 rate = getRate();
-        // calculate token amount to be created
-        uint256 tokens = weiAmount.mul(rate);
+        uint256 tokens = calculateTokens(weiAmount);
 
         // update state
         weiRaised = updatedWeiRaised;
@@ -75,9 +73,27 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         return new AkropolisToken();
     }
 
-    function getRate() internal pure returns(uint256) {
-        // the fixed rate going to be adjusted to make the tokens evenly distributed
-        return AET_RATE;
+    /**
+    * @dev Returns the bonus at the current moment in percents
+    */
+    function getCurrentBonus() public view returns(uint256) {
+        uint256 round = getCurrentRound();
+        if (round == 1) {
+            return 20;
+        } else if (round == 2) {
+            return 10;
+        } else if (round == 3) {
+            return 5;
+        }
+        return 0;
+    }
+
+    /**
+    * @dev Returns the number of AET tokens per contributed amount in wei
+    *      including the early participants bonus
+    */
+    function calculateTokens(uint256 _amountInWei) internal view returns(uint256) {
+        return _amountInWei.mul(AET_RATE).mul(getCurrentBonus().add(100)).div(100);
     }
 
     function getAvailableCap(address _buyer) public view returns(uint256) {
