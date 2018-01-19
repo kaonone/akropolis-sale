@@ -79,7 +79,17 @@ contract('IncreasingCapCrowdsale Crowdsale', function ([owner, other, wallet]) {
 
 	//TODO: test duration setters
 
-	it('should set the correct round duration', async function () {
+	it('should not allow for a round duration of 0', async function () {
+		await crowdsale.setRoundDuration(duration.days(0), {from: owner}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow the duration of 4 rounds to exceed the end time', async function() {
+		await crowdsale.setRoundDuration(duration.days(7), {from: owner}).should.be.rejectedWith('revert');
+	});
+
+
+    it('should set the correct round duration', async function () {
 		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 	});
 
@@ -109,6 +119,11 @@ contract('IncreasingCapCrowdsale Crowdsale', function ([owner, other, wallet]) {
 		await increaseTimeTo(startTime + duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
 		(await crowdsale.getCurrentCap()).should.be.bignumber.equal(ether(10));
+	});
+
+	it('should not return more than 4 rounds after the end time', async function () {
+		await increaseTimeTo(startTime + duration.days(7));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
 	});
 
 });
