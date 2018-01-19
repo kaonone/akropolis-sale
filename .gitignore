@@ -3,7 +3,8 @@ node_modules
 
 # Generated files
 build
-environments
+coverage
+coverage.json
 
 # IDE
 .idea
