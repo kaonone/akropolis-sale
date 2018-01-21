@@ -11,6 +11,10 @@ const should = require('chai')
 	.use(require('chai-bignumber')(BigNumber))
 	.should()
 
+function ether (n) {
+	return new web3.BigNumber(web3.toWei(n, 'ether'));
+}
+
 contract('Akropolis Presale', function ([owner, admin, investor, investorWithVesting, foundation, other]) {
 
 	const ALLOCATED_VALUE = 100;
@@ -28,7 +32,7 @@ contract('Akropolis Presale', function ([owner, admin, investor, investorWithVes
 
 	it('should not allow registering allocations for anyone other than admin', async function () {
 		await presale.registerAllocation(investor, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD).should.be.rejectedWith('revert');
-    await presale.registerAllocation(other, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD).should.be.rejectedWith('revert');
+    	await presale.registerAllocation(other, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD).should.be.rejectedWith('revert');
 	});
 
 	it('should not allow setting admin for anyone other than the owner', async function() {
@@ -72,6 +76,31 @@ contract('Akropolis Presale', function ([owner, admin, investor, investorWithVes
 		allocated[1].should.be.bignumber.equal(ALLOCATED_VESTING);
 		allocated[2].should.be.bignumber.equal(VESTING_PERIOD);
 	});
+
+
+	it('should not allow admin to register null investor', async function () {
+		await presale.registerAllocation(0, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	})
+
+
+	it('should not allow admin to register null value ', async function () {
+		await presale.registerAllocation(investor, ether(0), ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	})
+
+
+	it('should not allow admin to register value greater than max allocation value ', async function () {
+		await presale.registerAllocation(investor, ether(2000), ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	})
+
+
+	it('should not allow null vesting value with vesting period including proper time ', async function () {
+		await presale.registerAllocation(investor, ALLOCATED_VALUE, ether(0), VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	})
+
+
+	it('should not allow proper vesting value with null time allocated ', async function () {
+		await presale.registerAllocation(investor, ALLOCATED_VALUE, ALLOCATED_VESTING, 0, {from: admin}).should.be.rejectedWith('revert');
+	})
 
 
 	it('should allow the owner to set the token', async function () {
