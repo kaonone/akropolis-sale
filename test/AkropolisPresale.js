@@ -142,6 +142,11 @@ contract('Akropolis Presale', function ([owner, admin, investor, investorWithVes
 	});
 
 
+	it('should not allow distribution of tokens to null investor', async function () {
+		await presale.distributeAllocation(0x0, {from: owner}).should.be.rejectedWith('revert');
+	})
+
+
 	it('should setup correct vesting', async function () {
 		let vesting = LinearTokenVesting.at(await presale.getVesting(investorWithVesting));
 
