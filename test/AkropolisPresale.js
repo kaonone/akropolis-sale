@@ -147,6 +147,20 @@ contract('Akropolis Presale', function ([owner, admin, investor, investorWithVes
 	})
 
 
+	it('should not allow to register allocation for investor that already has a distributed status', async function () {
+		await presale.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD,
+			{from: admin}).should.be.rejectedWith('revert');
+	})
+
+
+	it('should return 0 allocated tokens for already distributed investors', async function () {
+		let allocated = await presale.getAllocatedTokens(investorWithVesting);
+		allocated[0].should.be.bignumber.equal(0);
+		allocated[1].should.be.bignumber.equal(0);
+		allocated[2].should.be.bignumber.equal(0);
+	})
+
+
 	it('should setup correct vesting', async function () {
 		let vesting = LinearTokenVesting.at(await presale.getVesting(investorWithVesting));
 
