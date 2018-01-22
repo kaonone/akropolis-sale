@@ -2,38 +2,23 @@ pragma solidity ^0.4.18;
 
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 import 'zeppelin-solidity/contracts/crowdsale/Crowdsale.sol';
+import './Administrable.sol';
 
 /**
  * @title WhitelistedCrowdsale
  * @dev Adding a support for whitelisting users during a crowdsale.
  * Only the users that were whitelisted by the contract admin may be allowed to buy tokens
  */
-contract WhitelistedCrowdsale is Crowdsale, Ownable {
+contract WhitelistedCrowdsale is Crowdsale, Administrable {
 
     // list of addresses that were verified and are allowed to the crowdsale
     mapping (address => bool) public whitelist;
 
-    // admin who is allowed to add/remove from the whitelist
-    address public admin;
-
     address public sender;
-
-    /**
-    * @dev Throws if called by any account other than the admin.
-    */
-    modifier onlyAdmin() {
-        require(msg.sender == admin);
-        _;
-    }
 
     function WhitelistedCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public
         Crowdsale(_startTime, _endTime, _rate, _wallet) { }
 
-
-    function setAdmin(address _admin) public onlyOwner {
-        require(address(_admin) != 0x0);
-        admin = _admin;
-    }
 
     function addToWhitelist(address _buyer) public onlyAdmin {
         require(_buyer != 0x0);
