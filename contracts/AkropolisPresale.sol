@@ -6,13 +6,12 @@ import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
 import "zeppelin-solidity/contracts/token/SafeERC20.sol";
 import "./AkropolisToken.sol";
 import "./LinearTokenVesting.sol";
-import './Administrable.sol';
+import "./SaleConfiguration.sol";
 
 
-contract AkropolisPresale is Administrable, Pausable {
+contract AkropolisPresale is Ownable, Pausable, SaleConfiguration {
     using SafeERC20 for AkropolisToken;
 
-    uint256 public constant MAX_ALLOCATION_VALUE = 1000 ether;
 
     event PresaleAllocationRegistered(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
     event PresaleAllocationDistributed(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
@@ -34,9 +33,25 @@ contract AkropolisPresale is Administrable, Pausable {
     //Map representing how many tokens have been allocated for an investor address
     mapping(address => Allocation) allocations;
 
+    //A role that is responsible for recording allocations,
+    address public admin;
+
+    /**
+    * @dev Throws if called by any account other than the admin.
+    */
+    modifier onlyAdmin() {
+        require(msg.sender == admin);
+        _;
+    }
+
     function setToken(AkropolisToken _token) public onlyOwner {
         require(address(_token) != 0x0);
         token = _token;
+    }
+
+    function setAdmin(address _admin) public onlyOwner {
+        require(address(_admin) != 0x0);
+        admin = _admin;
     }
 
     /**

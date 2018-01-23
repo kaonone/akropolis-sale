@@ -5,12 +5,10 @@ import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
 import "./AkropolisToken.sol";
 import "./WhitelistedCrowdsale.sol";
 import "./IncreasingCapCrowdsale.sol";
+import "./SaleConfiguration.sol";
 
 
-contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
-
-    uint256 public constant AET_RATE = 10;
-    uint256 public constant HARD_CAP = 10000 ether;
+contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale, SaleConfiguration {
 
     event WalletChange(address wallet);
 
