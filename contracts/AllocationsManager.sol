@@ -9,12 +9,12 @@ import "./LinearTokenVesting.sol";
 import "./SaleConfiguration.sol";
 
 
-contract AkropolisPresale is Ownable, Pausable, SaleConfiguration {
+contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     using SafeERC20 for AkropolisToken;
 
 
-    event PresaleAllocationRegistered(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
-    event PresaleAllocationDistributed(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
+    event AllocationRegistered(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
+    event AllocationDistributed(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
     event TokensReclaimed(address indexed newTokenOwner, uint256 valueReclaimed);
 
     enum AllocationStatus {REGISTERED, DISTRIBUTED}
@@ -68,7 +68,7 @@ contract AkropolisPresale is Ownable, Pausable, SaleConfiguration {
 
         allocations[_investor] = Allocation(_value, _vestingValue, _vestingPeriod, 0, AllocationStatus.REGISTERED);
 
-        PresaleAllocationRegistered(_investor, _value, _vestingValue, _vestingPeriod);
+        AllocationRegistered(_investor, _value, _vestingValue, _vestingPeriod);
     }
 
     /**
@@ -88,7 +88,7 @@ contract AkropolisPresale is Ownable, Pausable, SaleConfiguration {
         }
         allocation.status = AllocationStatus.DISTRIBUTED;
 
-        PresaleAllocationDistributed(_investor, allocation.value, allocation.vestingValue, allocation.vestingPeriod);
+        AllocationDistributed(_investor, allocation.value, allocation.vestingValue, allocation.vestingPeriod);
     }
 
     /**
@@ -118,5 +118,7 @@ contract AkropolisPresale is Ownable, Pausable, SaleConfiguration {
             return allocations[_investor].vestingContract;
         }
     }
+
+
 
 }
