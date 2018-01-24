@@ -98,6 +98,11 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	});
 
 
+	it('should not allow setting null beneficiary when buying tokens', async function() {
+		await crowdsale.buyTokens(0x0, {from: buyer, value: ether(1)}).should.be.rejectedWith('revert');
+	});
+
+
 	it('should not allow exceeding the available cap', async function() {
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(2.01)}).should.be.rejectedWith('revert');
 	});
