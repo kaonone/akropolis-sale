@@ -63,13 +63,25 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         WalletChange(_wallet);
     }
 
-    function releaseToken(address _newTokenOwner) public onlyOwner {
-        require(isFinalized);
-        token.transferOwnership(_newTokenOwner);
-    }
-
     function createTokenContract() internal returns(MintableToken) {
         return new AkropolisToken();
+    }
+
+    /**
+     * @dev Returns the bonus at the current moment in percents
+     */
+    function finalization() internal {
+
+        //Calculate unsold tokens
+
+        //Mint allocations
+
+        //Mint special purpose funds
+
+        //Finish minting and release token
+        token.finishMinting();
+        AkropolisToken(token).unpause();
+        token.transferOwnership(owner);
     }
 
     /**

@@ -64,12 +64,6 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	});
 
 
-	it('should not allow releasing token by anyone but owner', async function() {
-		await crowdsale.releaseToken(wallet, {from: wallet}).should.be.rejectedWith('revert');
-		await crowdsale.releaseToken(wallet, {from: buyer}).should.be.rejectedWith('revert');
-	});
-
-
 	it('should allow owner to change wallet', async function() {
 		await crowdsale.changeWallet(buyer, {from: owner}).should.be.fulfilled;
 		(await crowdsale.wallet()).should.be.equal(buyer);
@@ -153,24 +147,20 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	});
 
 
-	it('should not release token in crowdsale is not finalized', async function() {
-		await crowdsale.releaseToken(newTokenOwner, {from: owner}).should.be.rejectedWith('revert');
+	it('should not allow finalization by anyone other than owner', async function() {
+		await crowdsale.finalize({from: admin}).should.be.rejectedWith('revert');
+		await crowdsale.finalize({from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.finalize({from: buyer}).should.be.rejectedWith('revert');
 	});
 
 
-	it('should release the token to the new owner', async function() {
+	it('should have a correct token state after the crowdsale finalization', async function() {
 		await increaseTimeTo(endTime + 1);
 		await crowdsale.finalize({from: owner});
-		await crowdsale.releaseToken(newTokenOwner, {from: owner}).should.be.fulfilled;
 
-		(await token.owner()).should.be.equal(newTokenOwner);
-	});
-
-
-	it('should not release the token by anyone other than owner', async function() {
-		await crowdsale.releaseToken(newTokenOwner, {from: admin}).should.be.rejectedWith('revert');
-		await crowdsale.releaseToken(newTokenOwner, {from: wallet}).should.be.rejectedWith('revert');
-		await crowdsale.releaseToken(newTokenOwner, {from: buyer}).should.be.rejectedWith('revert');
+		(await token.owner()).should.be.equal(owner);
+		(await token.paused()).should.be.equal(false);
+		(await token.mintingFinished()).should.be.equal(true);
 	});
 
 });
