@@ -32,7 +32,7 @@ contract('Akropolis Presale', function ([owner, admin, investor, investorWithVes
 
 	it('should not allow registering allocations for anyone other than admin', async function () {
 		await presale.registerAllocation(investor, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD).should.be.rejectedWith('revert');
-    	await presale.registerAllocation(other, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD).should.be.rejectedWith('revert');
+		await presale.registerAllocation(other, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD).should.be.rejectedWith('revert');
 	});
 
 	it('should not allow setting admin for anyone other than the owner', async function() {
@@ -89,7 +89,8 @@ contract('Akropolis Presale', function ([owner, admin, investor, investorWithVes
 
 
 	it('should not allow admin to register value greater than max allocation value ', async function () {
-		await presale.registerAllocation(investor, ether(2000), ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+		let bigAllocation = (await presale.MAX_ALLOCATION_VALUE()).add(1);
+		await presale.registerAllocation(investor, bigAllocation, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
 	})
 
 
