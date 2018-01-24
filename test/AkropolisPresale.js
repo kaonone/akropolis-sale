@@ -89,7 +89,8 @@ contract('Akropolis Presale', function ([owner, admin, investor, investorWithVes
 
 
 	it('should not allow admin to register value greater than max allocation value ', async function () {
-		await presale.registerAllocation(investor, ether(2000), ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+		let bigAllocation = (await presale.MAX_ALLOCATION_VALUE()).toNumber() + ether(1);
+		await presale.registerAllocation(investor, bigAllocation, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
 	})
 
 
