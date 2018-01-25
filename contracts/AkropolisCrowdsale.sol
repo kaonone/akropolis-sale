@@ -6,6 +6,7 @@ import "./AkropolisToken.sol";
 import "./WhitelistedCrowdsale.sol";
 import "./IncreasingCapCrowdsale.sol";
 import "./SaleConfiguration.sol";
+import "./AllocationsManager.sol";
 
 
 contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale, SaleConfiguration {
@@ -13,6 +14,15 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     event WalletChange(address wallet);
 
     mapping(address => uint256) public contributions;
+
+    AllocationsManager public presaleAllocations;
+    AllocationsManager public teamAllocations;
+    AllocationsManager public advisorsAllocations;
+
+    address public reserveFund;
+    address public bountyFund;
+    address public developmentFund;
+
 
     function AkropolisCrowdsale(
     uint256 _startTime,
@@ -82,11 +92,21 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
      */
     function finalization() internal {
 
-        //Calculate unsold tokens
-
         //Mint allocations
+        require(address(presaleAllocations) != 0x0 && address(teamAllocations) != 0x0 && address(advisorsAllocations) != 0x0);
+        token.mint(presaleAllocations, PRESALE_SUPPLY);
+        token.mint(teamAllocations, TEAM_SUPPLY);
+        token.mint(advisorsAllocations, ADVISORS_SUPPLY);
 
         //Mint special purpose funds
+        require(reserveFund != 0x0 && bountyFund != 0x0 && developmentFund != 0x0);
+        token.mint(reserveFund, RESERVE_FUND_VALUE);
+        token.mint(bountyFund, BOUNTY_FUND_VALUE);
+        token.mint(developmentFund, DEVELOPMENT_FUND_VALUE);
+
+
+        //Calculate unsold tokens and send to the reserve
+
 
         //Finish minting and release token
         token.finishMinting();
@@ -107,6 +127,30 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
             return 5;
         }
         return 0;
+    }
+
+    function setPresaleAllocations(AllocationsManager _presaleAllocations) public onlyOwner {
+        presaleAllocations = _presaleAllocations;
+    }
+
+    function setTeamAllocations(AllocationsManager _teamAllocations) public onlyOwner {
+        teamAllocations = _teamAllocations;
+    }
+
+    function setAdvisorsAllocations(AllocationsManager _advisorsAllocations) public onlyOwner {
+        advisorsAllocations = _advisorsAllocations;
+    }
+
+    function setReserveFund(address _reserveFund) public onlyOwner {
+        reserveFund = _reserveFund;
+    }
+
+    function setBountyFund(address _bountyFund) public onlyOwner {
+        bountyFund = _bountyFund;
+    }
+
+    function setDevelopmentFund(address _developmentFund) public onlyOwner {
+        developmentFund = _developmentFund;
     }
 
     /**

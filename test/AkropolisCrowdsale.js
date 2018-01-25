@@ -17,7 +17,9 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4, newTokenOwner]) {
+contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4,
+																					 presaleAllocations, teamAllocations, advisorsAllocations,
+																					 reserveFund, bountyFund, developmentFund]) {
 
 	let token, crowdsale, whitelist;
 	let startTime, endTime, afterEndTime;
@@ -157,11 +159,34 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		await crowdsale.finalize({from: buyer}).should.be.rejectedWith('revert');
 	});
 
+	it('should not allow finalizing without all allocations and funds defined', async function() {
+		await increaseTimeTo(endTime + 1);
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setPresaleAllocations(presaleAllocations, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setTeamAllocations(teamAllocations, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setAdvisorsAllocations(advisorsAllocations, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setReserveFund(reserveFund, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setBountyFund(bountyFund, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.fulfilled;
+
+
+
+	});
+
 
 	it('should have a correct token state after the crowdsale finalization', async function() {
-		await increaseTimeTo(endTime + 1);
-		await crowdsale.finalize({from: owner});
-
 		(await token.owner()).should.be.equal(owner);
 		(await token.paused()).should.be.equal(false);
 		(await token.mintingFinished()).should.be.equal(true);
