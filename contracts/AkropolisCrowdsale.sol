@@ -26,8 +26,15 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     {
         require(AET_RATE > 0);
         require(_wallet != 0x0);
+    }
 
-        AkropolisToken(token).pause();
+    function setToken(AkropolisToken _token) public onlyOwner {
+        require(address(token) == 0x0);
+        require(address(_token) != 0x0);
+        require(_token.paused());
+        require(_token.owner() == address(this));
+
+        token = _token;
     }
 
     // low level token purchase function
@@ -63,8 +70,11 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         WalletChange(_wallet);
     }
 
-    function createTokenContract() internal returns(MintableToken) {
-        return new AkropolisToken();
+    /**
+    * Overwrites the base OpenZeppelin function not to waste gas on an unnecessary token creation
+    */
+    function createTokenContract() internal returns (MintableToken) {
+        return MintableToken(0x0);
     }
 
     /**

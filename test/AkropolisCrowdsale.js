@@ -29,9 +29,13 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.weeks(1);
 		afterEndTime = endTime + duration.seconds(1);
+
 		whitelist = await Whitelist.new();
+		token = await AkropolisToken.new();
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address);
-		token = AkropolisToken.at(await crowdsale.token());
+		await token.pause();
+		await token.transferOwnership(crowdsale.address);
+		await crowdsale.setToken(token.address);
 	});
 
 
