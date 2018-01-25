@@ -14,6 +14,7 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     event WalletChange(address wallet);
 
     mapping(address => uint256) public contributions;
+    uint256 public tokensSold;
 
     AllocationsManager public presaleAllocations;
     AllocationsManager public teamAllocations;
@@ -61,6 +62,7 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         weiRaised = updatedWeiRaised;
 
         token.mint(beneficiary, tokens);
+        tokensSold = tokensSold.add(tokens);
         TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
         contributions[beneficiary] = contributions[beneficiary].add(weiRaised);
@@ -106,7 +108,10 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
 
 
         //Calculate unsold tokens and send to the reserve
-
+        uint256 unsold = PUBLIC_SALE_SUPPLY.sub(tokensSold);
+        if (unsold > 0) {
+            token.mint(reserveFund, unsold);
+        }
 
         //Finish minting and release token
         token.finishMinting();
