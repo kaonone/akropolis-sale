@@ -4,6 +4,7 @@ import latestTime from './tools/latestTime';
 
 const AkropolisToken = artifacts.require('./AkropolisToken.sol');
 const AkropolisCrowdsale = artifacts.require('./AkropolisCrowdsale.sol');
+const Whitelist = artifacts.require('./Whitelist.sol');
 
 const BigNumber = web3.BigNumber;
 
@@ -18,7 +19,7 @@ function ether (n) {
 
 contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4, newTokenOwner]) {
 
-	let token, crowdsale;
+	let token, crowdsale, whitelist;
 	let startTime, endTime, afterEndTime;
 
 	before(async function () {
@@ -28,8 +29,8 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.weeks(1);
 		afterEndTime = endTime + duration.seconds(1);
-
-		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet);
+		whitelist = await Whitelist.new();
+		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address);
 		token = AkropolisToken.at(await crowdsale.token());
 	});
 
@@ -89,8 +90,9 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 
 
 	it('should accept whitelisted users and update available cap', async function() {
+		await whitelist.setAdmin(admin);
 		await crowdsale.setAdmin(admin);
-		await crowdsale.addToWhitelist(buyer, {from: admin});
+		await whitelist.addToWhitelist(buyer, {from: admin});
 
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.fulfilled;
 

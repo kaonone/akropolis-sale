@@ -26,7 +26,7 @@ contract('Akropolis Presale', function ([owner, admin, investor, investorWithVes
 	let presale;
 
 	before(async function () {
-		token = await AkropolisToken.new()
+		token = await AkropolisToken.new();
 		presale = await AkropolisPresale.new();
 	});
 

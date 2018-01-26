@@ -17,11 +17,12 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     function AkropolisCrowdsale(
     uint256 _startTime,
     uint256 _endTime,
-    address _wallet
+    address _wallet,
+    address _whitelist
     ) public
         IncreasingCapCrowdsale(HARD_CAP)
         FinalizableCrowdsale()
-        WhitelistedCrowdsale(_startTime, _endTime, AET_RATE, _wallet)
+        WhitelistedCrowdsale(_startTime, _endTime, AET_RATE, _wallet, _whitelist)
     {
         require(AET_RATE > 0);
         require(_wallet != 0x0);
