@@ -11,6 +11,10 @@ const should = require('chai')
 	.use(require('chai-bignumber')(BigNumber))
 	.should()
 
+function ether (n) {
+	return new web3.BigNumber(web3.toWei(n, 'ether'));
+}
+
 contract('AllocationsManager', function ([owner, admin, investor, investorWithVesting, foundation, other]) {
 
 	const ALLOCATED_VALUE = 100;
@@ -74,6 +78,32 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 	});
 
 
+	it('should not allow admin to register null investor', async function () {
+		await allocations.registerAllocation(0, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow admin to register null value ', async function () {
+		await allocations.registerAllocation(investor, ether(0), ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow admin to register value greater than max allocation value ', async function () {
+		let bigAllocation = (await allocations.MAX_ALLOCATION_VALUE()).add(1);
+		await allocations.registerAllocation(investor, bigAllocation, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow null vesting value with vesting period including proper time ', async function () {
+		await allocations.registerAllocation(investor, ALLOCATED_VALUE, ether(0), VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow proper vesting value with null time allocated ', async function () {
+		await allocations.registerAllocation(investor, ALLOCATED_VALUE, ALLOCATED_VESTING, 0, {from: admin}).should.be.rejectedWith('revert');
+	});
+
+
 	it('should allow the owner to set the token', async function () {
 		await allocations.setToken(token.address, {from: owner});
 
@@ -110,6 +140,25 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 
 		(await token.balanceOf(investorWithVesting)).should.be.bignumber.equal(ALLOCATED_VALUE);
 		(await token.balanceOf(allocations.address)).should.be.bignumber.equal(100);
+	});
+
+
+	it('should not allow distribution of tokens to null investor', async function () {
+		await allocations.distributeAllocation(0x0, {from: owner}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow to register allocation for investor that already has a distributed status', async function () {
+		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD,
+			{from: admin}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should return 0 allocated tokens for already distributed investors', async function () {
+		let allocated = await allocations.getAllocatedTokens(investorWithVesting);
+		allocated[0].should.be.bignumber.equal(0);
+		allocated[1].should.be.bignumber.equal(0);
+		allocated[2].should.be.bignumber.equal(0);
 	});
 
 
