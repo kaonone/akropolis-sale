@@ -5,6 +5,7 @@ import latestTime from './tools/latestTime';
 const AkropolisToken = artifacts.require('./AkropolisToken.sol');
 const AkropolisCrowdsale = artifacts.require('./AkropolisCrowdsale.sol');
 const Whitelist = artifacts.require('./Whitelist.sol');
+const SaleConfigurationMock = artifacts.require('./SaleConfigurationMock.sol');
 
 const BigNumber = web3.BigNumber;
 
@@ -21,7 +22,7 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 																					 presaleAllocations, teamAllocations, advisorsAllocations,
 																					 reserveFund, bountyFund, developmentFund]) {
 
-	let token, crowdsale, whitelist;
+	let token, crowdsale, whitelist, config;
 	let startTime, endTime, afterEndTime;
 
 	before(async function () {
@@ -33,16 +34,29 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		afterEndTime = endTime + duration.seconds(1);
 
 		whitelist = await Whitelist.new();
+
 		token = await AkropolisToken.new();
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address);
 		await token.pause();
-		await token.transferOwnership(crowdsale.address);
+		config = await SaleConfigurationMock.new();
+	});
+
+	it('should fail to validate configuration for AET_RATE == 0', async function () {
+		await config.setAET_RATE(0);
+		await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.rejectedWith('revert');
+	});
+
+
+	it('should create a crowdsale for valid configruation', async function () {
+		await config.setAET_RATE(10);
+		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address);
+    await token.transferOwnership(crowdsale.address);
 		await crowdsale.setToken(token.address);
 	});
 
 
 	it('should create the sale with the correct parameters', async function () {
-		(await crowdsale.startTime()).should.be.bignumber.equal(startTime);
+    (await crowdsale.startTime()).should.be.bignumber.equal(startTime);
 		(await crowdsale.endTime()).should.be.bignumber.equal(endTime);
 		(await crowdsale.wallet()).should.be.equal(wallet);
 	});

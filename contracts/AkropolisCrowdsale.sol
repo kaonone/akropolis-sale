@@ -9,7 +9,7 @@ import "./SaleConfiguration.sol";
 import "./AllocationsManager.sol";
 
 
-contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale, SaleConfiguration {
+contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
 
     event WalletChange(address wallet);
 
@@ -25,18 +25,24 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     address public developmentFund;
 
 
+    SaleConfiguration public config;
+
     function AkropolisCrowdsale(
     uint256 _startTime,
     uint256 _endTime,
     address _wallet,
-    address _whitelist
+    address _whitelist,
+    SaleConfiguration _config
     ) public
-        IncreasingCapCrowdsale(HARD_CAP)
+        IncreasingCapCrowdsale(_config.HARD_CAP())
         FinalizableCrowdsale()
-        WhitelistedCrowdsale(_startTime, _endTime, AET_RATE, _wallet, _whitelist)
+        WhitelistedCrowdsale(_startTime, _endTime, _config.AET_RATE(), _wallet, _whitelist)
     {
-        require(AET_RATE > 0);
+        require(address(_config) != 0x0);
         require(_wallet != 0x0);
+        
+        config = _config;
+        require(config.AET_RATE() > 0);
     }
 
     function setToken(AkropolisToken _token) public onlyOwner {
@@ -165,7 +171,7 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     *      including the early participants bonus
     */
     function calculateTokens(uint256 _amountInWei) internal view returns(uint256) {
-        return _amountInWei.mul(AET_RATE).mul(getCurrentBonus().add(100)).div(100);
+        return _amountInWei.mul(config.AET_RATE()).mul(getCurrentBonus().add(100)).div(100);
     }
 
     function getAvailableCap(address _buyer) public view returns(uint256) {
