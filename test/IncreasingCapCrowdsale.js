@@ -6,6 +6,7 @@ const AkropolisToken = artifacts.require('./AkropolisToken.sol');
 const AkropolisCrowdsale = artifacts.require('./AkropolisCrowdsale.sol');
 const IncreasingCapCrowdsale = artifacts.require('./IncreasingCapCrowdsale.sol');
 const Whitelist = artifacts.require('./Whitelist.sol');
+const SaleConfigurationMock = artifacts.require('./SaleConfigurationMock.sol');
 
 const BigNumber = web3.BigNumber;
 
@@ -20,7 +21,7 @@ function ether (n) {
 
 contract('IncreasingCapCrowdsale Crowdsale', function ([owner, other, wallet]) {
 
-	let token, crowdsale, whitelist;
+	let token, crowdsale, whitelist, config;
 	let startTime, endTime;
 
 	before(async function () {
@@ -30,7 +31,8 @@ contract('IncreasingCapCrowdsale Crowdsale', function ([owner, other, wallet]) {
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.days(5);
 		whitelist = await Whitelist.new();
-		var akropolisCrowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address);
+		config = await SaleConfigurationMock.new();
+		var akropolisCrowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address);
 		crowdsale = IncreasingCapCrowdsale.at(akropolisCrowdsale.address);
 		token = AkropolisToken.at(await crowdsale.token());
 	});
