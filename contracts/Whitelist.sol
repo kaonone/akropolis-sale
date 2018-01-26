@@ -6,6 +6,7 @@ import './Administrable.sol';
 
 contract Whitelist is Administrable {
 
+    // list of addresses that were verified and are allowed to the crowdsale
     mapping (address => bool) public whitelist;
 
     function addToWhitelist(address _buyer) public onlyAdmin {
@@ -22,7 +23,7 @@ contract Whitelist is Administrable {
     }
 
 
-// @return true if buyer is whitelisted
+    // @return true if buyer is whitelisted
     function isWhitelisted(address _buyer) public view returns (bool) {
         return whitelist[_buyer];
     }

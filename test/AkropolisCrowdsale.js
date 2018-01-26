@@ -18,7 +18,9 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4, newTokenOwner]) {
+contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4,
+																					 presaleAllocations, teamAllocations, advisorsAllocations,
+																					 reserveFund, bountyFund, developmentFund]) {
 
 	let token, crowdsale, whitelist, config;
 	let startTime, endTime, afterEndTime;
@@ -30,9 +32,13 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.weeks(1);
 		afterEndTime = endTime + duration.seconds(1);
-		whitelist = await Whitelist.new();
-		config = await SaleConfigurationMock.new();
 
+		whitelist = await Whitelist.new();
+
+		token = await AkropolisToken.new();
+		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address);
+		await token.pause();
+		config = await SaleConfigurationMock.new();
 	});
 
 	it('should fail to validate configuration for AET_RATE == 0', async function () {
@@ -44,12 +50,13 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	it('should create a crowdsale for valid configruation', async function () {
 		await config.setAET_RATE(10);
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address);
-		token = AkropolisToken.at(await crowdsale.token());
+    await token.transferOwnership(crowdsale.address);
+		await crowdsale.setToken(token.address);
 	});
 
 
 	it('should create the sale with the correct parameters', async function () {
-		(await crowdsale.startTime()).should.be.bignumber.equal(startTime);
+    (await crowdsale.startTime()).should.be.bignumber.equal(startTime);
 		(await crowdsale.endTime()).should.be.bignumber.equal(endTime);
 		(await crowdsale.wallet()).should.be.equal(wallet);
 	});
@@ -74,12 +81,6 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	it('should not allow wallet change by anyone but owner', async function() {
 		await crowdsale.changeWallet(wallet, {from: wallet}).should.be.rejectedWith('revert');
 		await crowdsale.changeWallet(wallet, {from: buyer}).should.be.rejectedWith('revert');
-	});
-
-
-	it('should not allow releasing token by anyone but owner', async function() {
-		await crowdsale.releaseToken(wallet, {from: wallet}).should.be.rejectedWith('revert');
-		await crowdsale.releaseToken(wallet, {from: buyer}).should.be.rejectedWith('revert');
 	});
 
 
@@ -166,24 +167,50 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	});
 
 
-	it('should not release token in crowdsale is not finalized', async function() {
-		await crowdsale.releaseToken(newTokenOwner, {from: owner}).should.be.rejectedWith('revert');
+	it('should not allow finalization by anyone other than owner', async function() {
+		await crowdsale.finalize({from: admin}).should.be.rejectedWith('revert');
+		await crowdsale.finalize({from: wallet}).should.be.rejectedWith('revert');
+		await crowdsale.finalize({from: buyer}).should.be.rejectedWith('revert');
 	});
 
-
-	it('should release the token to the new owner', async function() {
+	it('should not allow finalizing without all allocations and funds defined', async function() {
 		await increaseTimeTo(endTime + 1);
-		await crowdsale.finalize({from: owner});
-		await crowdsale.releaseToken(newTokenOwner, {from: owner}).should.be.fulfilled;
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
 
-		(await token.owner()).should.be.equal(newTokenOwner);
+		await crowdsale.setPresaleAllocations(presaleAllocations, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setTeamAllocations(teamAllocations, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setAdvisorsAllocations(advisorsAllocations, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setReserveFund(reserveFund, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setBountyFund(bountyFund, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
+
+		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
+		await crowdsale.finalize({from: owner}).should.be.fulfilled;
 	});
 
 
-	it('should not release the token by anyone other than owner', async function() {
-		await crowdsale.releaseToken(newTokenOwner, {from: admin}).should.be.rejectedWith('revert');
-		await crowdsale.releaseToken(newTokenOwner, {from: wallet}).should.be.rejectedWith('revert');
-		await crowdsale.releaseToken(newTokenOwner, {from: buyer}).should.be.rejectedWith('revert');
+	it('should mint unsold tokens', async function() {
+		let sold = await crowdsale.tokensSold();
+		let supply = await crowdsale.PUBLIC_SALE_SUPPLY();
+		let unsold = supply.sub(sold);
+		let reserve = await crowdsale.RESERVE_FUND_VALUE();
+
+		(await token.balanceOf(reserveFund)).should.be.bignumber.equal(reserve.add(unsold));
+	});
+
+
+	it('should have a correct token state after the crowdsale finalization', async function() {
+		(await token.owner()).should.be.equal(owner);
+		(await token.paused()).should.be.equal(false);
+		(await token.mintingFinished()).should.be.equal(true);
 	});
 
 });

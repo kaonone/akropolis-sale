@@ -30,11 +30,17 @@ contract('IncreasingCapCrowdsale Crowdsale', function ([owner, other, wallet]) {
 
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.days(5);
+
 		whitelist = await Whitelist.new();
+		token = await AkropolisToken.new();
 		config = await SaleConfigurationMock.new();
-		var akropolisCrowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address);
+		await token.pause();
+    var akropolisCrowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address);
+
+		await token.transferOwnership(akropolisCrowdsale.address);
+		await akropolisCrowdsale.setToken(token.address);
+
 		crowdsale = IncreasingCapCrowdsale.at(akropolisCrowdsale.address);
-		token = AkropolisToken.at(await crowdsale.token());
 	});
 
 

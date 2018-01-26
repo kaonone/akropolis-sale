@@ -6,6 +6,7 @@ import "./AkropolisToken.sol";
 import "./WhitelistedCrowdsale.sol";
 import "./IncreasingCapCrowdsale.sol";
 import "./SaleConfiguration.sol";
+import "./AllocationsManager.sol";
 
 
 contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
@@ -13,6 +14,16 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     event WalletChange(address wallet);
 
     mapping(address => uint256) public contributions;
+    uint256 public tokensSold;
+
+    AllocationsManager public presaleAllocations;
+    AllocationsManager public teamAllocations;
+    AllocationsManager public advisorsAllocations;
+
+    address public reserveFund;
+    address public bountyFund;
+    address public developmentFund;
+
 
     SaleConfiguration public config;
 
@@ -29,11 +40,18 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     {
         require(address(_config) != 0x0);
         require(_wallet != 0x0);
-
+        
         config = _config;
         require(config.AET_RATE() > 0);
+    }
 
-        AkropolisToken(token).pause();
+    function setToken(AkropolisToken _token) public onlyOwner {
+        require(address(token) == 0x0);
+        require(address(_token) != 0x0);
+        require(_token.paused());
+        require(_token.owner() == address(this));
+
+        token = _token;
     }
 
     // low level token purchase function
@@ -49,10 +67,13 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         // update state
         weiRaised = updatedWeiRaised;
 
-        token.mint(beneficiary, tokens);
-        TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
+        require(token.mint(beneficiary, tokens));
 
         contributions[beneficiary] = contributions[beneficiary].add(weiRaised);
+        tokensSold = tokensSold.add(tokens);
+        require(tokensSold <= PUBLIC_SALE_SUPPLY);
+        
+        TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
         forwardFunds();
     }
@@ -69,13 +90,41 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         WalletChange(_wallet);
     }
 
-    function releaseToken(address _newTokenOwner) public onlyOwner {
-        require(isFinalized);
-        token.transferOwnership(_newTokenOwner);
+    /**
+    * Overwrites the base OpenZeppelin function not to waste gas on an unnecessary token creation
+    */
+    function createTokenContract() internal returns (MintableToken) {
+        return MintableToken(0x0);
     }
 
-    function createTokenContract() internal returns(MintableToken) {
-        return new AkropolisToken();
+    /**
+     * @dev Returns the bonus at the current moment in percents
+     */
+    function finalization() internal {
+
+        //Mint allocations
+        require(address(presaleAllocations) != 0x0 && address(teamAllocations) != 0x0 && address(advisorsAllocations) != 0x0);
+        token.mint(presaleAllocations, PRESALE_SUPPLY);
+        token.mint(teamAllocations, TEAM_SUPPLY);
+        token.mint(advisorsAllocations, ADVISORS_SUPPLY);
+
+        //Mint special purpose funds
+        require(reserveFund != 0x0 && bountyFund != 0x0 && developmentFund != 0x0);
+        token.mint(reserveFund, RESERVE_FUND_VALUE);
+        token.mint(bountyFund, BOUNTY_FUND_VALUE);
+        token.mint(developmentFund, DEVELOPMENT_FUND_VALUE);
+
+
+        //Calculate unsold tokens and send to the reserve
+        uint256 unsold = PUBLIC_SALE_SUPPLY.sub(tokensSold);
+        if (unsold > 0) {
+            token.mint(reserveFund, unsold);
+        }
+
+        //Finish minting and release token
+        token.finishMinting();
+        AkropolisToken(token).unpause();
+        token.transferOwnership(owner);
     }
 
     /**
@@ -91,6 +140,30 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
             return 5;
         }
         return 0;
+    }
+
+    function setPresaleAllocations(AllocationsManager _presaleAllocations) public onlyOwner {
+        presaleAllocations = _presaleAllocations;
+    }
+
+    function setTeamAllocations(AllocationsManager _teamAllocations) public onlyOwner {
+        teamAllocations = _teamAllocations;
+    }
+
+    function setAdvisorsAllocations(AllocationsManager _advisorsAllocations) public onlyOwner {
+        advisorsAllocations = _advisorsAllocations;
+    }
+
+    function setReserveFund(address _reserveFund) public onlyOwner {
+        reserveFund = _reserveFund;
+    }
+
+    function setBountyFund(address _bountyFund) public onlyOwner {
+        bountyFund = _bountyFund;
+    }
+
+    function setDevelopmentFund(address _developmentFund) public onlyOwner {
+        developmentFund = _developmentFund;
     }
 
     /**
