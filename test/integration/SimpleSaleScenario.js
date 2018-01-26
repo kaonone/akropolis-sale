@@ -19,7 +19,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis TGE Scenario', function ([owner, admin, buyer1, buyer2, buyer3, bonusBuyer4,
+contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, bonusBuyer4,
 																						presaleAllocations, teamAllocations, advisorsAllocations,
 																						reserveFund, bountyFund, developmentFund]) {
 
@@ -30,9 +30,18 @@ contract('Akropolis TGE Scenario', function ([owner, admin, buyer1, buyer2, buye
 	let token, crowdsale, whitelist, config, allocations;
 	let startTime, endTime, afterEndTime;
 
+	before(async function () {
+		// Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
+		await advanceBlock();
+
+		startTime = latestTime() + duration.weeks(1);
+		endTime = startTime + duration.weeks(1);
+		afterEndTime = endTime + duration.seconds(1);
+	});
 
 	it('should deploy AET token', async function () {
 		token = await AkropolisToken.new().should.be.fulfilled;
+		await token.pause().should.be.fulfilled;
 	});
 
 
@@ -63,8 +72,15 @@ contract('Akropolis TGE Scenario', function ([owner, admin, buyer1, buyer2, buye
 	});
 
 
-	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
+	it('should deploy Config', async function () {
+		config = await SaleConfiguration.new().should.be.fulfilled;
+	});
 
+
+	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
+		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
+		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
+		await crowdsale.setToken(token.address).should.be.fulfilled;
 	});
 
 
