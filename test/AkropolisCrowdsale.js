@@ -46,7 +46,7 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	});
 
 
-	it('should create a crowdsale for valid configruation', async function () {
+	it('should create a crowdsale for valid configuration', async function () {
 		await config.setAET_RATE(10);
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address);
     await token.transferOwnership(crowdsale.address);
