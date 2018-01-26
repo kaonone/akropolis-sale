@@ -55,6 +55,8 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		allocated[0].should.be.bignumber.equal(ALLOCATED_VALUE);
 		allocated[1].should.be.bignumber.equal(0);
 		allocated[2].should.be.bignumber.equal(0);
+
+		(await allocations.totalAllocated()).should.be.bignumber.equal(ALLOCATED_VALUE);
 	});
 
 
@@ -65,6 +67,8 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		allocated[0].should.be.bignumber.equal(UPDATED_VALUE);
 		allocated[1].should.be.bignumber.equal(0);
 		allocated[2].should.be.bignumber.equal(0);
+
+		(await allocations.totalAllocated()).should.be.bignumber.equal(UPDATED_VALUE);
 	});
 
 	it('should allow the admin to register allocation with vesting', async function () {
@@ -75,6 +79,8 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		allocated[0].should.be.bignumber.equal(ALLOCATED_VALUE);
 		allocated[1].should.be.bignumber.equal(ALLOCATED_VESTING);
 		allocated[2].should.be.bignumber.equal(VESTING_PERIOD);
+
+		(await allocations.totalAllocated()).should.be.bignumber.equal(UPDATED_VALUE + ALLOCATED_VALUE + ALLOCATED_VESTING);
 	});
 
 

@@ -11,6 +11,7 @@ import "./SaleConfiguration.sol";
 
 contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     using SafeERC20 for AkropolisToken;
+    using SafeMath for uint256;
 
 
     event AllocationRegistered(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
@@ -32,6 +33,9 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
 
     //Map representing how many tokens have been allocated for an investor address
     mapping(address => Allocation) allocations;
+
+    //Total value of all allocations
+    uint256 public totalAllocated;
 
     //A role that is responsible for recording allocations,
     address public admin;
@@ -66,7 +70,14 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
 
         require(allocations[_investor].status != AllocationStatus.DISTRIBUTED);
 
+        if (allocations[_investor].value > 0) {
+            totalAllocated = totalAllocated.sub(allocations[_investor].value);
+            totalAllocated = totalAllocated.sub(allocations[_investor].vestingValue);
+        }
+
         allocations[_investor] = Allocation(_value, _vestingValue, _vestingPeriod, 0, AllocationStatus.REGISTERED);
+
+        totalAllocated = totalAllocated.add(_value).add(_vestingValue);
 
         AllocationRegistered(_investor, _value, _vestingValue, _vestingPeriod);
     }
