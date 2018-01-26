@@ -12,15 +12,12 @@ import './Whitelist.sol';
  */
 contract WhitelistedCrowdsale is Crowdsale, Administrable {
 
-    // list of addresses that were verified and are allowed to the crowdsale
-    
-    address public sender;
-	Whitelist _whitelistContract;
+    Whitelist _whitelistContract;
 
     function WhitelistedCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address whitelistAddress) public
         Crowdsale(_startTime, _endTime, _rate, _wallet) {
         _whitelistContract = Whitelist(whitelistAddress);
- }
+    }
 
 
     // overriding Crowdsale#validPurchase to add checking if a buyer is whitelisted
