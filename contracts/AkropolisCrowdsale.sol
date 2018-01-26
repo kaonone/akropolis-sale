@@ -71,7 +71,7 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
 
         contributions[beneficiary] = contributions[beneficiary].add(weiRaised);
         tokensSold = tokensSold.add(tokens);
-        require(tokensSold <= PUBLIC_SALE_SUPPLY);
+        //require(tokensSold <= config.PUBLIC_SALE_SUPPLY());
         
         TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
@@ -104,19 +104,19 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
 
         //Mint allocations
         require(address(presaleAllocations) != 0x0 && address(teamAllocations) != 0x0 && address(advisorsAllocations) != 0x0);
-        token.mint(presaleAllocations, PRESALE_SUPPLY);
-        token.mint(teamAllocations, TEAM_SUPPLY);
-        token.mint(advisorsAllocations, ADVISORS_SUPPLY);
+        token.mint(presaleAllocations, config.PRESALE_SUPPLY());
+        token.mint(teamAllocations, config.TEAM_SUPPLY());
+        token.mint(advisorsAllocations, config.ADVISORS_SUPPLY());
 
         //Mint special purpose funds
         require(reserveFund != 0x0 && bountyFund != 0x0 && developmentFund != 0x0);
-        token.mint(reserveFund, RESERVE_FUND_VALUE);
-        token.mint(bountyFund, BOUNTY_FUND_VALUE);
-        token.mint(developmentFund, DEVELOPMENT_FUND_VALUE);
+        token.mint(reserveFund, config.RESERVE_FUND_VALUE());
+        token.mint(bountyFund, config.BOUNTY_FUND_VALUE());
+        token.mint(developmentFund, config.DEVELOPMENT_FUND_VALUE());
 
 
         //Calculate unsold tokens and send to the reserve
-        uint256 unsold = PUBLIC_SALE_SUPPLY.sub(tokensSold);
+        uint256 unsold = config.PUBLIC_SALE_SUPPLY().sub(tokensSold);
         if (unsold > 0) {
             token.mint(reserveFund, unsold);
         }

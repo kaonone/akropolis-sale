@@ -36,7 +36,6 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		whitelist = await Whitelist.new();
 
 		token = await AkropolisToken.new();
-		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address);
 		await token.pause();
 		config = await SaleConfigurationMock.new();
 	});
@@ -199,9 +198,9 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 
 	it('should mint unsold tokens', async function() {
 		let sold = await crowdsale.tokensSold();
-		let supply = await crowdsale.PUBLIC_SALE_SUPPLY();
+		let supply = await config.PUBLIC_SALE_SUPPLY();
 		let unsold = supply.sub(sold);
-		let reserve = await crowdsale.RESERVE_FUND_VALUE();
+		let reserve = await config.RESERVE_FUND_VALUE();
 
 		(await token.balanceOf(reserveFund)).should.be.bignumber.equal(reserve.add(unsold));
 	});
