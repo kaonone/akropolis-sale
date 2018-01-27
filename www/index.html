@@ -28,23 +28,25 @@
 
     <div id="overview" class="panel panel-primary">
         <div class="panel-heading">
-            <h3 class="panel-title">Overview</h3>
+            <h3 class="panel-title">Whitelisted buyers <span id="whitelisted-count" class="badge badge-primary">Primary</span></h3>
         </div>
-        <div class="panel-body">
-            <p>Whitelisted count: <span id="whitelisted-count"></span></p>
+        <div class="panel-body form-inline">
+            <label for="check-address" class="sr-only">Buyer address</label>
+            <input type="text" id="check-address" class="form-control" style="width: 400px;" placeholder="address"></input>
+            <button type="button" class="btn btn-primary" onclick="Dapp.checkAddress()">Check address</button>
         </div>
     </div><!--/#overview -->
 
-    <div id="admin" class="panel panel-warning">
+    <div id="admin" class="panel panel-success">
         <div class="panel-heading">
             <h3 class="panel-title">Add to the Whitelist</h3>
         </div>
         <div class="panel-body form-inline">
             <label for="buyer-address" class="sr-only">Buyer address</label>
             <input type="text" id="buyer-address" class="form-control" style="width: 400px;" placeholder="address"></input>
-            <button type="button" class="btn btn-lg btn-warning" onclick="Dapp.addToWhitelist()">Add</button>
+            <button type="button" class="btn btn-success" onclick="Dapp.addToWhitelist()">Add</button>
         </div>
-    </div><!--/#admin -->
+    </div>
 
 </div><!--/.container -->
 

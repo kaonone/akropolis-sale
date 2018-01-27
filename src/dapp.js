@@ -48,7 +48,28 @@ window.Dapp = {
 			Dapp.throwError("Cannot add to the whitelist!");
 			console.log(err);
 		});
+	},
+
+	checkAddress: function() {
+		var self = this;
+		var address = document.getElementById("check-address").value;
+		console.log("Checking address: " + address);
+		Whitelist.deployed().then(function(instance) {
+			self.setAlert("CHecking address...");
+			return instance.isWhitelisted(address, {from: adminAccount});
+		}).then(function(result) {
+			console.log(result);
+			if (result) {
+				self.setAlert("Address: " + address + " is whitelisted.", "success");
+			} else {
+				self.setAlert("Address: " + address + " is NOT whitelisted.", "danger");
+			}
+		}).catch(function(err) {
+			Dapp.throwError("Cannot check the address!");
+			console.log(err);
+		});
 	}
+
 };
 
 window.addEventListener("load", function() {
