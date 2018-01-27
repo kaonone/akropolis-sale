@@ -76,11 +76,15 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet, notAdd
 		await whitelist.addToWhitelist(0x0, {from: admin}).should.be.rejectedWith('revert');
 	});
 
+	it('should allow adding a buyer to the whitelist', async function () {
+		await whitelist.addToWhitelist(buyer, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+	});
+
 
 	it('should allow whitelisted buyers to purchase tokens', async function () {
-		await whitelist.addToWhitelist(buyer, {from: admin});
-		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
-
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.fulfilled;
 	});
 
