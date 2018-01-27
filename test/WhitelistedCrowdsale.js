@@ -104,6 +104,7 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet, notAdd
 	it('should allow admin to remove buyer from the whitelist', async function () {
 		await whitelist.removeFromWhitelist(buyer, {from: admin});
 		(await whitelist.isWhitelisted(buyer)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
 
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.rejectedWith('revert');
 	});

@@ -39,13 +39,29 @@ window.Dapp = {
 		var address = document.getElementById("buyer-address").value;
 		console.log("Adding to whitelist: " + address);
 		Whitelist.deployed().then(function(instance) {
-			self.setAlert("Adding to whitelist...");
+			self.setAlert("Adding to the whitelist...");
 			return instance.addToWhitelist(address, {from: adminAccount});
 		}).then(function() {
 			self.setWhitelistedCount();
 			self.setAlert("Buyer was added!", "success");
 		}).catch(function(err) {
 			Dapp.throwError("Cannot add to the whitelist!");
+			console.log(err);
+		});
+	},
+
+	removeFromWhitelist: function() {
+		var self = this;
+		var address = document.getElementById("remove-address").value;
+		console.log("Removing from whitelist: " + address);
+		Whitelist.deployed().then(function(instance) {
+			self.setAlert("Removing from the whitelist...");
+			return instance.removeFromWhitelist(address, {from: adminAccount});
+		}).then(function() {
+			self.setWhitelistedCount();
+			self.setAlert("Buyer was removed!", "success");
+		}).catch(function(err) {
+			Dapp.throwError("Cannot remove from the whitelist!");
 			console.log(err);
 		});
 	},
