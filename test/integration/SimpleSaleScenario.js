@@ -90,8 +90,8 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	});
 
 
-	it('should sell tokens to whitelisted users', async function() {
-		await increaseTimeTo(startTime + duration.days(1));
+	it('should sell tokens to whitelisted users during round 1', async function() {
+		await increaseTimeTo(startTime);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
@@ -114,7 +114,10 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should distribute tokens among pre-sale users', async function() {
-
+		let tokenBuyerAmountRound1 = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT).mul(1.2);
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 	});
 
 });
