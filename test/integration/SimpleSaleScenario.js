@@ -7,6 +7,7 @@ const AkropolisCrowdsale = artifacts.require('./AkropolisCrowdsale.sol');
 const Whitelist = artifacts.require('./Whitelist.sol');
 const SaleConfiguration = artifacts.require('./SaleConfiguration.sol');
 const AllocationsManager = artifacts.require('./AllocationsManager.sol');
+const LinearTokenVesting = artifacts.require('./LinearTokenVesting.sol');
 
 const BigNumber = web3.BigNumber;
 
@@ -64,12 +65,14 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	it('should deploy pre-sale allocations', async function() {
 		allocations = await AllocationsManager.new().should.be.fulfilled;
+		await allocations.setToken(token.address);
 	});
 
 
 	it('should register 3 investors', async function() {
 		await allocations.setAdmin(admin);
 
+		//TODO: User different allocations values, vesting, no vesting for different investors
 		await allocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
 		await allocations.registerAllocation(investor2, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
 		await allocations.registerAllocation(investor3, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
@@ -136,7 +139,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 		await increaseTimeTo(afterEndTime);
 
-		await crowdsale.setPresaleAllocations(presaleAllocations, {from: owner});
+		await crowdsale.setPresaleAllocations(allocations.address, {from: owner});
 		await crowdsale.setTeamAllocations(teamAllocations, {from: owner});
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations, {from: owner});
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
@@ -144,11 +147,28 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
+
+		//TODO: Should check if balances of funds and allocations are correct
+		(await token.balanceOf(allocations.address)).should.be.bignumber.equal((await config.PRESALE_SUPPLY()));
 	});
 
 
 	it('should distribute tokens among pre-sale users', async function() {
+		await allocations.distributeAllocation(investor1, {from: owner});
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE);
+		//TODO: CHeck allocatons for other investors
+	});
 
+
+	it('should correctly vest investors allocations', async function() {
+		await increaseTimeTo(afterEndTime + duration.days(VESTING_PERIOD));
+		let vestingAddress = await allocations.getVesting(investor1);
+		let vesting = await LinearTokenVesting.at(vestingAddress);
+		await vesting.release(token.address);
+
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING);
+
+		//TODO: Check other vesting
 	});
 
 });
