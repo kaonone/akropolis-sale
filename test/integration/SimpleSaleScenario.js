@@ -19,7 +19,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, investor1, investor2, investor3,
+contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
 																						presaleAllocations, teamAllocations, advisorsAllocations,
 																						reserveFund, bountyFund, developmentFund]) {
 
@@ -37,7 +37,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await advanceBlock();
 
 		startTime = latestTime() + duration.weeks(1);
-		endTime = startTime + duration.weeks(1);
+		endTime = startTime + duration.days(4);
 		afterEndTime = endTime + duration.seconds(1);
 	});
 
@@ -52,11 +52,12 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	});
 
 
-	it('should register 3 users to the whitelist', async function () {
+	it('should register 4 users to the whitelist', async function () {
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, {from: admin}).should.be.fulfilled;
 		await whitelist.addToWhitelist(buyer2, {from: admin}).should.be.fulfilled;
 		await whitelist.addToWhitelist(buyer3, {from: admin}).should.be.fulfilled;
+		await whitelist.addToWhitelist(buyer4, {from: admin}).should.be.fulfilled;
 	});
 
 
@@ -92,15 +93,35 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	it('should sell tokens to whitelisted users during round 1', async function() {
 		await increaseTimeTo(startTime);
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
+	});
+
+
+	it('should sell tokens to whitelisted users during round 2', async function() {
+		await increaseTimeTo(startTime + duration.days(1));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
+	});
+
+
+	it('should sell tokens to whitelisted users during round 3', async function() {
+		await increaseTimeTo(startTime + duration.days(2));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
+	});
+
+
+	it('should sell tokens to whitelisted users during round 4', async function() {
+		await increaseTimeTo(startTime + duration.days(3));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 	});
 
 
 	it('should finalize crowdsale', async function() {
 
-		await increaseTimeTo(endTime + 1);
+		await increaseTimeTo(afterEndTime);
 
 		await crowdsale.setPresaleAllocations(presaleAllocations, {from: owner});
 		await crowdsale.setTeamAllocations(teamAllocations, {from: owner});
@@ -114,10 +135,19 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should distribute tokens among pre-sale users', async function() {
-		let tokenBuyerAmountRound1 = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT).mul(1.2);
+		let tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT);
+
+		let tokenBuyerAmountRound1 = tokenBuyerAmount.mul(1.2);
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+
+		let tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+
+		let tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+
+		//Check round 4 token buyer balance
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmount);
 	});
 
 });
