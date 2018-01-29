@@ -31,6 +31,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	let token, crowdsale, whitelist, config, allocations;
 	let startTime, endTime, afterEndTime;
+	let tokenBuyerAmount;
 
 	before(async function () {
 		// Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
@@ -92,9 +93,13 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should sell tokens to whitelisted users during round 1', async function() {
+		tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT)
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
+
+		let tokenBuyerAmountRound1 = tokenBuyerAmount.mul(1.2);
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 	});
 
 
@@ -102,6 +107,9 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await increaseTimeTo(startTime + duration.days(1));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
+
+		let tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 	});
 
 
@@ -109,6 +117,9 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await increaseTimeTo(startTime + duration.days(2));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
+
+		let tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 	});
 
 
@@ -116,6 +127,8 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await increaseTimeTo(startTime + duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
+
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmount);
 	});
 
 
@@ -135,19 +148,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should distribute tokens among pre-sale users', async function() {
-		let tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT);
 
-		let tokenBuyerAmountRound1 = tokenBuyerAmount.mul(1.2);
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-
-		let tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1);
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
-
-		let tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
-
-		//Check round 4 token buyer balance
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmount);
 	});
 
 });
