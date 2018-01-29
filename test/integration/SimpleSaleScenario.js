@@ -19,7 +19,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3,
+contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, investor1, investor2, investor3,
 																						presaleAllocations, teamAllocations, advisorsAllocations,
 																						reserveFund, bountyFund, developmentFund]) {
 
@@ -68,9 +68,9 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	it('should register 3 investors', async function() {
 		await allocations.setAdmin(admin);
 
-		await allocations.registerAllocation(buyer1, ALLOCATED_VALUE, 0, 0, {from: admin}).should.be.fulfilled;
-		await allocations.registerAllocation(buyer2, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
-		await allocations.registerAllocation(buyer3, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
+		await allocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
+		await allocations.registerAllocation(investor2, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
+		await allocations.registerAllocation(investor3, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
 	});
 
 
