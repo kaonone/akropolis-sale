@@ -21,7 +21,6 @@ function ether (n) {
 }
 
 contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
-																						presaleAllocations, teamAllocations, advisorsAllocations,
 																						reserveFund, bountyFund, developmentFund]) {
 
 	const ALLOCATED_VALUE = 100;
