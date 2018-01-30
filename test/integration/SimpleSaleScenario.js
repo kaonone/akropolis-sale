@@ -21,7 +21,6 @@ function ether (n) {
 }
 
 contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
-																						presaleAllocations, teamAllocations, advisorsAllocations,
 																						reserveFund, bountyFund, developmentFund]) {
 
 	const ALLOCATED_VALUE = 100;
@@ -137,19 +136,45 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	it('should finalize crowdsale', async function() {
 
+		let teamAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await teamAllocations.setToken(token.address);
+		await teamAllocations.setAdmin(admin);
+
+		let advisorsAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await advisorsAllocations.setToken(token.address);
+		await advisorsAllocations.setAdmin(admin);
+
 		await increaseTimeTo(afterEndTime);
 
 		await crowdsale.setPresaleAllocations(allocations.address, {from: owner});
-		await crowdsale.setTeamAllocations(teamAllocations, {from: owner});
-		await crowdsale.setAdvisorsAllocations(advisorsAllocations, {from: owner});
+		await crowdsale.setTeamAllocations(teamAllocations.address, {from: owner});
+		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
 		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
 
-		//TODO: Should check if balances of funds and allocations are correct
+		//Test presale allocations
 		(await token.balanceOf(allocations.address)).should.be.bignumber.equal((await config.PRESALE_SUPPLY()));
+
+		//Test team allocations
+		(await token.balanceOf(teamAllocations.address)).should.be.bignumber.equal((await config.TEAM_SUPPLY()));
+
+		//Test advisors allocations
+		(await token.balanceOf(advisorsAllocations.address)).should.be.bignumber.equal((await config.ADVISORS_SUPPLY()));
+
+		//Test bounty allocations
+		(await token.balanceOf(bountyFund)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
+
+		//Test dev allocations
+		(await token.balanceOf(developmentFund)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));
+
+		//Test reserve allocations
+		let sold = await crowdsale.tokensSold();
+		let supply = await config.PUBLIC_SALE_SUPPLY();
+		let unsold = supply.sub(sold);
+		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()).add(unsold));
 	});
 
 
