@@ -146,28 +146,14 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await advisorsAllocations.setToken(token.address);
 		await advisorsAllocations.setAdmin(admin);
 
-
-		let reserveAllocations = await AllocationsManager.new().should.be.fulfilled;
-		await reserveAllocations.setToken(token.address);
-		await reserveAllocations.setAdmin(admin);
-
-
-		let bountyAllocations = await AllocationsManager.new().should.be.fulfilled;
-		await bountyAllocations.setToken(token.address);
-		await bountyAllocations.setAdmin(admin);
-
-		let developmentAllocations = await AllocationsManager.new().should.be.fulfilled;
-		await developmentAllocations.setToken(token.address);
-		await developmentAllocations.setAdmin(admin);
-
 		await increaseTimeTo(afterEndTime);
 
 		await crowdsale.setPresaleAllocations(allocations.address, {from: owner});
 		await crowdsale.setTeamAllocations(teamAllocations.address, {from: owner});
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
-		await crowdsale.setReserveFund(reserveAllocations.address, {from: owner});
-		await crowdsale.setBountyFund(bountyAllocations.address, {from: owner});
-		await crowdsale.setDevelopmentFund(developmentAllocations.address, {from: owner});
+		await crowdsale.setReserveFund(reserveFund, {from: owner});
+		await crowdsale.setBountyFund(bountyFund, {from: owner});
+		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
 		console.log("test allocations");
@@ -177,11 +163,11 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		console.log("test advisors allocations");
 		(await token.balanceOf(advisorsAllocations.address)).should.be.bignumber.equal((await config.ADVISORS_SUPPLY()));
 		console.log("test reserve allocations");
-		(await token.balanceOf(reserveAllocations.address)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()));
+		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()));
 		console.log("test bounty allocations");
-		(await token.balanceOf(bountyAllocations.address)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
+		(await token.balanceOf(bountyFund)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
 		console.log("test dev allocations");
-		(await token.balanceOf(developmentAllocations.address)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));
+		(await token.balanceOf(developmentFund)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));
 		console.log("test allocations");
 	});
 
