@@ -161,13 +161,12 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		(await token.balanceOf(teamAllocations.address)).should.be.bignumber.equal((await config.TEAM_SUPPLY()));
 		console.log("test advisors allocations");
 		(await token.balanceOf(advisorsAllocations.address)).should.be.bignumber.equal((await config.ADVISORS_SUPPLY()));
-		console.log("test reserve allocations");
-		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()));
-		console.log("test bounty allocations");
 		(await token.balanceOf(bountyFund)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
 		console.log("test dev allocations");
 		(await token.balanceOf(developmentFund)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));
-		console.log("test allocations");
+		console.log("test reserve allocations");
+		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()));
+		console.log("test bounty allocations");
 	});
 
 
