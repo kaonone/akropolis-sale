@@ -165,7 +165,11 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		console.log("test dev allocations");
 		(await token.balanceOf(developmentFund)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));
 		console.log("test reserve allocations");
-		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()));
+
+		let sold = await crowdsale.tokensSold();
+		let supply = await config.PUBLIC_SALE_SUPPLY();
+		let unsold = supply.sub(sold);
+		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()).add(unsold));
 		console.log("test bounty allocations");
 	});
 
