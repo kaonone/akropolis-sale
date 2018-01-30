@@ -64,7 +64,7 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     */
     function registerAllocation(address _investor, uint256 _value, uint256 _vestingValue, uint256 _vestingPeriod) public onlyAdmin {
         require(_investor != 0x0);
-        require(_value > 0);
+        require(_value > 0 || _vestingValue > 0);
         require(_value <= MAX_ALLOCATION_VALUE);
         require( (_vestingValue == 0 && _vestingPeriod == 0) || (_vestingValue > 0 && _vestingPeriod > 0) );
 

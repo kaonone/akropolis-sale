@@ -90,7 +90,7 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 
 
 	it('should not allow admin to register null value ', async function () {
-		await allocations.registerAllocation(investor, ether(0), ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+		await allocations.registerAllocation(investor, 0, 0, 0, {from: admin}).should.be.rejectedWith('revert');
 	});
 
 
