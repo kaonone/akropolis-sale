@@ -70,10 +70,9 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	it('should register 3 investors', async function() {
 		await allocations.setAdmin(admin);
-
-		//TODO: User different allocations values, vesting, no vesting for different investors
+		
 		await allocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
-		await allocations.registerAllocation(investor2, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
+		await allocations.registerAllocation(investor2, ALLOCATED_VALUE.mul(2), ALLOCATED_VESTING.mul(10), VESTING_PERIOD.mul(2), {from: admin}).should.be.fulfilled;
 		await allocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin}).should.be.fulfilled;
 	});
 
@@ -181,7 +180,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	it('should distribute tokens among pre-sale users', async function() {
 		await allocations.distributeAllocation(investor1, {from: owner});
 		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE);
-		await allocations.distributeAllocation(investor2, {from: owner});
+		await allocations.distributeAllocation(investor2.mul(2), {from: owner});
 		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE);
 		await allocations.distributeAllocation(investor3, {from: owner});
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
@@ -201,10 +200,13 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		vestingAddress = await allocations.getVesting(investor2);
 		vesting = await LinearTokenVesting.at(vestingAddress);
 		await vesting.release(token.address);
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING);
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE.mul(2) + ALLOCATED_VESTING.mul(5));
 
 		//Determine investor 3 token balance (did not receive vesting)
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
+
+		await increaseTimeTo(afterEndTime + duration.days(VESTING_PERIOD.mul(2)));
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE.mul(2) + ALLOCATED_VESTING.mul(10));
 	});
 
 });
