@@ -137,19 +137,46 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	it('should finalize crowdsale', async function() {
 
+		let teamAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await teamAllocations.setToken(token.address);
+		await teamAllocations.setAdmin(admin);
+
+
+		let advisorsAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await advisorsAllocations.setToken(token.address);
+		await advisorsAllocations.setAdmin(admin);
+
+
+		let reserveAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await reserveAllocations.setToken(token.address);
+		await reserveAllocations.setAdmin(admin);
+
+
+		let bountyAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await bountyAllocations.setToken(token.address);
+		await bountyAllocations.setAdmin(admin);
+
+		let developmentAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await developmentAllocations.setToken(token.address);
+		await developmentAllocations.setAdmin(admin);
+
 		await increaseTimeTo(afterEndTime);
 
 		await crowdsale.setPresaleAllocations(allocations.address, {from: owner});
-		await crowdsale.setTeamAllocations(teamAllocations, {from: owner});
-		await crowdsale.setAdvisorsAllocations(advisorsAllocations, {from: owner});
-		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
-		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
+		await crowdsale.setTeamAllocations(teamAllocations.address, {from: owner});
+		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
+		await crowdsale.setReserveFund(reserveAllocations.address, {from: owner});
+		await crowdsale.setBountyFund(bountyAllocations.address, {from: owner});
+		await crowdsale.setDevelopmentFund(developmentAllocations.address, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
-
-		//TODO: Should check if balances of funds and allocations are correct
+		
 		(await token.balanceOf(allocations.address)).should.be.bignumber.equal((await config.PRESALE_SUPPLY()));
+		(await token.balanceOf(teamAllocations.address)).should.be.bignumber.equal((await config.TEAM_SUPPLY()));
+		(await token.balanceOf(advisorsAllocations.address)).should.be.bignumber.equal((await config.ADVISORS_SUPPLY()));
+		(await token.balanceOf(reserveAllocations.address)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()));
+		(await token.balanceOf(bountyAllocations.address)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
+		(await token.balanceOf(developmentAllocations.address)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));
 	});
 
 
