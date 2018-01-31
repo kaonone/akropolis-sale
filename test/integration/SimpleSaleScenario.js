@@ -200,18 +200,25 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		let vestingAddress = await presaleAllocations.getVesting(investor1);
 		let vesting = await LinearTokenVesting.at(vestingAddress);
 		await vesting.release(token.address);
+
+		console.log("Investor 1 balance after vesting period");
 		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING);
 
 		//Determine investor 2 token balance
 		vestingAddress = await presaleAllocations.getVesting(investor2);
 		vesting = await LinearTokenVesting.at(vestingAddress);
 		await vesting.release(token.address);
+
+		console.log("Investor 2 balance after half of vesting period for them");
 		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5));
 
+		console.log("Investor 3 balance after full vesting period");
 		//Determine investor 3 token balance (did not receive vesting)
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
 
 		await increaseTimeTo(afterEndTime + (VESTING_PERIOD * 2));
+
+		console.log("Investor 2 balance after full vesting period");
 		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
 	});
 
