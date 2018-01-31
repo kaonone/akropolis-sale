@@ -21,7 +21,7 @@ function ether (n) {
 }
 
 contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
-																						reserveFund, bountyFund, developmentFund]) {
+																						reserveFund, bountyFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
@@ -29,7 +29,8 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	const CONTRIBUTION_AMOUNT = ether(1);
 
-	let token, crowdsale, whitelist, config, allocations;
+	let token, crowdsale, whitelist, config;
+	let presaleAllocations, teamAllocations, advisorsAllocations;
 	let startTime, endTime, afterEndTime;
 	let tokenBuyerAmount;
 
@@ -63,17 +64,25 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should deploy pre-sale allocations', async function() {
-		allocations = await AllocationsManager.new().should.be.fulfilled;
-		await allocations.setToken(token.address);
+		presaleAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await presaleAllocations.setToken(token.address);
+
+
+		teamAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await teamAllocations.setToken(token.address);
+		await teamAllocations.setAdmin(admin);
+
+		advisorsAllocations = await AllocationsManager.new().should.be.fulfilled;
+		await advisorsAllocations.setToken(token.address);
+		await advisorsAllocations.setAdmin(admin);
 	});
 
 
-	it('should register 3 investors', async function() {
-		await allocations.setAdmin(admin);
-		
-		await allocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
-		await allocations.registerAllocation(investor2, ALLOCATED_VALUE.mul(2), ALLOCATED_VESTING.mul(10), VESTING_PERIOD.mul(2), {from: admin}).should.be.fulfilled;
-		await allocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin}).should.be.fulfilled;
+	it('should register 3 presale investors', async function() {
+		await presaleAllocations.setAdmin(admin);
+		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
+		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), (VESTING_PERIOD * 2), {from: admin}).should.be.fulfilled;
+		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin}).should.be.fulfilled;
 	});
 
 
@@ -94,7 +103,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should sell tokens to whitelisted users during round 1', async function() {
-		tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT)
+		tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT);
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
@@ -133,21 +142,18 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	});
 
 
+	it('should not allow for transfer of tokens', async function () {
+		await token.transferFrom(investor1, unknown, ALLOCATED_VALUE, {from: investor1}).should.be.rejectedWith('revert');
+		await token.transferFrom(buyer1, unknown, tokenBuyerAmount, {from: buyer1}).should.be.rejectedWith('revert');
+	});
+
+
 	it('should finalize crowdsale', async function() {
-
-		let teamAllocations = await AllocationsManager.new().should.be.fulfilled;
-		await teamAllocations.setToken(token.address);
-		await teamAllocations.setAdmin(admin);
-
-		let advisorsAllocations = await AllocationsManager.new().should.be.fulfilled;
-		await advisorsAllocations.setToken(token.address);
-		await advisorsAllocations.setAdmin(admin);
-
 		await increaseTimeTo(afterEndTime);
-
-		await crowdsale.setPresaleAllocations(allocations.address, {from: owner});
+		await crowdsale.setPresaleAllocations(presaleAllocations.address, {from: owner});
 		await crowdsale.setTeamAllocations(teamAllocations.address, {from: owner});
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
+
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
 		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
@@ -155,7 +161,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
 
 		//Test presale allocations
-		(await token.balanceOf(allocations.address)).should.be.bignumber.equal((await config.PRESALE_SUPPLY()));
+		(await token.balanceOf(presaleAllocations.address)).should.be.bignumber.equal((await config.PRESALE_SUPPLY()));
 
 		//Test team allocations
 		(await token.balanceOf(teamAllocations.address)).should.be.bignumber.equal((await config.TEAM_SUPPLY()));
@@ -163,13 +169,13 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		//Test advisors allocations
 		(await token.balanceOf(advisorsAllocations.address)).should.be.bignumber.equal((await config.ADVISORS_SUPPLY()));
 
-		//Test bounty allocations
+		//Test bounty fund
 		(await token.balanceOf(bountyFund)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
 
-		//Test dev allocations
+		//Test dev fund
 		(await token.balanceOf(developmentFund)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));
 
-		//Test reserve allocations
+		//Test reserve fund
 		let sold = await crowdsale.tokensSold();
 		let supply = await config.PUBLIC_SALE_SUPPLY();
 		let unsold = supply.sub(sold);
@@ -178,35 +184,35 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should distribute tokens among pre-sale users', async function() {
-		await allocations.distributeAllocation(investor1, {from: owner});
+		await presaleAllocations.distributeAllocation(investor1, {from: owner});
 		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE);
-		await allocations.distributeAllocation(investor2.mul(2), {from: owner});
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE);
-		await allocations.distributeAllocation(investor3, {from: owner});
+		await presaleAllocations.distributeAllocation(investor2, {from: owner});
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE * 2);
+		await presaleAllocations.distributeAllocation(investor3, {from: owner});
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
 	});
 
 
 	it('should correctly vest investors allocations', async function() {
-		await increaseTimeTo(afterEndTime + duration.days(VESTING_PERIOD));
+		await increaseTimeTo(afterEndTime + VESTING_PERIOD);
 
 		//Determine investor 1 token balance
-		let vestingAddress = await allocations.getVesting(investor1);
+		let vestingAddress = await presaleAllocations.getVesting(investor1);
 		let vesting = await LinearTokenVesting.at(vestingAddress);
 		await vesting.release(token.address);
 		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING);
 
 		//Determine investor 2 token balance
-		vestingAddress = await allocations.getVesting(investor2);
+		vestingAddress = await presaleAllocations.getVesting(investor2);
 		vesting = await LinearTokenVesting.at(vestingAddress);
 		await vesting.release(token.address);
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE.mul(2) + ALLOCATED_VESTING.mul(5));
+		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5));
 
 		//Determine investor 3 token balance (did not receive vesting)
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
 
-		await increaseTimeTo(afterEndTime + duration.days(VESTING_PERIOD.mul(2)));
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE.mul(2) + ALLOCATED_VESTING.mul(10));
+		await increaseTimeTo(afterEndTime + (VESTING_PERIOD * 2));
+		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
 	});
 
 });
