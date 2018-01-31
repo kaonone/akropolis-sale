@@ -224,10 +224,9 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should allow for transfer of tokens', async function () {
+		await token.transfer(unknown, 1, {from: investor1}).should.be.fulfilled;
 
-		await token.approve(unknown, ALLOCATED_VALUE, {from: investor1}).should.be.fulfilled;
-		await token.approve(unknown, tokenBuyerAmount, {from: buyer1}).should.be.fulfilled;
-		await token.transferFrom(investor1, unknown, ALLOCATED_VALUE, {from: investor1}).should.be.fulfilled;
-		await token.transferFrom(buyer1, unknown, tokenBuyerAmount, {from: buyer1}).should.be.fulfilled;
+		await token.approve(unknown, 1, {from: investor1}).should.be.fulfilled;
+		await token.transferFrom(investor1, unknown, 1, {from: unknown}).should.be.fulfilled;
 	})
 });
