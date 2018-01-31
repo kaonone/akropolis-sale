@@ -20,7 +20,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
+contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
@@ -117,16 +117,29 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	it('should sell tokens to whitelisted users during round 2', async function() {
 		await increaseTimeTo(startTime + duration.days(1));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
+		console.log("Buy Tokens buyer 1");
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT * 2}).should.be.fulfilled;
+		console.log("token buyer 2");
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT * 2}).should.be.fulfilled;
 
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
+		console.log("token buyer 3");
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT * 2}).should.be.fulfilled;
+
+		console.log("token buyer 4");
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT * 2}).should.be.fulfilled;
 
 		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1).mul(2) + tokenbuyerAmountRound1;
+		console.log("the token buyer amount is" + tokenBuyerAmount + "amount round2 is" + tokenBuyerAmountRound2);
+		console.log("token buyer 1");
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+
+		console.log("token buyer 2");
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+
+		console.log("token buyer 3");
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+
+		console.log("token buyer 4");
 		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 	});
 
