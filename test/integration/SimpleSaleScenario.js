@@ -215,4 +215,9 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
 	});
 
+
+	it('should allow for transfer of tokens', async function () {
+		await token.transferFrom(investor1, unknown, ALLOCATED_VALUE, {from: investor1}).should.be.fulfilled;
+		await token.transferFrom(buyer1, unknown, tokenBuyerAmount, {from: buyer1}).should.be.fulfilled;
+	})
 });
