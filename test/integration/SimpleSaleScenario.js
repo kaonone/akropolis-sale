@@ -25,7 +25,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
-	const VESTING_PERIOD = 1000;
+	const VESTING_PERIOD = duration.days(100);
 
 	const CONTRIBUTION_AMOUNT = ether(1);
 
@@ -194,31 +194,31 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 
 	it('should correctly vest investors allocations', async function() {
-		await increaseTimeTo(afterEndTime + VESTING_PERIOD);
-
 		//Determine investor 1 token balance
-		let vestingAddress = await presaleAllocations.getVesting(investor1);
-		let vesting = await LinearTokenVesting.at(vestingAddress);
-		await vesting.release(token.address);
+		let vestingAddress1 = await presaleAllocations.getVesting(investor1);
+		let vesting1 = await LinearTokenVesting.at(vestingAddress1);
+		let vestingStart1 = await vesting1.start();
 
-		console.log("Investor 1 balance after vesting period");
+		await increaseTimeTo(vestingStart1.add(VESTING_PERIOD));
+		await vesting1.release(token.address);
+
 		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING);
 
 		//Determine investor 2 token balance
-		vestingAddress = await presaleAllocations.getVesting(investor2);
-		vesting = await LinearTokenVesting.at(vestingAddress);
-		await vesting.release(token.address);
+		let vestingAddress2 = await presaleAllocations.getVesting(investor2);
+		let vesting2 = await LinearTokenVesting.at(vestingAddress2);
+		await vesting2.release(token.address);
 
-		console.log("Investor 2 balance after half of vesting period for them");
 		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5));
 
-		console.log("Investor 3 balance after full vesting period");
 		//Determine investor 3 token balance (did not receive vesting)
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
 
-		await increaseTimeTo(afterEndTime + (VESTING_PERIOD * 2));
+		let vestingStart2 = await vesting2.start();
 
-		console.log("Investor 2 balance after full vesting period");
+		await increaseTimeTo(vestingStart2.add(VESTING_PERIOD * 2));
+		await vesting2.release(token.address);
+
 		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
 	});
 
