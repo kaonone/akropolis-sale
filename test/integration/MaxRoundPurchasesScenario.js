@@ -115,7 +115,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 
 	it('should sell tokens to whitelisted users during round 2', async function() {
-		await increaseTimeTo(startTime.add(duration.days(1)));
+		await increaseTimeTo(startTime + duration.days(1));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 		
 		console.log("Buy Tokens buyer 1");
@@ -130,7 +130,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 
 	it('should sell tokens to whitelisted users during round 3', async function() {
-		await increaseTimeTo(startTime.add(duration.days(2)));
+		await increaseTimeTo(startTime + duration.days(2));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
@@ -141,7 +141,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 
 	it('should sell tokens to whitelisted users during round 4', async function() {
-		await increaseTimeTo(startTime.add(duration.days(3)));
+		await increaseTimeTo(startTime + duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(6)}).should.be.fulfilled;
