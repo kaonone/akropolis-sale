@@ -27,8 +27,6 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 	const ALLOCATED_VESTING = 200;
 	const VESTING_PERIOD = duration.days(100);
 
-	const CONTRIBUTION_AMOUNT = ether(1);
-
 	const BASE_CAP_INDIVIDUAL_AMOUNT = ether(2);
 	const MAX_CAP_INDIVIDUAL_AMOUNT = ether(20);
 
@@ -107,6 +105,8 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 
 		tokenBuyerAmountRound1 = tokenBuyerAmount.mul(1.2);
+
+		console.log("the token buyer amount is" + tokenBuyerAmount + "amount round2 is" + tokenBuyerAmountRound1);
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1);
@@ -123,7 +123,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 
 		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1)+ tokenBuyerAmountRound1;
-		console.log("the token buyer amount is" + tokenBuyerAmount + "amount round2 is" + tokenBuyerAmountRound2);
+		console.log("the token buyer amount is " + tokenBuyerAmount + "amount round2 is " + tokenBuyerAmountRound2);
 		console.log("token buyer 1");
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 	});
