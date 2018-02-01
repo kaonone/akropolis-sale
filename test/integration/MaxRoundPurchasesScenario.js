@@ -122,7 +122,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 
 
-		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1)+ tokenbuyerAmountRound1;
+		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1)+ tokenBuyerAmountRound1;
 		console.log("the token buyer amount is" + tokenBuyerAmount + "amount round2 is" + tokenBuyerAmountRound2);
 		console.log("token buyer 1");
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
