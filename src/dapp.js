@@ -84,7 +84,36 @@ window.Dapp = {
 			Dapp.throwError("Cannot check the address!");
 			console.log(err);
 		});
+	},
+
+	fetchWhitelistedAddress: function(index, max, contract, element) {
+		var self = this;
+		if (index<max) {
+			contract.getWhitelistedAddress(index).then(function (value) {
+				element.innerHTML = element.innerHTML + value + "<br/>";
+				return self.fetchWhitelistedAddress(index+1, max, contract, element);
+			}).catch(function(err) {
+				console.log(err);
+			});
+		}
+	},
+
+	listAllWhitelisted: function() {
+		var self = this;
+		var contract;
+		var element = document.getElementById("whitelisted-list");
+		element.innerHTML = "";
+		Whitelist.deployed().then(function(instance) {
+			contract = instance;
+			return instance.getWhitelistedCount.call();
+		}).then(function(max) {
+			return self.fetchWhitelistedAddress(0, max, contract, element);
+		}).catch(function(err) {
+			console.log(err);
+		});
 	}
+
+
 
 };
 

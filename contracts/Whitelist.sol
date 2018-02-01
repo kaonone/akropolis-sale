@@ -39,4 +39,9 @@ contract Whitelist is Administrable {
     function getWhitelistedCount() public view returns(uint256) {
         return indexedWhitelist.length;
     }
+
+
+    function getWhitelistedAddress(uint256 _index) public view returns(address) {
+        return indexedWhitelist[_index];
+    }
 }

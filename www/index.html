@@ -33,8 +33,10 @@
         <div class="panel-body form-inline">
             <label for="check-address" class="sr-only">Buyer address</label>
             <input type="text" id="check-address" class="form-control" style="width: 400px;" placeholder="address"></input>
-            <button type="button" class="btn btn-primary" onclick="Dapp.checkAddress()">Check address</button>
+            <button type="button" class="btn btn-primary btn-" onclick="Dapp.checkAddress()">Check address</button>
         </div>
+        <button type="button" class="btn btn-primary" style="margin-left: 15px; margin-bottom: 15px;" onclick="Dapp.listAllWhitelisted()">List all whitelisted users</button>
+        <div id="whitelisted-list" style="margin-left:15px;"></div>
     </div><!--/#overview -->
 
     <div id="add-panel" class="panel panel-success">
