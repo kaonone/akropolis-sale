@@ -117,18 +117,20 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 	it('should sell tokens to whitelisted users during round 2', async function() {
 		await increaseTimeTo(startTime + duration.days(1));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
+		
 		console.log("Buy Tokens buyer 1");
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT * 2}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+
 		console.log("token buyer 2");
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT * 2}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 
 		console.log("token buyer 3");
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT * 2}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 
 		console.log("token buyer 4");
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT * 2}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 
-		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1).mul(2) + tokenbuyerAmountRound1;
+		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1)+ tokenbuyerAmountRound1;
 		console.log("the token buyer amount is" + tokenBuyerAmount + "amount round2 is" + tokenBuyerAmountRound2);
 		console.log("token buyer 1");
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
@@ -148,12 +150,12 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await increaseTimeTo(startTime + duration.days(2));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(4)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(4)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(4)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(4)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
 
-		tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05).mul(4) + tokenbuyerAmountRound2;
+		tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05).mul(2) + tokenbuyerAmountRound2;
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
@@ -166,12 +168,12 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
 
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(3)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(3)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(3)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(3)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(6)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(6)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(6)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(6)}).should.be.fulfilled;
 
-		tokenBuyerAmountRound4 = tokenBuyerAmount.mul(1.0).mul(3) + tokenbuyerAmountRound3;
+		tokenBuyerAmountRound4 = tokenBuyerAmount.mul(1.0).mul(6) + tokenbuyerAmountRound3;
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound4);
