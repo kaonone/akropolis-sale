@@ -135,7 +135,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(2)}).should.be.fulfilled;
 
-		tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05).mul(2) + tokenbuyerAmountRound2;
+		tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05).mul(2) + tokenBuyerAmountRound2;
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 	});
 
@@ -146,7 +146,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT.mul(6)}).should.be.fulfilled;
 
-		tokenBuyerAmountRound4 = tokenBuyerAmount.mul(1.0).mul(6) + tokenbuyerAmountRound3;
+		tokenBuyerAmountRound4 = tokenBuyerAmount.mul(1.0).mul(6) + tokenBuyerAmountRound3;
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 	});
 
