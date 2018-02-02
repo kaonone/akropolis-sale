@@ -118,11 +118,16 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 
 		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1).add(tokenBuyerAmountRound1);
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 	});
 
 
@@ -133,9 +138,15 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 		let capAmount = BASE_CAP_INDIVIDUAL_AMOUNT * 2;
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: capAmount}).should.be.fulfilled;
 
 		tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05).mul(2).add(tokenBuyerAmountRound2);
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 	});
 
 
@@ -145,11 +156,18 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 		let capAmount = BASE_CAP_INDIVIDUAL_AMOUNT * 6;
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: capAmount}).should.be.fulfilled;
 
 
 		tokenBuyerAmountRound4 = tokenBuyerAmount.mul(1.0).mul(6).add(tokenBuyerAmountRound3);
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound4);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound4);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound4);
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound4);
+
 	});
 
 
