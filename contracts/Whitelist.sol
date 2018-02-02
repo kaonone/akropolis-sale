@@ -9,6 +9,7 @@ contract Whitelist is Administrable {
 
     //Mapping with buyer address as a key and buyer index (in order of addition) as a value
     mapping (address => uint256) public whitelist;
+
     //Array of addresses stored in addition order
     address[] public indexedWhitelist;
 
@@ -24,9 +25,14 @@ contract Whitelist is Administrable {
         require(_buyer != 0x0);
         require(isWhitelisted(_buyer));
 
-        indexedWhitelist[whitelist[_buyer].sub(1)] = indexedWhitelist[indexedWhitelist.length.sub(1)];
+        uint256 removalIndex = whitelist[_buyer].sub(1);
+        address lastAddress = indexedWhitelist[indexedWhitelist.length.sub(1)];
+        indexedWhitelist[removalIndex] = lastAddress;
         indexedWhitelist.length = indexedWhitelist.length.sub(1);
         whitelist[_buyer] = 0;
+        if (removalIndex < indexedWhitelist.length) {
+          whitelist[lastAddress] = removalIndex.add(1);
+        }
     }
 
 
