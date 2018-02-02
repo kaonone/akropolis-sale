@@ -209,7 +209,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		let vesting1 = await LinearTokenVesting.at(vestingAddress1);
 		let vestingStart1 = await vesting1.start();
 
-		await increaseTimeTo(vestingStart1.add(VESTING_PERIOD));
+		await increaseTimeTo(vestingStart1.add(VESTING_PERIOD).add(1));
 		await vesting1.release(token.address);
 
 		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING);
@@ -226,7 +226,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 		let vestingStart2 = await vesting2.start();
 
-		await increaseTimeTo(vestingStart2.add(VESTING_PERIOD * 2));
+		await increaseTimeTo(vestingStart2.add(VESTING_PERIOD * 2).add(1));
 		await vesting2.release(token.address);
 
 		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
