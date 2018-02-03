@@ -20,7 +20,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
+contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, buyer5, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
@@ -46,13 +46,19 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		whitelist = await Whitelist.new().should.be.fulfilled;
 	});
 
+	it('should not let unknown users set the admin for whitelist, add or remove from whitelist', async function () {
+		await whitelist.setAdmin(unknown, {from: unknown}).should.be.rejectedWith('revert');
+		await whitelist.addToWhitelist(buyer4, {from: unknown}).should.be.rejectedWith('revert');
+		await whitelist.removeFromWhitelist(buyer4, {from: unknown}).should.be.rejectedWith('revert');
+	});
 
-	it('should register 4 users to the whitelist', async function () {
+	it('should register 5 users to the whitelist', async function () {
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, {from: admin}).should.be.fulfilled;
 		await whitelist.addToWhitelist(buyer2, {from: admin}).should.be.fulfilled;
 		await whitelist.addToWhitelist(buyer3, {from: admin}).should.be.fulfilled;
 		await whitelist.addToWhitelist(buyer4, {from: admin}).should.be.fulfilled;
+		await whitelist.addToWhitelist(buyer5, {from: admin}).should.be.fulfilled;
 	});
 
 
@@ -68,6 +74,13 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		advisorsAllocations = await AllocationsManager.new().should.be.fulfilled;
 		await advisorsAllocations.setToken(token.address);
 		await advisorsAllocations.setAdmin(admin);
+	});
+
+
+	it('should not let unknown users set the registration, token or admin for an allocation', async function () {
+		await teamAllocations.setToken(token.address, {from: unknown}).should.be.rejectedWith('revert');
+		await teamAllocations.setAdmin(unknown, {from: unknown}).should.be.rejectedWith('revert');
+		await presaleAllocations.registerAllocation(unknown, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: unknown}).should.be.rejectedWith('revert');
 	});
 
 
@@ -95,6 +108,15 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 	});
 
 
+	it('should not let unknown users set the parameters, token or admin for crowdsale', async function () {
+		await crowdsale.setToken(token.address, {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setAdmin(unknown, {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setMaxCap(ether(10), {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setBaseCap(ether(10), {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setRoundDuration(duration.days(1), {from: unknown}).should.be.rejectedWith('revert');
+	});
+
+
 	it('should sell tokens to whitelisted users during round 1', async function() {
 		tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT);
 		await increaseTimeTo(startTime);
@@ -113,6 +135,21 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 
 		let tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+	});
+
+
+	it('should not sell tokens to unknown users', async function () {
+		await crowdsale.buyTokens(unknown, {from: unknown, value: CONTRIBUTION_AMOUNT}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should allow admin to remove buyer5 from whitelist', async function () {
+		await whitelist.removeFromWhitelist(buyer5, {from: admin}).should.be.fulfilled;
+	});
+
+
+	it('should not sell tokens to users removed from whitelist', async function () {
+		await crowdsale.buyTokens(buyer5, {from: buyer5, value: CONTRIBUTION_AMOUNT}).should.be.rejectedWith('revert');
 	});
 
 
@@ -140,9 +177,24 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		await token.transferFrom(buyer1, unknown, tokenBuyerAmount, {from: buyer1}).should.be.rejectedWith('revert');
 	});
 
+	it('should not allow allocations or funds to be set by unknown addresses', async function() {
+		await crowdsale.setPresaleAllocations(presaleAllocations.address, {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setTeamAllocations(teamAllocations.address, {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: unknown}).should.be.rejectedWith('revert');
+
+		await crowdsale.setReserveFund(reserveFund, {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setBountyFund(bountyFund, {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setDevelopmentFund(developmentFund, {from: unknown}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow unknown users to finalize crowdsale', async function () {
+		await increaseTimeTo(afterEndTime);
+		await crowdsale.finalize({from: unknown}).should.be.rejectedWith('revert');
+	});
+
 
 	it('should finalize crowdsale', async function() {
-		await increaseTimeTo(afterEndTime);
 		await crowdsale.setPresaleAllocations(presaleAllocations.address, {from: owner});
 		await crowdsale.setTeamAllocations(teamAllocations.address, {from: owner});
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
@@ -176,6 +228,11 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 	});
 
 
+	it('should not allow unknown users to distribute tokens', async function() {
+		await presaleAllocations.distributeAllocation(investor1, {from: unknown}).should.be.rejectedWith('revert');
+	});
+
+
 	it('should distribute tokens among pre-sale users', async function() {
 		await presaleAllocations.distributeAllocation(investor1, {from: owner});
 		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE);
@@ -183,6 +240,13 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE * 2);
 		await presaleAllocations.distributeAllocation(investor3, {from: owner});
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
+	});
+
+
+	it('should not allow unknown addresses to release vesting', async function () {
+		let vestingAddress1 = await presaleAllocations.getVesting(investor1);
+		let vesting1 = await LinearTokenVesting.at(vestingAddress1);
+		await vesting1.release(token.address, {from: unknown}).should.be.rejectedWith('revert');
 	});
 
 
