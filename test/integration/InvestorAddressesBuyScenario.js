@@ -54,8 +54,8 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, {from: admin}).should.be.fulfilled;
 		await whitelist.addToWhitelist(buyer2, {from: admin}).should.be.fulfilled;
-		await whitelist.addToWhitelist(buyer3, {from: admin}).should.be.fulfilled;
-		await whitelist.addToWhitelist(buyer4, {from: admin}).should.be.fulfilled;
+		await whitelist.addToWhitelist(investor1, {from: admin}).should.be.fulfilled;
+		await whitelist.addToWhitelist(investor2, {from: admin}).should.be.fulfilled;
 	});
 
 
@@ -101,15 +101,15 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+		await crowdsale.buyTokens(investor1, {from: investor1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+		await crowdsale.buyTokens(investor2, {from: investor2, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 
 		tokenBuyerAmountRound1 = tokenBuyerAmount.mul(1.2);
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 	});
 
 
@@ -119,15 +119,15 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+		await crowdsale.buyTokens(investor1, {from: investor1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+		await crowdsale.buyTokens(investor2, {from: investor2, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
 
 		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1).add(tokenBuyerAmountRound1);
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 	});
 
 
@@ -139,14 +139,14 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 		let capAmount = BASE_CAP_INDIVIDUAL_AMOUNT * 2;
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: capAmount}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(investor1, {from: investor1, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(investor2, {from: investor2, value: capAmount}).should.be.fulfilled;
 
 		tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05).mul(2).add(tokenBuyerAmountRound2);
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound3);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 	});
 
 
@@ -157,16 +157,16 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 		let capAmount = BASE_CAP_INDIVIDUAL_AMOUNT * 6;
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: capAmount}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(investor1, {from: investor1, value: capAmount}).should.be.fulfilled;
+		await crowdsale.buyTokens(investor2, {from: investor2, value: capAmount}).should.be.fulfilled;
 
 
 		tokenBuyerAmountRound4 = tokenBuyerAmount.mul(1.0).mul(6).add(tokenBuyerAmountRound3);
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound4);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound4);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound4);
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound4);
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 
 	});
 
@@ -213,9 +213,9 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 
 	it('should distribute tokens among pre-sale users', async function() {
 		await presaleAllocations.distributeAllocation(investor1, {from: owner});
-		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE);
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound4 + ALLOCATED_VALUE);
 		await presaleAllocations.distributeAllocation(investor2, {from: owner});
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE * 2);
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4 + (ALLOCATED_VALUE * 2));
 		await presaleAllocations.distributeAllocation(investor3, {from: owner});
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
 	});
@@ -230,14 +230,14 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 		await increaseTimeTo(vestingStart1.add(VESTING_PERIOD).add(1));
 		await vesting1.release(token.address);
 
-		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING);
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound4 + ALLOCATED_VALUE + ALLOCATED_VESTING);
 
 		//Determine investor 2 token balance
 		let vestingAddress2 = await presaleAllocations.getVesting(investor2);
 		let vesting2 = await LinearTokenVesting.at(vestingAddress2);
 		await vesting2.release(token.address);
 
-		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5));
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4 + (ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5));
 
 		//Determine investor 3 token balance (did not receive vesting)
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
@@ -247,7 +247,7 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 		await increaseTimeTo(vestingStart2.add(VESTING_PERIOD * 2).add(1));
 		await vesting2.release(token.address);
 
-		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4 + (ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
 	});
 
 
