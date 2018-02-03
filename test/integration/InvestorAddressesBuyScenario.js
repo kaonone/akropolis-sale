@@ -20,7 +20,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
+contract('Akropolis Investors buy the crowdsale Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
@@ -213,9 +213,9 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 
 	it('should distribute tokens among pre-sale users', async function() {
 		await presaleAllocations.distributeAllocation(investor1, {from: owner});
-		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound4 + ALLOCATED_VALUE);
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound4.add(ALLOCATED_VALUE));
 		await presaleAllocations.distributeAllocation(investor2, {from: owner});
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4 + (ALLOCATED_VALUE * 2));
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4.add(ALLOCATED_VALUE * 2));
 		await presaleAllocations.distributeAllocation(investor3, {from: owner});
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
 	});
@@ -230,14 +230,14 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 		await increaseTimeTo(vestingStart1.add(VESTING_PERIOD).add(1));
 		await vesting1.release(token.address);
 
-		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound4 + ALLOCATED_VALUE + ALLOCATED_VESTING);
+		(await token.balanceOf(investor1)).should.be.bignumber.equal(tokenBuyerAmountRound4.add(ALLOCATED_VALUE + ALLOCATED_VESTING));
 
 		//Determine investor 2 token balance
 		let vestingAddress2 = await presaleAllocations.getVesting(investor2);
 		let vesting2 = await LinearTokenVesting.at(vestingAddress2);
 		await vesting2.release(token.address);
 
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4 + (ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5));
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4.add((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5)));
 
 		//Determine investor 3 token balance (did not receive vesting)
 		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
@@ -247,7 +247,7 @@ contract('Investors buy the crowdsale Scenario', function ([owner, admin, wallet
 		await increaseTimeTo(vestingStart2.add(VESTING_PERIOD * 2).add(1));
 		await vesting2.release(token.address);
 
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4 + (ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
+		(await token.balanceOf(investor2)).should.be.bignumber.equal(tokenBuyerAmountRound4.add((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10)));
 	});
 
 
