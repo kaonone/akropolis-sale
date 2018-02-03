@@ -95,6 +95,11 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 	});
 
 
+	it('should should not sell tokens before start of round 1', async function() {
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.rejectedWith('revert');
+	});
+
+
 	it('should sell tokens to whitelisted users during round 1', async function() {
 		tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT);
 		await increaseTimeTo(startTime);
@@ -173,6 +178,11 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		let supply = await config.PUBLIC_SALE_SUPPLY();
 		let unsold = supply.sub(sold);
 		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()).add(unsold));
+	});
+
+
+	it('should should not sell tokens after the crowdsale has been finalized', async function() {
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.rejectedWith('revert');
 	});
 
 
