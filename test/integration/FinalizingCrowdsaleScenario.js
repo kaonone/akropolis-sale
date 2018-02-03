@@ -41,15 +41,8 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.days(4);
 		afterEndTime = endTime + duration.seconds(1);
-	});
-
-	it('should deploy AET token', async function () {
 		token = await AkropolisToken.new().should.be.fulfilled;
 		await token.pause().should.be.fulfilled;
-	});
-
-
-	it('should deploy Whitelist', async function () {
 		whitelist = await Whitelist.new().should.be.fulfilled;
 	});
 
@@ -86,12 +79,8 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 	});
 
 
-	it('should deploy Config', async function () {
-		config = await SaleConfiguration.new().should.be.fulfilled;
-	});
-
-
 	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
+		config = await SaleConfiguration.new().should.be.fulfilled;
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
 		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
@@ -99,6 +88,11 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 		await crowdsale.setBaseCap(ether(3), {from: owner}).should.be.fulfilled;
 		await crowdsale.setMaxCap(ether(10), {from: owner}).should.be.fulfilled;
 		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
+	});
+
+
+	it('should not finalize the sale before the start time', async function () {
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
 	});
 
 
@@ -130,6 +124,11 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 
 		let tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+	});
+
+
+	it('should not finalize the sale before the end of token sale or reach the hard cap', async function () {
+		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
 	});
 
 
