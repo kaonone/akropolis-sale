@@ -41,46 +41,32 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.days(4);
 		afterEndTime = endTime + duration.seconds(1);
-		token = await AkropolisToken.new().should.be.fulfilled;
-		await token.pause().should.be.fulfilled;
-		whitelist = await Whitelist.new().should.be.fulfilled;
-	});
-
-
-	it('should register 4 users to the whitelist', async function () {
+		token = await AkropolisToken.new();
+		await token.pause();
+		whitelist = await Whitelist.new();
 		await whitelist.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer1, {from: admin}).should.be.fulfilled;
-		await whitelist.addToWhitelist(buyer2, {from: admin}).should.be.fulfilled;
-		await whitelist.addToWhitelist(buyer3, {from: admin}).should.be.fulfilled;
-		await whitelist.addToWhitelist(buyer4, {from: admin}).should.be.fulfilled;
-	});
+		await whitelist.addToWhitelist(buyer1, {from: admin});
+		await whitelist.addToWhitelist(buyer2, {from: admin});
+		await whitelist.addToWhitelist(buyer3, {from: admin});
+		await whitelist.addToWhitelist(buyer4, {from: admin});
 
-
-	it('should deploy pre-sale allocations', async function() {
-		presaleAllocations = await AllocationsManager.new().should.be.fulfilled;
+		presaleAllocations = await AllocationsManager.new();
 		await presaleAllocations.setToken(token.address);
+		await presaleAllocations.setAdmin(admin);
 
-
-		teamAllocations = await AllocationsManager.new().should.be.fulfilled;
+		teamAllocations = await AllocationsManager.new();
 		await teamAllocations.setToken(token.address);
 		await teamAllocations.setAdmin(admin);
 
-		advisorsAllocations = await AllocationsManager.new().should.be.fulfilled;
+		advisorsAllocations = await AllocationsManager.new();
 		await advisorsAllocations.setToken(token.address);
 		await advisorsAllocations.setAdmin(admin);
-	});
+		config = await SaleConfiguration.new();
 
-
-	it('should register 3 presale investors', async function() {
-		await presaleAllocations.setAdmin(admin);
-		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
-		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), (VESTING_PERIOD * 2), {from: admin}).should.be.fulfilled;
-		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin}).should.be.fulfilled;
-	});
-
-
-	it('should deploy Config', async function () {
-		config = await SaleConfiguration.new().should.be.fulfilled;
+		//Register some investors
+		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
+		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), (VESTING_PERIOD * 2), {from: admin});
+		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin});
 	});
 
 
@@ -158,21 +144,6 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
 
-		//Test presale allocations
-		(await token.balanceOf(presaleAllocations.address)).should.be.bignumber.equal((await config.PRESALE_SUPPLY()));
-
-		//Test team allocations
-		(await token.balanceOf(teamAllocations.address)).should.be.bignumber.equal((await config.TEAM_SUPPLY()));
-
-		//Test advisors allocations
-		(await token.balanceOf(advisorsAllocations.address)).should.be.bignumber.equal((await config.ADVISORS_SUPPLY()));
-
-		//Test bounty fund
-		(await token.balanceOf(bountyFund)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
-
-		//Test dev fund
-		(await token.balanceOf(developmentFund)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));
-
 		//Test reserve fund
 		let sold = await crowdsale.tokensSold();
 		let supply = await config.PUBLIC_SALE_SUPPLY();
@@ -184,52 +155,4 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 	it('should should not sell tokens after the crowdsale has been finalized', async function() {
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.rejectedWith('revert');
 	});
-
-
-	it('should distribute tokens among pre-sale users', async function() {
-		await presaleAllocations.distributeAllocation(investor1, {from: owner});
-		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE);
-		await presaleAllocations.distributeAllocation(investor2, {from: owner});
-		(await token.balanceOf(investor2)).should.be.bignumber.equal(ALLOCATED_VALUE * 2);
-		await presaleAllocations.distributeAllocation(investor3, {from: owner});
-		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
-	});
-
-
-	it('should correctly vest investors allocations', async function() {
-		//Determine investor 1 token balance
-		let vestingAddress1 = await presaleAllocations.getVesting(investor1);
-		let vesting1 = await LinearTokenVesting.at(vestingAddress1);
-		let vestingStart1 = await vesting1.start();
-
-		await increaseTimeTo(vestingStart1.add(VESTING_PERIOD));
-		await vesting1.release(token.address);
-
-		(await token.balanceOf(investor1)).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING);
-
-		//Determine investor 2 token balance
-		let vestingAddress2 = await presaleAllocations.getVesting(investor2);
-		let vesting2 = await LinearTokenVesting.at(vestingAddress2);
-		await vesting2.release(token.address);
-
-		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5));
-
-		//Determine investor 3 token balance (did not receive vesting)
-		(await token.balanceOf(investor3)).should.be.bignumber.equal(ALLOCATED_VALUE);
-
-		let vestingStart2 = await vesting2.start();
-
-		await increaseTimeTo(vestingStart2.add(VESTING_PERIOD * 2));
-		await vesting2.release(token.address);
-
-		(await token.balanceOf(investor2)).should.be.bignumber.equal((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10));
-	});
-
-
-	it('should allow for transfer of tokens', async function () {
-		await token.transfer(unknown, 1, {from: investor1}).should.be.fulfilled;
-
-		await token.approve(unknown, 1, {from: investor1}).should.be.fulfilled;
-		await token.transferFrom(investor1, unknown, 1, {from: unknown}).should.be.fulfilled;
-	})
 });
