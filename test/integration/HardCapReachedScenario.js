@@ -85,7 +85,7 @@ contract('Akropolis Reach Hard cap Scenario', function ([owner, admin, wallet, b
 		await tokenRound1Hardcap.transferOwnership(crowdsaleRound1Hardcap.address).should.be.fulfilled;
 		await crowdsaleRound1Hardcap.setToken(tokenRound1Hardcap.address).should.be.fulfilled;
 		await crowdsaleRound1Hardcap.setBaseCap(CONTRIBUTION_AMOUNT, {from: owner}).should.be.fulfilled;
-		await crowdsaleRound1Hardcap.setMaxCap(CONTRIBUTION_AMOUNT * 2, {from: owner}).should.be.fulfilled;
+		await crowdsaleRound1Hardcap.setMaxCap(CONTRIBUTION_AMOUNT.mul(2), {from: owner}).should.be.fulfilled;
 		await crowdsaleRound1Hardcap.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 
 		//Setup round 2 test
@@ -94,7 +94,7 @@ contract('Akropolis Reach Hard cap Scenario', function ([owner, admin, wallet, b
 		await tokenRound2Hardcap.transferOwnership(crowdsaleRound2Hardcap.address).should.be.fulfilled;
 		await crowdsaleRound2Hardcap.setToken(tokenRound2Hardcap.address).should.be.fulfilled;
 		await crowdsaleRound2Hardcap.setBaseCap(CONTRIBUTION_AMOUNT, {from: owner}).should.be.fulfilled;
-		await crowdsaleRound2Hardcap.setMaxCap(CONTRIBUTION_AMOUNT * 2, {from: owner}).should.be.fulfilled;
+		await crowdsaleRound2Hardcap.setMaxCap(CONTRIBUTION_AMOUNT.mul(2), {from: owner}).should.be.fulfilled;
 		await crowdsaleRound2Hardcap.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 
 		//Setup round 3 test
@@ -103,7 +103,7 @@ contract('Akropolis Reach Hard cap Scenario', function ([owner, admin, wallet, b
 		await tokenRound3Hardcap.transferOwnership(crowdsaleRound3Hardcap.address).should.be.fulfilled;
 		await crowdsaleRound3Hardcap.setToken(tokenRound3Hardcap.address).should.be.fulfilled;
 		await crowdsaleRound3Hardcap.setBaseCap(CONTRIBUTION_AMOUNT, {from: owner}).should.be.fulfilled;
-		await crowdsaleRound3Hardcap.setMaxCap(CONTRIBUTION_AMOUNT * 2, {from: owner}).should.be.fulfilled;
+		await crowdsaleRound3Hardcap.setMaxCap(CONTRIBUTION_AMOUNT.mul(2), {from: owner}).should.be.fulfilled;
 		await crowdsaleRound3Hardcap.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 
 		//Setup round 4 test
@@ -112,7 +112,7 @@ contract('Akropolis Reach Hard cap Scenario', function ([owner, admin, wallet, b
 		await tokenRound4Hardcap.transferOwnership(crowdsaleRound4Hardcap.address).should.be.fulfilled;
 		await crowdsaleRound4Hardcap.setToken(tokenRound4Hardcap.address).should.be.fulfilled;
 		await crowdsaleRound4Hardcap.setBaseCap(CONTRIBUTION_AMOUNT, {from: owner}).should.be.fulfilled;
-		await crowdsaleRound4Hardcap.setMaxCap(CONTRIBUTION_AMOUNT * 2, {from: owner}).should.be.fulfilled;
+		await crowdsaleRound4Hardcap.setMaxCap(CONTRIBUTION_AMOUNT.mul(2), {from: owner}).should.be.fulfilled;
 		await crowdsaleRound4Hardcap.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 	});
 
@@ -245,7 +245,7 @@ contract('Akropolis Reach Hard cap Scenario', function ([owner, admin, wallet, b
 	});
 
 
-	it('should finalize the sale in round 1 reaching hardcap', async function () {
+	it('should finalize the sale in round 4 reaching hardcap', async function () {
 		await presaleAllocations.setToken(tokenRound4Hardcap.address);
 		await teamAllocations.setToken(tokenRound4Hardcap.address);
 		await advisorsAllocations.setToken(tokenRound4Hardcap.address);
@@ -262,7 +262,7 @@ contract('Akropolis Reach Hard cap Scenario', function ([owner, admin, wallet, b
 	});
 
 
-	it('should allow for transfer of tokens if reach hard cap in round 1 ', async function () {
+	it('should allow for transfer of tokens if reach hard cap in round 4 ', async function () {
 		await tokenRound4Hardcap.transfer(unknown, 1, {from: buyer1}).should.be.fulfilled;
 		await tokenRound4Hardcap.approve(unknown, 1, {from: buyer1}).should.be.fulfilled;
 		await tokenRound4Hardcap.transferFrom(buyer1, unknown, 1, {from: unknown}).should.be.fulfilled;
