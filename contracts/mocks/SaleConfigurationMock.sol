@@ -23,4 +23,8 @@ contract SaleConfigurationMock {
         AET_RATE = _aetRate;
     }
 
+    function setHARD_CAP(uint256 _hardCap) public {
+        HARD_CAP = _hardCap;
+    }
+
 }
