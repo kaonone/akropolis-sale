@@ -147,7 +147,7 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     }
 
     /**
-    * @dev Returns the number of allocations registered
+    * @dev Returns the address of the allocation at the given index
     */
     function getAllocationAddress(uint256 _index) public view returns(address) {
         return indexedAllocations[_index];

@@ -56,8 +56,7 @@ window.Dapp = {
 		Whitelist.deployed().then(function(instance) {
 			return instance.getWhitelistedCount.call();
 		}).then(function(value) {
-			var element = document.getElementById("whitelisted-count");
-			element.innerHTML = value.valueOf();
+			show("whitelisted-count", value.valueOf());
 		}).catch(function(err) {
 			console.log(err);
 		});
@@ -100,7 +99,7 @@ window.Dapp = {
 		var address = document.getElementById("check-address").value;
 		console.log("Checking address: " + address);
 		Whitelist.deployed().then(function(instance) {
-			self.setAlert("CHecking address...");
+			self.setAlert("Checking address...");
 			return instance.isWhitelisted(address, {from: adminAccount});
 		}).then(function(result) {
 			console.log(result);
