@@ -81,6 +81,7 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, buyer2, wallet
 
 		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+		(await whitelist.getWhitelistedAddress(0)).should.be.equal(buyer);
 	});
 
 
