@@ -113,9 +113,10 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 
 
 	it('should not allow for transfer of tokens', async function () {
-		await token.transferFrom(investor1, unknown, ALLOCATED_VALUE, {from: investor1}).should.be.rejectedWith('revert');
-		await token.transferFrom(buyer1, unknown, tokenBuyerAmount, {from: buyer1}).should.be.rejectedWith('revert');
-	});
+		await token.transfer(unknown, 1, {from: buyer1}).should.be.rejectedWith('revert');
+		await token.approve(unknown, 1, {from: buyer1}).should.be.rejectedWith('revert');
+		await token.transferFrom(buyer1, unknown, 1, {from: unknown}).should.be.rejectedWith('revert');
+	})
 
 
 	it('should finalize crowdsale after reaching time', async function() {
@@ -136,4 +137,11 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 		let unsold = supply.sub(sold);
 		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()).add(unsold));
 	});
+
+
+	it('should allow for transfer of tokens', async function () {
+		await token.transfer(unknown, 1, {from: buyer1}).should.be.fulfilled;
+		await token.approve(unknown, 1, {from: buyer1}).should.be.fulfilled;
+		await token.transferFrom(buyer1, unknown, 1, {from: unknown}).should.be.fulfilled;
+	})
 });
