@@ -259,4 +259,8 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await token.approve(unknown, 1, {from: buyer1}).should.be.fulfilled;
 		await token.transferFrom(buyer1, unknown, 1, {from: unknown}).should.be.fulfilled;
 	})
+
+	it('should not mint more tokens', async function () {
+		await token.mint(buyer1, 1, { from: owner }).should.be.rejectedWith('revert');
+	});
 });
