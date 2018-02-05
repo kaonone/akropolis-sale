@@ -41,9 +41,9 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.days(4);
 		afterEndTime = endTime + duration.seconds(1);
-		token = await AkropolisToken.new().should.be.fulfilled;
-		await token.pause().should.be.fulfilled;
-		whitelist = await Whitelist.new().should.be.fulfilled;
+		token = await AkropolisToken.new();
+		await token.pause();
+		whitelist = await Whitelist.new();
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, {from: admin});
 		await whitelist.addToWhitelist(buyer2, {from: admin});
