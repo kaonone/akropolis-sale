@@ -17,7 +17,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet, notAdded]) {
+contract('Whitelisted Crowdsale', function ([owner, admin, buyer, buyer2, wallet, notAdded]) {
 
 	let whitelist, token, crowdsale;
 
@@ -76,11 +76,16 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet, notAdd
 		await whitelist.addToWhitelist(0x0, {from: admin}).should.be.rejectedWith('revert');
 	});
 
+	it('should allow adding a buyer to the whitelist', async function () {
+		await whitelist.addToWhitelist(buyer, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+		(await whitelist.getWhitelistedAddress(0)).should.be.equal(buyer);
+	});
+
 
 	it('should allow whitelisted buyers to purchase tokens', async function () {
-		await whitelist.addToWhitelist(buyer, {from: admin});
-		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
-
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.fulfilled;
 	});
 
@@ -100,6 +105,7 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet, notAdd
 	it('should allow admin to remove buyer from the whitelist', async function () {
 		await whitelist.removeFromWhitelist(buyer, {from: admin});
 		(await whitelist.isWhitelisted(buyer)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
 
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.rejectedWith('revert');
 	});
@@ -112,6 +118,52 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer, wallet, notAdd
 
 	it('should not allow removing a user that has not been added to the whitelist', async function () {
 		await whitelist.removeFromWhitelist(notAdded, {from: admin}).should.be.rejectedWith('revert');
+	});
+
+	it('should add two users to whitelist and then remove them in the same order', async function () {
+		await whitelist.addToWhitelist(buyer, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.addToWhitelist(buyer2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(true);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(2);
+
+		await whitelist.removeFromWhitelist(buyer, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.removeFromWhitelist(buyer2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
+
+	});
+
+	it('should add two users to whitelist and then remove them in the reverse order', async function () {
+		await whitelist.addToWhitelist(buyer, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.addToWhitelist(buyer2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(true);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(2);
+
+		await whitelist.removeFromWhitelist(buyer2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.removeFromWhitelist(buyer, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
+
 	});
 
 });

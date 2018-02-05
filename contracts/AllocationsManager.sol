@@ -21,6 +21,7 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     enum AllocationStatus {REGISTERED, DISTRIBUTED}
 
     struct Allocation {
+        uint256 index;
         uint256 value;
         uint256 vestingValue;
         uint256 vestingPeriod;
@@ -33,6 +34,9 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
 
     //Map representing how many tokens have been allocated for an investor address
     mapping(address => Allocation) allocations;
+
+    //Array of addresses stored in addition order
+    address[] public indexedAllocations;
 
     //Total value of all allocations
     uint256 public totalAllocated;
@@ -70,12 +74,17 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
 
         require(allocations[_investor].status != AllocationStatus.DISTRIBUTED);
 
+
+        uint256 index = indexedAllocations.length;
         if (allocations[_investor].value > 0) {
             totalAllocated = totalAllocated.sub(allocations[_investor].value);
             totalAllocated = totalAllocated.sub(allocations[_investor].vestingValue);
+            index = allocations[_investor].index;
+        } else {
+            indexedAllocations.push(_investor);
         }
 
-        allocations[_investor] = Allocation(_value, _vestingValue, _vestingPeriod, 0, AllocationStatus.REGISTERED);
+        allocations[_investor] = Allocation(index, _value, _vestingValue, _vestingPeriod, 0, AllocationStatus.REGISTERED);
 
         totalAllocated = totalAllocated.add(_value).add(_vestingValue);
 
@@ -115,7 +124,7 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     * @dev Returns the value of allocated tokens in the following format
     * [allocated tokens, allocated vesting, vesting period]
     */
-    function getAllocatedTokens(address _investor) public view returns(uint256[3]) {
+    function getAllocation(address _investor) public view returns(uint256[3]) {
         if (allocations[_investor].status == AllocationStatus.REGISTERED) {
             return [allocations[_investor].value, allocations[_investor].vestingValue, allocations[_investor].vestingPeriod];
         }
@@ -130,6 +139,39 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
         }
     }
 
+    /**
+    * @dev Returns the number of allocations registered
+    */
+    function getAllocationsCount() public view returns(uint256) {
+        return indexedAllocations.length;
+    }
+
+    /**
+    * @dev Returns the address of the allocation at the given index
+    */
+    function getAllocationAddress(uint256 _index) public view returns(address) {
+        return indexedAllocations[_index];
+    }
+
+    /**
+    * @dev Removes an allocation for a given address
+    */
+    function removeAllocation(address _investor) public returns(bool) {
+        require(allocations[_investor].value > 0);
+
+        uint256 removalIndex = allocations[_investor].index;
+        address lastAddress = indexedAllocations[indexedAllocations.length.sub(1)];
+        indexedAllocations[removalIndex] = lastAddress;
+        indexedAllocations.length = indexedAllocations.length.sub(1);
+        allocations[lastAddress].index = removalIndex;
+
+        totalAllocated = totalAllocated.sub(allocations[_investor].value);
+        totalAllocated = totalAllocated.sub(allocations[_investor].vestingValue);
+        delete allocations[_investor];
+        return true;
+    }
+
 
 
 }
+
