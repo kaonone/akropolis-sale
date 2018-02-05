@@ -57,6 +57,8 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		allocated[2].should.be.bignumber.equal(0);
 
 		(await allocations.totalAllocated()).should.be.bignumber.equal(ALLOCATED_VALUE);
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(1);
+		(await allocations.getAllocationAddress(0)).should.be.equal(investor);
 	});
 
 
@@ -71,6 +73,7 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		(await allocations.totalAllocated()).should.be.bignumber.equal(UPDATED_VALUE);
 	});
 
+
 	it('should allow the admin to register allocation with vesting', async function () {
 		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE * 2, ALLOCATED_VESTING * 2, VESTING_PERIOD * 2, {from: admin});
 
@@ -80,7 +83,10 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		allocated[2].should.be.bignumber.equal(VESTING_PERIOD * 2);
 
 		(await allocations.totalAllocated()).should.be.bignumber.equal(UPDATED_VALUE + ALLOCATED_VALUE * 2 + ALLOCATED_VESTING * 2);
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(2);
+		(await allocations.getAllocationAddress(1)).should.be.equal(investorWithVesting);
 	});
+
 
 	it('should allow the admin to update allocation with vesting', async function () {
 		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
@@ -91,11 +97,57 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		allocated[2].should.be.bignumber.equal(VESTING_PERIOD);
 
 		(await allocations.totalAllocated()).should.be.bignumber.equal(UPDATED_VALUE + ALLOCATED_VALUE + ALLOCATED_VESTING);
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(2);
+		(await allocations.getAllocationAddress(0)).should.be.equal(investor);
+		(await allocations.getAllocationAddress(1)).should.be.equal(investorWithVesting);
+	});
+
+
+	it('should allow the admin to remove allocation in the order of additions', async function () {
+		await allocations.removeAllocation(investor);
+
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(1);
+		(await allocations.getAllocationAddress(0)).should.be.equal(investorWithVesting);
+
+		await allocations.removeAllocation(investorWithVesting);
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(0);
+		(await allocations.totalAllocated()).should.be.bignumber.equal(0);
+	});
+
+
+	it('should allow the admin to remove allocation in the reverse order', async function () {
+		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
+		await allocations.registerAllocation(investor, UPDATED_VALUE, 0, 0, {from: admin});
+
+		await allocations.removeAllocation(investor);
+
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(1);
+		(await allocations.getAllocationAddress(0)).should.be.equal(investorWithVesting);
+
+		await allocations.removeAllocation(investorWithVesting);
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(0);
+		(await allocations.totalAllocated()).should.be.bignumber.equal(0);
+	});
+
+
+	it('should allow the admin to add allocations after removal', async function () {
+		await allocations.registerAllocation(investor, UPDATED_VALUE, 0, 0, {from: admin});
+		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
+
+		(await allocations.totalAllocated()).should.be.bignumber.equal(UPDATED_VALUE + ALLOCATED_VALUE + ALLOCATED_VESTING);
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(2);
+		(await allocations.getAllocationAddress(0)).should.be.equal(investor);
+		(await allocations.getAllocationAddress(1)).should.be.equal(investorWithVesting);
 	});
 
 
 	it('should not allow admin to register null investor', async function () {
 		await allocations.registerAllocation(0, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.rejectedWith('revert');
+	});
+
+
+	it('should not allow admin to remove non-existing allocation ', async function () {
+		await allocations.removeAllocation(other).should.be.rejectedWith('revert');
 	});
 
 
@@ -201,4 +253,4 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		(await token.balanceOf(allocations.address)).should.be.bignumber.equal(0);
 	});
 
-})
+});
