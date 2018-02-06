@@ -20,7 +20,7 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('Akropolis Round 1 Hard cap reach Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
+contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
@@ -73,9 +73,13 @@ contract('Akropolis Round 1 Hard cap reach Scenario', function ([owner, admin, w
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
 		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
+		console.log("should set token");
 		await crowdsale.setToken(token.address).should.be.fulfilled;
+		console.log("should set basecap");
 		await crowdsale.setBaseCap(CONTRIBUTION_AMOUNT, {from: owner}).should.be.fulfilled;
+		console.log("should set max cap");
 		await crowdsale.setMaxCap(CONTRIBUTION_AMOUNT * 2, {from: owner}).should.be.fulfilled;
+		console.log("should set duration");
 		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 	});
 
