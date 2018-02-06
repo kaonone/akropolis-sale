@@ -26,6 +26,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
 	const VESTING_PERIOD = duration.days(100);
+	const VESTING_CLIFF = duration.days(25);
 
 	const CONTRIBUTION_AMOUNT = ether(1);
 
@@ -80,9 +81,9 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	it('should register 3 presale investors', async function() {
 		await presaleAllocations.setAdmin(admin);
-		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
-		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), (VESTING_PERIOD * 2), {from: admin}).should.be.fulfilled;
-		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin}).should.be.fulfilled;
+		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
+		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), VESTING_CLIFF * 2, (VESTING_PERIOD * 2), {from: admin}).should.be.fulfilled;
+		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, 0, {from: admin}).should.be.fulfilled;
 	});
 
 

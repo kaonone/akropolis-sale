@@ -14,8 +14,8 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     using SafeMath for uint256;
 
 
-    event AllocationRegistered(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
-    event AllocationDistributed(address indexed investor, uint256 value, uint256 vestingValue, uint256 vestingPeriod);
+    event AllocationRegistered(address indexed investor, uint256 value, uint256 vestingValue, uint256 cliff, uint256 vestingPeriod);
+    event AllocationDistributed(address indexed investor, uint256 value, uint256 vestingValue, uint256 cliff, uint256 vestingPeriod);
     event TokensReclaimed(address indexed newTokenOwner, uint256 valueReclaimed);
 
     enum AllocationStatus {REGISTERED, DISTRIBUTED}
@@ -24,6 +24,7 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
         uint256 index;
         uint256 value;
         uint256 vestingValue;
+        uint256 cliff;
         uint256 vestingPeriod;
         address vestingContract;
         AllocationStatus status;
@@ -66,9 +67,10 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     * @dev Register the amount of tokens allocated for an investor.
     * The amount my be changed before the tokens are distributed.
     */
-    function registerAllocation(address _investor, uint256 _value, uint256 _vestingValue, uint256 _vestingPeriod) public onlyAdmin {
+    function registerAllocation(address _investor, uint256 _value, uint256 _vestingValue, uint256 _cliff, uint256 _vestingPeriod) public onlyAdmin {
         require(_investor != 0x0);
         require(_value > 0 || _vestingValue > 0);
+        require(_cliff <= _vestingPeriod);
         require(_value <= MAX_ALLOCATION_VALUE);
         require( (_vestingValue == 0 && _vestingPeriod == 0) || (_vestingValue > 0 && _vestingPeriod > 0) );
 
@@ -84,11 +86,11 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
             indexedAllocations.push(_investor);
         }
 
-        allocations[_investor] = Allocation(index, _value, _vestingValue, _vestingPeriod, 0, AllocationStatus.REGISTERED);
+        allocations[_investor] = Allocation(index, _value, _vestingValue, _cliff, _vestingPeriod, 0, AllocationStatus.REGISTERED);
 
         totalAllocated = totalAllocated.add(_value).add(_vestingValue);
 
-        AllocationRegistered(_investor, _value, _vestingValue, _vestingPeriod);
+        AllocationRegistered(_investor, _value, _vestingValue, _cliff, _vestingPeriod);
     }
 
     /**
@@ -101,14 +103,14 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
 
         token.safeTransfer(_investor, allocation.value);
         if (allocation.vestingValue > 0) {
-            LinearTokenVesting vesting = new LinearTokenVesting(_investor, allocation.vestingPeriod);
+            LinearTokenVesting vesting = new LinearTokenVesting(_investor, allocation.cliff, allocation.vestingPeriod);
             vesting.transferOwnership(owner);
             token.safeTransfer(address(vesting), allocation.vestingValue);
             allocation.vestingContract = address(vesting);
         }
         allocation.status = AllocationStatus.DISTRIBUTED;
 
-        AllocationDistributed(_investor, allocation.value, allocation.vestingValue, allocation.vestingPeriod);
+        AllocationDistributed(_investor, allocation.value, allocation.vestingValue, allocation.cliff, allocation.vestingPeriod);
     }
 
     /**
@@ -122,11 +124,16 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
 
     /**
     * @dev Returns the value of allocated tokens in the following format
-    * [allocated tokens, allocated vesting, vesting period]
+    * [allocated tokens, allocated vesting, cliff, vesting period]
     */
-    function getAllocation(address _investor) public view returns(uint256[3]) {
+    function getAllocation(address _investor) public view returns(uint256[4]) {
         if (allocations[_investor].status == AllocationStatus.REGISTERED) {
-            return [allocations[_investor].value, allocations[_investor].vestingValue, allocations[_investor].vestingPeriod];
+            return [
+                allocations[_investor].value,
+                allocations[_investor].vestingValue,
+                allocations[_investor].cliff,
+                allocations[_investor].vestingPeriod
+            ];
         }
     }
 
