@@ -76,13 +76,9 @@ contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, w
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
 		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
-		console.log("should set token");
 		await crowdsale.setToken(token.address).should.be.fulfilled;
-		console.log("should set basecap");
 		await crowdsale.setBaseCap(CONTRIBUTION_AMOUNT, {from: owner}).should.be.fulfilled;
-		console.log("should set max cap");
 		await crowdsale.setMaxCap(MAX_AMOUNT, {from: owner}).should.be.fulfilled;
-		console.log("should set duration");
 		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 	});
 
