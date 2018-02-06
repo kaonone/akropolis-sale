@@ -149,7 +149,7 @@ contract('Akropolis Round 4 Hard Cap Reach Scenario', function ([owner, admin, w
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT.mul(4)}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: CONTRIBUTION_AMOUNT.mul(4)}).should.be.fulfilled;
 
-		tokenBuyerAmountRound4 = tokenBuyerAmount.mul(4).add(tokenBuyerAmountRound3);
+		let tokenBuyerAmountRound4 = tokenBuyerAmount.mul(4).add(tokenBuyerAmountRound3);
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound4);
