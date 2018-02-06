@@ -28,6 +28,7 @@ contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, w
 	const VESTING_PERIOD = duration.days(100);
 
 	const CONTRIBUTION_AMOUNT = ether(1);
+	const MAX_AMOUNT = ether(2);
 
 	let token, crowdsale, whitelist, config;
 	let presaleAllocations, teamAllocations, advisorsAllocations;
@@ -78,7 +79,7 @@ contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, w
 		console.log("should set basecap");
 		await crowdsale.setBaseCap(CONTRIBUTION_AMOUNT, {from: owner}).should.be.fulfilled;
 		console.log("should set max cap");
-		await crowdsale.setMaxCap(CONTRIBUTION_AMOUNT * 2, {from: owner}).should.be.fulfilled;
+		await crowdsale.setMaxCap(MAX_AMOUNT, {from: owner}).should.be.fulfilled;
 		console.log("should set duration");
 		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 	});
