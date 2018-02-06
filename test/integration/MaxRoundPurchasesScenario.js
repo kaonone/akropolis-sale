@@ -92,10 +92,15 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+
+		await crowdsale.buyTokens(buyer1, {from: buyer1, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer2, {from: buyer2, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer3, {from: buyer3, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer4, {from: buyer4, 1}).should.be.rejectedWith('revert');
 	});
 
 
-	it('should sell tokens to whitelisted users during round 2', async function() {
+	it('should sell max amount of tokens to whitelisted users during round 2', async function() {
 		await increaseTimeTo(startTime + duration.days(1));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 
@@ -110,10 +115,15 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+
+		await crowdsale.buyTokens(buyer1, {from: buyer1, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer2, {from: buyer2, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer3, {from: buyer3, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer4, {from: buyer4, 1}).should.be.rejectedWith('revert');
 	});
 
 
-	it('should sell tokens to whitelisted users during round 3', async function() {
+	it('should sell max amount of tokens to whitelisted users during round 3', async function() {
 		await increaseTimeTo(startTime + duration.days(2));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 
@@ -129,10 +139,15 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+
+		await crowdsale.buyTokens(buyer1, {from: buyer1, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer2, {from: buyer2, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer3, {from: buyer3, 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer4, {from: buyer4, 1}).should.be.rejectedWith('revert');
 	});
 
 
-	it('should sell tokens to whitelisted users during round 4', async function() {
+	it('should sell max amount of tokens to whitelisted users during round 4', async function() {
 		await increaseTimeTo(startTime + duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
 
@@ -149,6 +164,13 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound4);
 		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound4);
+
+
+
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: 1}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: 1}).should.be.rejectedWith('revert');
 
 	});
 
