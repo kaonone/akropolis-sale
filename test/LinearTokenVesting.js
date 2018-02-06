@@ -17,6 +17,7 @@ const should = require('chai')
 contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 
 	const DURATION = duration.days(100);
+	const CLIFF = duration.days(25);
 	const VESTING_AMOUNT = 100;
 
 	let token;
@@ -30,23 +31,29 @@ contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 
 
 	it('should not allow vesting without duration', async function () {
-		vesting = await LinearTokenVesting.new(beneficiary, 0).should.be.rejectedWith('revert');
+		vesting = await LinearTokenVesting.new(beneficiary, 0, 0).should.be.rejectedWith('revert');
 	});
 
 
 	it('should not allow vesting without beneficiary', async function () {
-		vesting = await LinearTokenVesting.new(0x0, DURATION).should.be.rejectedWith('revert');
-    });
+		vesting = await LinearTokenVesting.new(0x0, CLIFF, DURATION).should.be.rejectedWith('revert');
+  });
+
+
+	it('should not allow vesting with cliff longer than duration', async function () {
+		vesting = await LinearTokenVesting.new(0x0, DURATION + 1, DURATION).should.be.rejectedWith('revert');
+	});
 
 
 	it('should define vesting', async function () {
-		vesting = await LinearTokenVesting.new(beneficiary, DURATION);
+		vesting = await LinearTokenVesting.new(beneficiary, CLIFF, DURATION);
 		start = latestTime();
 		await token.mint(vesting.address, VESTING_AMOUNT);
 
 		(await token.balanceOf(vesting.address)).should.be.bignumber.equal(VESTING_AMOUNT);
 		(await vesting.duration()).should.be.bignumber.equal(DURATION);
 		(await vesting.beneficiary()).should.be.bignumber.equal(beneficiary);
+		(await vesting.cliff()).should.be.bignumber.equal(CLIFF);
 		(await vesting.start()).should.be.bignumber.equal(start);
 	});
 
@@ -55,9 +62,13 @@ contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 		//Start: 0% vested
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(0);
 
-		//Time passed: 20%
-		await increaseTimeTo(start + 0.2 * DURATION);
-		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(20);
+		//Cliff: 0% vested
+		await increaseTimeTo(start + 0.24 * DURATION);
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(0);
+
+		//Time passed: 30%
+		await increaseTimeTo(start + 0.3 * DURATION);
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(30);
 
 		//Time passed: 50%
 		await increaseTimeTo(start + 0.5 * DURATION);
@@ -68,7 +79,7 @@ contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 	it('should not release tokens to unknown address', async function () {
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(50);
 		await vesting.release(token.address, {from: unknown}).should.be.rejectedWith('revert');
-	})
+	});
 
 
 	it('should release vested amount', async function () {
@@ -101,7 +112,7 @@ contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 	it('should not release tokens if there are no unreleased tokens', async function () {
 		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
 		await vesting.release(token.address).should.be.rejectedWith('revert');
-	})
+	});
 
 
 	it('should not vest more than the total vested amount, after the duration', async function() {
@@ -109,4 +120,4 @@ contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
 	});
 
-})
+});

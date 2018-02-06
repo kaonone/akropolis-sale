@@ -8,6 +8,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
 /**
  * @title LinearTokenVesting
  * @dev A token holder contract that can release its tokens pro-rata with the passing time
+ * after the cliff period
  */
 contract LinearTokenVesting is Ownable {
     using SafeMath for uint256;
@@ -24,6 +25,9 @@ contract LinearTokenVesting is Ownable {
     // duration of the vesting period
     uint256 public duration;
 
+    // time after which tokens begin to vest
+    uint256 public cliff;
+
     // amounts of tokens that has been already released
     mapping (address => uint256) public released;
 
@@ -31,15 +35,18 @@ contract LinearTokenVesting is Ownable {
      * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
      * _beneficiary, gradually in a linear fashion until _start + _duration.
      * @param _beneficiary address of the beneficiary to whom vested tokens are transferred
+     * @param _cliff duration in seconds after which tokens will begin to vest
      * @param _duration duration in seconds of the period in which the tokens will vest
      */
-    function LinearTokenVesting(address _beneficiary, uint256 _duration) public {
+    function LinearTokenVesting(address _beneficiary, uint256 _cliff, uint256 _duration) public {
         require(_beneficiary != 0x0);
         require(_duration > 0);
+        require(_cliff <= _duration);
 
         beneficiary = _beneficiary;
         duration = _duration;
         start = now;
+        cliff = _cliff;
     }
 
     /**
@@ -76,7 +83,9 @@ contract LinearTokenVesting is Ownable {
         uint256 currentBalance = token.balanceOf(this);
         uint256 totalBalance = currentBalance.add(released[token]);
 
-        if (now >= start.add(duration)) {
+        if (now < start.add(cliff)) {
+            return 0;
+        } else if (now >= start.add(duration)) {
             return totalBalance;
         } else {
             return totalBalance.mul(now.sub(start)).div(duration);

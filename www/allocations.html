@@ -43,6 +43,7 @@
                 <th scope="col">Address</th>
                 <th scope="col">Value (AET)</th>
                 <th scope="col">Vesting value (AET)</th>
+                <th scope="col">Vesting cliff (days)</th>
                 <th scope="col">Vesting period (days)</th>
             </tr>
             </thead>
@@ -59,20 +60,24 @@
             <h3 class="panel-title">Add/Update Allocation</h3>
         </div>
         <div class="panel-body form-inline">
-            <label for="buyer-address" class="col-md-2" >Investor address</label>
+            <label for="allocation-address" class="col-md-2" >Investor address</label>
             <input type="text" id="allocation-address" class="form-control" style="width: 400px;" placeholder="address"></input>
             <button type="button" class="btn btn-primary btn-" onclick="Dapp.findAllocation()">Find</button>
         </div>
         <div class="panel-body form-inline">
-            <label for="buyer-address" class="col-md-2">Value (AET)</label>
+            <label for="allocation-value" class="col-md-2">Value (AET)</label>
             <input type="text" id="allocation-value" class="form-control" style="width: 400px;" placeholder="address"></input>
         </div>
         <div class="panel-body form-inline">
-            <label for="buyer-address" class="col-md-2">Vesting Value (AET)</label>
+            <label for="allocation-vesting-value" class="col-md-2">Vesting Value (AET)</label>
             <input type="text" id="allocation-vesting-value" class="form-control" style="width: 400px;" placeholder="address"></input>
         </div>
         <div class="panel-body form-inline">
-            <label for="buyer-address" class="col-md-2">Vesting period (days)</label>
+            <label for="allocation-vesting-cliff" class="col-md-2">Vesting cliff (days)</label>
+            <input type="text" id="allocation-vesting-cliff" class="form-control" style="width: 400px;" placeholder="address"></input>
+        </div>
+        <div class="panel-body form-inline">
+            <label for="allocation-vesting-period" class="col-md-2">Vesting period (days)</label>
             <input type="text" id="allocation-vesting-period" class="form-control" style="width: 400px;" placeholder="address"></input>
         </div>
         <div class="panel-body form-inline">
