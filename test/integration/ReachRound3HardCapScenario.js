@@ -118,11 +118,11 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 
-		let tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1);
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1.add(tokenBuyerAmountRound2));
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1.add(tokenBuyerAmountRound2));
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1.add(tokenBuyerAmountRound2));
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound1.add(tokenBuyerAmountRound2));
+		let tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1).add(tokenBuyerAmountRound1);
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 	});
 
 	it('should sell tokens to whitelisted users during round 3', async function() {
@@ -133,11 +133,11 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT * 2}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: CONTRIBUTION_AMOUNT * 2}).should.be.fulfilled;
 
-		let tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05);
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2.add(tokenBuyerAmountRound3));
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2.add(tokenBuyerAmountRound3));
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2.add(tokenBuyerAmountRound3));
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2.add(tokenBuyerAmountRound3));
+		let tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05).add(tokenBuyerAmountRound2);
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 	});
 
 
