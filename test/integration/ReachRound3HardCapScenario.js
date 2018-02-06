@@ -28,12 +28,12 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 	const VESTING_PERIOD = duration.days(100);
 
 	const CONTRIBUTION_AMOUNT = ether(1);
-	const MAX_AMOUNT = ether(4);
+	const MAX_AMOUNT = ether(8);
 
 	let token, crowdsale, whitelist, config;
 	let presaleAllocations, teamAllocations, advisorsAllocations;
 	let startTime, endTime, afterEndTime;
-	let tokenBuyerAmount, tokenBuyerAmountRound1;
+	let tokenBuyerAmount, tokenBuyerAmountRound1, tokenBuyerAmountRound2;
 
 	before(async function () {
 		// Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
@@ -111,9 +111,8 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 
 
 	it('should sell tokens to whitelisted users during round 2', async function() {
-		tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT);
 		await increaseTimeTo(startTime + duration.days(1));
-		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
@@ -124,6 +123,21 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1.add(tokenBuyerAmountRound2));
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1.add(tokenBuyerAmountRound2));
 		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound1.add(tokenBuyerAmountRound2));
+	});
+
+	it('should sell tokens to whitelisted users during round 3', async function() {
+		await increaseTimeTo(startTime + duration.days(2));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT * 2}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: CONTRIBUTION_AMOUNT * 2}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT * 2}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: CONTRIBUTION_AMOUNT * 2}).should.be.fulfilled;
+
+		let tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05);
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2.add(tokenBuyerAmountRound3));
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2.add(tokenBuyerAmountRound3));
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2.add(tokenBuyerAmountRound3));
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2.add(tokenBuyerAmountRound3));
 	});
 
 
