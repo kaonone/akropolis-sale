@@ -162,10 +162,11 @@ window.Dapp = {
 		var address = document.getElementById("allocation-address").value;
 		var value = etherToWei(document.getElementById("allocation-value").value);
 		var vestingValue = etherToWei(document.getElementById("allocation-vesting-value").value);
+		var vestingCliff = duration.days(document.getElementById("allocation-vesting-cliff").value);
 		var vestingPeriod = duration.days(document.getElementById("allocation-vesting-period").value);
 		console.log("Adding allocation: " + address);
 		self.setAlert("Adding allocation...");
-		self.allocations.registerAllocation(address, value, vestingValue, vestingPeriod, {from: adminAccount, gas: 200000}).then(function(tx) {
+		self.allocations.registerAllocation(address, value, vestingValue, vestingCliff, vestingPeriod, {from: adminAccount, gas: 200000}).then(function(tx) {
 			self.setAllocationsSummary();
 			self.listAllAllocations();
 			self.setAlert("Allocation was added. Transaction hash: " + tx.tx, "success");
@@ -186,7 +187,8 @@ window.Dapp = {
 				self.setAlert("Address: " + address + " has an allocation.", "success");
 				document.getElementById("allocation-value").value = weiToEther(result[0].valueOf());
 				document.getElementById("allocation-vesting-value").value = weiToEther(result[1].valueOf());
-				document.getElementById("allocation-vesting-period").value = result[2].valueOf() / duration.days(1);
+				document.getElementById("allocation-vesting-cliff").value = result[2].valueOf() / duration.days(1);
+				document.getElementById("allocation-vesting-period").value = result[3].valueOf() / duration.days(1);
 				show("add-update-button", "Update");
 			} else {
 				self.setAlert("Address: " + address + " has NO allocation.", "danger");
@@ -211,6 +213,7 @@ window.Dapp = {
 					row.insertCell(2).innerHTML = weiToEther(allocation[0]);
 					row.insertCell(3).innerHTML = weiToEther(allocation[1]);
 					row.insertCell(4).innerHTML = allocation[2].valueOf() / duration.days(1);
+					row.insertCell(5).innerHTML = allocation[3].valueOf() / duration.days(1);
 					return self.fetchAllocation(index+1, max, table);
 				});
 			}).catch(function(err) {
