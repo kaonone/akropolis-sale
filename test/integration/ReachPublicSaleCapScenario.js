@@ -63,10 +63,6 @@ contract('Akropolis Reach Public Sale Cap Round 1 Scenario', function ([owner, a
 		await advisorsAllocations.setToken(token.address);
 		await advisorsAllocations.setAdmin(admin);
 
-		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
-		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), (VESTING_PERIOD * 2), {from: admin});
-		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin});
-
 		config = await SaleConfigurationMock.new();
 	});
 
