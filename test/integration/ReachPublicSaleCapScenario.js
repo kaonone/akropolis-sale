@@ -91,20 +91,16 @@ contract('Akropolis Reach Public Sale Cap Round 1 Scenario', function ([owner, a
 
 	it('should finalize crowdsale when public sale cap is reached', async function() {
 		await advanceBlock();
-		console.log("Add presale allocations");
 		await crowdsale.setPresaleAllocations(presaleAllocations.address, {from: owner});
 		await crowdsale.setTeamAllocations(teamAllocations.address, {from: owner});
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
-		console.log("Set addresses for funds");
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
 		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
-		console.log("Finalize the crowdsale");
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
 
-		console.log("Check the reserve fund value is equal to: "+ token.balanceOf(reserveFund));
 		//Test reserve fund balance has nothing added to it from crowdsale, is just reserve fund value
 		(await token.balanceOf(reserveFund)).should.be.bignumber.equal((await config.RESERVE_FUND_VALUE()));
 	});
