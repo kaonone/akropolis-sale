@@ -84,6 +84,14 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         return super.validPurchase() && msg.value <= getAvailableCap(msg.sender);
     }
 
+    /**
+    * Allows to end a crowdsale when all of the tokens allocated for the public sale are sold out
+    */
+    function hasEnded() public view returns (bool) {
+        bool tokensSoldOut = (tokensSold == config.PUBLIC_SALE_SUPPLY());
+        return super.hasEnded() || tokensSoldOut;
+    }
+
     function changeWallet(address _wallet) public onlyOwner {
         require(_wallet != 0x0);
         wallet = _wallet;
