@@ -22,8 +22,8 @@ function ether (n) {
 
 //This integration test seeks to explore reaching the public sale token sales cap
 //This test affirms that if we can finalize the public sale if we reach the public sale token sales limit
-//In this test we reach the limit in Round 2
-contract('Akropolis Reach Public Sale Cap Round 2 Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
+//In this test we reach the limit in Round 3
+contract('Akropolis Reach Public Sale Cap Round 3 Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
 	const CONTRIBUTION_AMOUNT = ether(1);
@@ -47,6 +47,7 @@ contract('Akropolis Reach Public Sale Cap Round 2 Scenario', function ([owner, a
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, {from: admin});
 		await whitelist.addToWhitelist(buyer2, {from: admin});
+		await whitelist.addToWhitelist(buyer3, {from: admin});
 
 		presaleAllocations = await AllocationsManager.new();
 		await presaleAllocations.setToken(token.address);
@@ -66,7 +67,7 @@ contract('Akropolis Reach Public Sale Cap Round 2 Scenario', function ([owner, a
 
 	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await config.setPUBLIC_SALE_SUPPLY(ether(23)).should.be.fulfilled;
+		await config.setPUBLIC_SALE_SUPPLY(ether(33.5)).should.be.fulfilled;
 		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
 		await crowdsale.setToken(token.address).should.be.fulfilled;
@@ -101,13 +102,22 @@ contract('Akropolis Reach Public Sale Cap Round 2 Scenario', function ([owner, a
 
 
 	it('should sell tokens to whitelisted users during round 2', async function() {
-		tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT);
 		await increaseTimeTo(startTime + duration.days(1));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 
 		let tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+	});
+
+
+	it('should sell tokens to whitelisted users during round 3', async function() {
+		await increaseTimeTo(startTime + duration.days(2));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
+
+		let tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 	});
 
 
