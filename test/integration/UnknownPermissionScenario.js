@@ -29,6 +29,7 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
 	const VESTING_PERIOD = duration.days(100);
+	const VESTING_CLIFF = duration.days(25);
 
 	const CONTRIBUTION_AMOUNT = ether(1);
 
@@ -68,9 +69,9 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		await advisorsAllocations.setAdmin(admin);
 
 		//Setup presale allocations
-		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
-		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), (VESTING_PERIOD * 2), {from: admin});
-		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin});
+		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin});
+		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), VESTING_CLIFF, (VESTING_PERIOD * 2), {from: admin});
+		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, 0, {from: admin});
 	});
 
 	

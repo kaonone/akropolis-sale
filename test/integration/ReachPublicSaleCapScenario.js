@@ -26,10 +26,6 @@ function ether (n) {
 contract('Akropolis Reach Public Sale Cap Round 1 Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
-	const ALLOCATED_VALUE = 100;
-	const ALLOCATED_VESTING = 200;
-	const VESTING_PERIOD = duration.days(100);
-
 	const CONTRIBUTION_AMOUNT = ether(1);
 
 	let token, crowdsale, whitelist, config;

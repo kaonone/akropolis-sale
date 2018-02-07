@@ -29,6 +29,7 @@ contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
 	const VESTING_PERIOD = duration.days(100);
+	const VESTING_CLIFF = duration.days(25);
 
 	const BASE_CAP_INDIVIDUAL_AMOUNT = ether(2);
 	const MAX_CAP_INDIVIDUAL_AMOUNT = ether(20);
@@ -70,9 +71,9 @@ contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, 
 		config = await SaleConfiguration.new();
 
 		//Register some investors
-		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
-		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), (VESTING_PERIOD * 2), {from: admin});
-		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin});
+		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin});
+		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), VESTING_CLIFF, (VESTING_PERIOD * 2), {from: admin});
+		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, 0, {from: admin});
 	});
 
 	it('should deploy config and crowdsale and connect to token and allocations contracts', async function() {

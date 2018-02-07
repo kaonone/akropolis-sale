@@ -23,12 +23,10 @@ function ether (n) {
 //This integration test seeks to explore buying at inappropriate times for the crowdsale
 //We check that the crowdsale is set up, tokens are bought and finalizes as normal
 //This test ensures we cannot buy tokens before round 1 or after the sale has been finalized
-contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
+contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
-	const ALLOCATED_VESTING = 200;
-	const VESTING_PERIOD = duration.days(100);
 
 	const CONTRIBUTION_AMOUNT = ether(1);
 
@@ -65,11 +63,6 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		await advisorsAllocations.setToken(token.address);
 		await advisorsAllocations.setAdmin(admin);
 		config = await SaleConfiguration.new();
-
-		//Register some investors
-		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: admin});
-		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), (VESTING_PERIOD * 2), {from: admin});
-		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin});
 	});
 
 
