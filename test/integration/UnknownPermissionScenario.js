@@ -85,7 +85,7 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 	it('should not let unknown users set the registration, token or admin for an allocation', async function () {
 		await teamAllocations.setToken(token.address, {from: unknown}).should.be.rejectedWith('revert');
 		await teamAllocations.setAdmin(unknown, {from: unknown}).should.be.rejectedWith('revert');
-		await presaleAllocations.registerAllocation(unknown, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_PERIOD, {from: unknown}).should.be.rejectedWith('revert');
+		await presaleAllocations.registerAllocation(unknown, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: unknown}).should.be.rejectedWith('revert');
 	});
 
 
