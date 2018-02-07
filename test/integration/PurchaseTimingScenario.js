@@ -123,8 +123,9 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 
 
 	it('should not allow for transfer of tokens', async function () {
-		await token.transferFrom(investor1, unknown, ALLOCATED_VALUE, {from: investor1}).should.be.rejectedWith('revert');
-		await token.transferFrom(buyer1, unknown, tokenBuyerAmount, {from: buyer1}).should.be.rejectedWith('revert');
+		await token.transfer(unknown, 1, {from: buyer1}).should.be.rejectedWith('revert');
+		await token.approve(unknown, 1, {from: buyer1}).should.be.rejectedWith('revert');
+		await token.transferFrom(buyer1, unknown, 1, {from: unknown}).should.be.rejectedWith('revert');
 	});
 
 
