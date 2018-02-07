@@ -20,6 +20,9 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
+//This integration test seeks to explore buying at inappropriate times for the crowdsale
+//We check that the crowdsale is set up, tokens are bought and finalizes as normal
+//This test ensures we cannot buy tokens before round 1 or after the sale has been finalized
 contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 

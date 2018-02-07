@@ -20,6 +20,9 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
+//This integration test seeks to explore finalizing the crowdsale at inappropriate times
+//Test sets up a simple crowdsale which does not reach the public sale supply of tokens nor the maximum ether contribution
+//We test to ensure that the crowdsale will not finalize until the time of the 4 round durations is over
 contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 

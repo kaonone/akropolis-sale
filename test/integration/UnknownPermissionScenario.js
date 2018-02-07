@@ -20,6 +20,9 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
+//This integration test seeks to discover permission edge cases related to the token sales
+//The specific permissions we ensure are revoked during the sale include setting admin, token assigning, whitelist duties
+//Also included is not allowing unknown users to finalize crowdsale
 contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, buyer5, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 

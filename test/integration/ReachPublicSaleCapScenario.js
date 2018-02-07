@@ -20,6 +20,9 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
+//This integration test seeks to explore reaching the public sale token sales cap
+//This test affirms that if we can finalize the public sale if we reach the public sale token sales limit
+//In this test we reach the limit in Round 1
 contract('Akropolis Reach Public Sale Cap Round 1 Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 

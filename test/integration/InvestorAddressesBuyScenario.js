@@ -20,6 +20,9 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
+//This integration test seeks to push the contract by selling tokens to allocated addresses also on the whitelist
+//Test will whitelist investor 1 and 2. They buy every round of the crowdsale along with buyer 1 and 2
+//At the completion of the crowdsale the investors also receive the allocated and vested value without issues
 contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
@@ -72,7 +75,7 @@ contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, 
 		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, {from: admin});
 	});
 
-it('should deploy config and crowdsale and connect to token and allocations contracts', async function() {
+	it('should deploy config and crowdsale and connect to token and allocations contracts', async function() {
 		config = await SaleConfiguration.new().should.be.fulfilled;
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
 		await crowdsale.setAdmin(admin);

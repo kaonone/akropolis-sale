@@ -20,6 +20,9 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
+//This integration test seeks to explore that 4 buyers are able to buy the maximum amount allotted to them per round
+//The test ensures that they can buy up to the maximum individual cap for each round and afterwards not 1 more
+//We ensure that the crowdsale completes correctly and tokens can be transferred
 contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
