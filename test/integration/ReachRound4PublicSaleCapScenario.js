@@ -68,7 +68,7 @@ contract('Akropolis Reach Public Sale Cap Round 4 Scenario', function ([owner, a
 
 	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await config.setPUBLIC_SALE_SUPPLY(ether(33.5)).should.be.fulfilled;
+		await config.setPUBLIC_SALE_SUPPLY(ether(43.5)).should.be.fulfilled;
 		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
 		await crowdsale.setToken(token.address).should.be.fulfilled;
