@@ -71,7 +71,7 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
 
         contributions[beneficiary] = contributions[beneficiary].add(weiAmount);
         tokensSold = tokensSold.add(tokens);
-        //require(tokensSold <= config.PUBLIC_SALE_SUPPLY());
+        require(tokensSold <= config.PUBLIC_SALE_SUPPLY());
         
         TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
 
