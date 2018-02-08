@@ -1,6 +1,8 @@
 // Allows us to use ES6 in our migrations and tests.
 require('babel-register');
 require('babel-polyfill');
+var HDWalletProvider = require("truffle-hdwallet-provider");
+var mnemonic = "12 words";
 
 module.exports = {
     networks: {
@@ -21,6 +23,12 @@ module.exports = {
                 enabled: true,
                 runs: 200
             }
-        }
+        },
+		kovan: {
+			provider: function() {
+				return new HDWalletProvider(mnemonic, "https://kovan.infura.io/tokenkey")
+			},
+			network_id: 42
+		}
     }
 };
