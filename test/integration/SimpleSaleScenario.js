@@ -20,6 +20,10 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
+//This integration test stands as a baseline test for the most simple sale
+//The test is a basis for other tests built out in the integration testing module
+//It seeks to correctly set up related contracts for the token generation event
+//The test explores allocations, public token sales, vesting, reserve fund, finalization, and final token transfer
 contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
