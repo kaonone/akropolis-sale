@@ -171,10 +171,4 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		await presaleAllocations.distributeAllocation(investor1, {from: unknown}).should.be.rejectedWith('revert');
 	});
 
-
-	it('should not allow unknown addresses to release vesting', async function () {
-		let vestingAddress1 = await presaleAllocations.getVesting(investor1);
-		let vesting1 = await LinearTokenVesting.at(vestingAddress1);
-		await vesting1.release(token.address, {from: unknown}).should.be.rejectedWith('revert');
-	});
 });
