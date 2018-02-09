@@ -29,6 +29,8 @@ module.exports = {
 				return new HDWalletProvider(mnemonic, "https://kovan.infura.io/tokenkey")
 			},
 			network_id: 42
+			gas: 5000000, // <-- Use this high gas value
+			gasPrice: 0x05
 		}
     }
 };
