@@ -1,5 +1,7 @@
-const AkropolisToken = artifacts.require('./AkropolisToken.sol')
+const AkropolisToken = artifacts.require('./AkropolisToken.sol');
 
-module.exports = function(deployer) {
-	deployer.deploy(AkropolisToken);
+module.exports = async function(deployer, network, accounts) {
+	await deployer.deploy(AkropolisToken);
+	let token = await AkropolisToken.deployed();
+	await token.pause();
 };
