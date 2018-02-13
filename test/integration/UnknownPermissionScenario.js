@@ -49,11 +49,11 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		whitelist = await Whitelist.new().should.be.fulfilled;
 
 		await whitelist.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer1, {from: admin});
-		await whitelist.addToWhitelist(buyer2, {from: admin});
-		await whitelist.addToWhitelist(buyer3, {from: admin});
-		await whitelist.addToWhitelist(buyer4, {from: admin});
-		await whitelist.addToWhitelist(buyer5, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer3, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer4, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer5, 1, {from: admin});
 
 		//deploy allocations
 		presaleAllocations = await AllocationsManager.new();
@@ -77,7 +77,7 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 	
 	it('should not let unknown users set the admin for whitelist, add or remove from whitelist', async function () {
 		await whitelist.setAdmin(unknown, {from: unknown}).should.be.rejectedWith('revert');
-		await whitelist.addToWhitelist(buyer4, {from: unknown}).should.be.rejectedWith('revert');
+		await whitelist.addToWhitelist(buyer4, 1, {from: unknown}).should.be.rejectedWith('revert');
 		await whitelist.removeFromWhitelist(buyer4, {from: unknown}).should.be.rejectedWith('revert');
 	});
 

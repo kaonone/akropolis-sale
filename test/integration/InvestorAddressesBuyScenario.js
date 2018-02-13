@@ -52,10 +52,10 @@ contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, 
 
 		whitelist = await Whitelist.new();
 		await whitelist.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer1, {from: admin});
-		await whitelist.addToWhitelist(buyer2, {from: admin});
-		await whitelist.addToWhitelist(investor1, {from: admin});
-		await whitelist.addToWhitelist(investor2, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
+		await whitelist.addToWhitelist(investor1, 1, {from: admin});
+		await whitelist.addToWhitelist(investor2, 1, {from: admin});
 
 		presaleAllocations = await AllocationsManager.new();
 		await presaleAllocations.setToken(token.address);

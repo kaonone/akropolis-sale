@@ -49,10 +49,10 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 		//Set up Whitelist
 		await whitelist.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer1, {from: admin});
-		await whitelist.addToWhitelist(buyer2, {from: admin});
-		await whitelist.addToWhitelist(buyer3, {from: admin});
-		await whitelist.addToWhitelist(buyer4, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer3, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer4, 1, {from: admin});
 
 		//Assign Allocations
 		presaleAllocations = await AllocationsManager.new();

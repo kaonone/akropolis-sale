@@ -105,7 +105,7 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	it('should accept whitelisted users and update available cap', async function() {
 		await whitelist.setAdmin(admin);
 		await crowdsale.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer, {from: admin});
+		await whitelist.addToWhitelist(buyer, 1, {from: admin});
 
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.fulfilled;
 
