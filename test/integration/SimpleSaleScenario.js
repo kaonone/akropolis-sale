@@ -60,7 +60,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	});
 
 
-	it('should register 4 users to the whitelist', async function () {
+	it('should register 3 users to the whitelist', async function () {
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, 1, {from: admin}).should.be.fulfilled;
 		await whitelist.addToWhitelist(buyer2, 2, {from: admin}).should.be.fulfilled;

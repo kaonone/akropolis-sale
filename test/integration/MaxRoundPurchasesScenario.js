@@ -26,20 +26,17 @@ function ether (n) {
 contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
-	const BASE_CAP_INDIVIDUAL_AMOUNT = ether(2);
-	const MAX_CAP_INDIVIDUAL_AMOUNT = ether(20);
-
 	let token, crowdsale, whitelist, config;
 	let presaleAllocations, teamAllocations, advisorsAllocations;
 	let startTime, endTime, afterEndTime;
-	let tokenBuyerAmount, tokenBuyerAmountRound1, tokenBuyerAmountRound2, tokenBuyerAmountRound3, tokenBuyerAmountRound4;
+	let tokenBuyerAmountTier1, tokenBuyerAmountRound1Tier2, tokenBuyerAmountTier3;
 
 	before(async function () {
 		// Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
 		await advanceBlock();
 
 		startTime = latestTime() + duration.weeks(1);
-		endTime = startTime + duration.days(4);
+		endTime = startTime + duration.days(9);
 		afterEndTime = endTime + duration.seconds(1);
 
 		token = await AkropolisToken.new().should.be.fulfilled;
@@ -51,8 +48,8 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
 		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
-		await whitelist.addToWhitelist(buyer3, 1, {from: admin});
-		await whitelist.addToWhitelist(buyer4, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer3, 2, {from: admin});
+		await whitelist.addToWhitelist(buyer4, 3, {from: admin});
 
 		//Assign Allocations
 		presaleAllocations = await AllocationsManager.new();
@@ -73,51 +70,37 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
 		await crowdsale.setToken(token.address).should.be.fulfilled;
-		await crowdsale.setBaseCap(BASE_CAP_INDIVIDUAL_AMOUNT, {from: owner}).should.be.fulfilled;
-		await crowdsale.setMaxCap(MAX_CAP_INDIVIDUAL_AMOUNT, {from: owner}).should.be.fulfilled;
-		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 	});
 
 
-	it('should sell max amount of tokens to whitelisted users during round 1', async function() {
-		tokenBuyerAmount = (await config.AET_RATE()).mul(BASE_CAP_INDIVIDUAL_AMOUNT);
+	it('should sell max amount of tokens to a tier 1 whitelisted user during round 1', async function() {
+		tokenBuyerAmountTier1 = (await config.AET_RATE()).mul(config.MAX_TIER_1());
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: config.MAX_TIER_1()}).should.be.fulfilled;
 
-		tokenBuyerAmountRound1 = tokenBuyerAmount.mul(1.2);
 
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountTier1);
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: 1}).should.be.rejectedWith('revert');
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: 1}).should.be.rejectedWith('revert');
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: 1}).should.be.rejectedWith('revert');
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: 1}).should.be.rejectedWith('revert');
 	});
 
 
-	it('should sell max amount of tokens to whitelisted users during round 2', async function() {
-		await increaseTimeTo(startTime + duration.days(1));
+	it('should sell max amount of tokens to a tier 1 and 2 whitelisted user during round 2', async function() {
+		tokenBuyerAmountTier2 = (await config.AET_RATE()).mul(config.MAX_TIER_2());
+		await increaseTimeTo(startTime+ duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: BASE_CAP_INDIVIDUAL_AMOUNT}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: config.MAX_TIER_1()}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: config.MAX_TIER_2()}).should.be.fulfilled;
 
-		tokenBuyerAmountRound2 = tokenBuyerAmount.mul(1.1).add(tokenBuyerAmountRound1);
 
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound2);
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound2);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2);
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountTier1);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountTier1);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountTier2);
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: 1}).should.be.rejectedWith('revert');
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: 1}).should.be.rejectedWith('revert');
@@ -125,56 +108,29 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: 1}).should.be.rejectedWith('revert');
 	});
 
-
-	it('should sell max amount of tokens to whitelisted users during round 3', async function() {
-		await increaseTimeTo(startTime + duration.days(2));
+	it('should sell max amount of tokens to any whitelisted user during round 3', async function() {
+		tokenBuyerAmountTier3 = (await config.AET_RATE()).mul(config.MAX_CONTRIBUTION_VALUE());
+		await increaseTimeTo(startTime+ duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 
+		let tier1BuyerContribution = config.MAX_CONTRIBUTION_VALUE().sub(config.MAX_TIER_1());
+		let tier2BuyerContribution = config.MAX_CONTRIBUTION_VALUE().sub(config.MAX_TIER_2());
 
-		let capAmount = BASE_CAP_INDIVIDUAL_AMOUNT * 2;
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: capAmount}).should.be.fulfilled;
-
-		tokenBuyerAmountRound3 = tokenBuyerAmount.mul(1.05).mul(2).add(tokenBuyerAmountRound2);
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound3);
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound3);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound3);
-
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: 1}).should.be.rejectedWith('revert');
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: 1}).should.be.rejectedWith('revert');
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: 1}).should.be.rejectedWith('revert');
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: 1}).should.be.rejectedWith('revert');
-	});
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: tier1BuyerContribution}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: tier1BuyerContribution}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: tier2BuyerContribution}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: config.MAX_CONTRIBUTION_VALUE()}).should.be.fulfilled;
 
 
-	it('should sell max amount of tokens to whitelisted users during round 4', async function() {
-		await increaseTimeTo(startTime + duration.days(3));
-		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
-
-		let capAmount = BASE_CAP_INDIVIDUAL_AMOUNT * 6;
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: capAmount}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: capAmount}).should.be.fulfilled;
-
-
-		tokenBuyerAmountRound4 = tokenBuyerAmount.mul(1.0).mul(6).add(tokenBuyerAmountRound3);
-
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound4);
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound4);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound4);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound4);
-
-
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountTier3);
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountTier3);
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountTier3);
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountTier3);
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: 1}).should.be.rejectedWith('revert');
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: 1}).should.be.rejectedWith('revert');
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: 1}).should.be.rejectedWith('revert');
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: 1}).should.be.rejectedWith('revert');
-
 	});
 
 
