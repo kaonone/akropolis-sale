@@ -48,7 +48,7 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 		whitelist = await Whitelist.new();
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
-		await whitelist.addToWhitelist(buyer2, 1, {from: admin})
+		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
 		await whitelist.addToWhitelist(buyer3, 2, {from: admin});
 		await whitelist.addToWhitelist(buyer4, 3, {from: admin});
 
@@ -99,6 +99,16 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+	});
+
+
+	it('should sell tokens to whitelisted users during round 2', async function() {
+		let tokenBuyerAmountRound1 = (await config.AET_RATE()).mul(ether(5));
+		await increaseTimeTo(startTime+ duration.days(3));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(5)}).should.be.fulfilled;
+
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 	});
 
 
