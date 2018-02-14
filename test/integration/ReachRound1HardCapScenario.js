@@ -22,7 +22,7 @@ function ether (n) {
 
 //This integration test seeks to explore reaching the hard cap for ether sent in exchange for tokens
 //This test affirms that if we can finalize the public sale if we reach the ether sales limit
-//In this test we reach the sales limit in Round 1
+//In this test we reach the token  limit in Round 1
 contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
