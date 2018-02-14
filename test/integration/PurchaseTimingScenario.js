@@ -71,7 +71,7 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 	});
 
 
-	it('should should not sell tokens before start of round 1', async function() {
+	it('should not sell tokens before start of round 1', async function() {
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.rejectedWith('revert');
 	});
 
