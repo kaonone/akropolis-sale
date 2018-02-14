@@ -46,10 +46,10 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		await token.pause();
 		whitelist = await Whitelist.new();
 		await whitelist.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer1, {from: admin});
-		await whitelist.addToWhitelist(buyer2, {from: admin});
-		await whitelist.addToWhitelist(buyer3, {from: admin});
-		await whitelist.addToWhitelist(buyer4, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer3, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer4, 1, {from: admin});
 
 		presaleAllocations = await AllocationsManager.new();
 		await presaleAllocations.setToken(token.address);

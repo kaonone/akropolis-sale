@@ -31,7 +31,7 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 	const VESTING_PERIOD = duration.days(100);
 	const VESTING_CLIFF = duration.days(25);
 
-	const CONTRIBUTION_AMOUNT = ether(1);
+	const CONTRIBUTION_AMOUNT = ether(2);
 
 	let token, crowdsale, whitelist, config;
 	let presaleAllocations, teamAllocations, advisorsAllocations;
@@ -43,16 +43,16 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 		await advanceBlock();
 
 		startTime = latestTime() + duration.weeks(1);
-		endTime = startTime + duration.days(4);
+		endTime = startTime + duration.days(9);
 		afterEndTime = endTime + duration.seconds(1);
 		token = await AkropolisToken.new();
 		await token.pause();
 		whitelist = await Whitelist.new();
 		await whitelist.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer1, {from: admin});
-		await whitelist.addToWhitelist(buyer2, {from: admin});
-		await whitelist.addToWhitelist(buyer3, {from: admin});
-		await whitelist.addToWhitelist(buyer4, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer3, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer4, 1, {from: admin});
 
 		presaleAllocations = await AllocationsManager.new();
 		await presaleAllocations.setToken(token.address);
@@ -77,12 +77,8 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
 		config = await SaleConfiguration.new().should.be.fulfilled;
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
 		await crowdsale.setToken(token.address).should.be.fulfilled;
-		await crowdsale.setBaseCap(ether(3), {from: owner}).should.be.fulfilled;
-		await crowdsale.setMaxCap(ether(10), {from: owner}).should.be.fulfilled;
-		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
 	});
 
 
@@ -97,22 +93,12 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
 
-		let tokenBuyerAmountRound1 = tokenBuyerAmount.mul(1.2);
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmount);
 	});
 
 
 	it('should not finalize the sale before the end of token sale or reach the hard cap', async function () {
 		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
-	});
-
-
-	it('should sell tokens to whitelisted users during round 4', async function() {
-		await increaseTimeTo(startTime + duration.days(3));
-		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;
-
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmount);
 	});
 
 

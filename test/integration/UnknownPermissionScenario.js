@@ -42,18 +42,18 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		await advanceBlock();
 
 		startTime = latestTime() + duration.weeks(1);
-		endTime = startTime + duration.days(4);
+		endTime = startTime + duration.days(9);
 		afterEndTime = endTime + duration.seconds(1);
 		token = await AkropolisToken.new().should.be.fulfilled;
 		await token.pause().should.be.fulfilled;
 		whitelist = await Whitelist.new().should.be.fulfilled;
 
 		await whitelist.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer1, {from: admin});
-		await whitelist.addToWhitelist(buyer2, {from: admin});
-		await whitelist.addToWhitelist(buyer3, {from: admin});
-		await whitelist.addToWhitelist(buyer4, {from: admin});
-		await whitelist.addToWhitelist(buyer5, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer3, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer4, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer5, 1, {from: admin});
 
 		//deploy allocations
 		presaleAllocations = await AllocationsManager.new();
@@ -77,7 +77,7 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 	
 	it('should not let unknown users set the admin for whitelist, add or remove from whitelist', async function () {
 		await whitelist.setAdmin(unknown, {from: unknown}).should.be.rejectedWith('revert');
-		await whitelist.addToWhitelist(buyer4, {from: unknown}).should.be.rejectedWith('revert');
+		await whitelist.addToWhitelist(buyer4, 1, {from: unknown}).should.be.rejectedWith('revert');
 		await whitelist.removeFromWhitelist(buyer4, {from: unknown}).should.be.rejectedWith('revert');
 	});
 
@@ -92,21 +92,17 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
 		config = await SaleConfiguration.new();
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
 		await crowdsale.setToken(token.address).should.be.fulfilled;
-		await crowdsale.setBaseCap(ether(3), {from: owner}).should.be.fulfilled;
-		await crowdsale.setMaxCap(ether(10), {from: owner}).should.be.fulfilled;
 		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
+		await crowdsale.setCapsPerTier(1, 2, 3, {from: owner}).should.be.fulfilled;
 	});
 
 
 	it('should not let unknown users set the parameters, token or admin for crowdsale', async function () {
 		await crowdsale.setToken(token.address, {from: unknown}).should.be.rejectedWith('revert');
-		await crowdsale.setAdmin(unknown, {from: unknown}).should.be.rejectedWith('revert');
-		await crowdsale.setMaxCap(ether(10), {from: unknown}).should.be.rejectedWith('revert');
-		await crowdsale.setBaseCap(ether(10), {from: unknown}).should.be.rejectedWith('revert');
 		await crowdsale.setRoundDuration(duration.days(1), {from: unknown}).should.be.rejectedWith('revert');
+		await crowdsale.setCapsPerTier(1, 2, 3, {from: unknown}).should.be.rejectedWith('revert');
 	});
 
 

@@ -30,7 +30,7 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		await advanceBlock();
 
 		startTime = latestTime() + duration.weeks(1);
-		endTime = startTime + duration.weeks(1);
+		endTime = startTime + duration.weeks(2);
 		afterEndTime = endTime + duration.seconds(1);
 
 		whitelist = await Whitelist.new();
@@ -91,25 +91,15 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	});
 
 
-	it('should set up increasing cap', async function() {
-		await crowdsale.setBaseCap(ether(3), {from: owner}).should.be.fulfilled;
-		await crowdsale.setMaxCap(ether(10), {from: owner}).should.be.fulfilled;
-		await crowdsale.setRoundDuration(duration.days(1), {from: owner}).should.be.fulfilled;
-
-		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
-		(await crowdsale.getCurrentCap()).should.be.bignumber.equal(ether(3));
-		(await crowdsale.getAvailableCap(buyer)).should.be.bignumber.equal(ether(3));
-	});
-
-
 	it('should accept whitelisted users and update available cap', async function() {
 		await whitelist.setAdmin(admin);
-		await crowdsale.setAdmin(admin);
-		await whitelist.addToWhitelist(buyer, {from: admin});
+		await whitelist.addToWhitelist(buyer, 1, {from: admin});
 
-		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1)}).should.be.fulfilled;
+		(await crowdsale.getAvailableCap(buyer)).should.be.bignumber.equal(ether(10));
 
-		(await crowdsale.getAvailableCap(buyer)).should.be.bignumber.equal(ether(2));
+		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(2)}).should.be.fulfilled;
+
+		(await crowdsale.getAvailableCap(buyer)).should.be.bignumber.equal(ether(8));
 	});
 
 
@@ -119,52 +109,12 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 
 
 	it('should not allow exceeding the available cap', async function() {
-		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(2.01)}).should.be.rejectedWith('revert');
+		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(8.01)}).should.be.rejectedWith('revert');
 	});
 
-
-	it('should calculate bonus (Round 1)', async function() {
-		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
-		(await crowdsale.getCurrentBonus()).should.be.bignumber.equal(20);
-
-		await crowdsale.buyTokens(bonusBuyer1, {from: buyer, value: ether(1)});
-
-		(await token.balanceOf(bonusBuyer1)).should.be.bignumber.equal(ether(12));
+	it('should not allow buying below the minimal limit', async function() {
+		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1.99)}).should.be.rejectedWith('revert');
 	});
-
-
-	it('should calculate bonus (Round 2)', async function() {
-		await increaseTimeTo(startTime + duration.days(1));
-		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
-		(await crowdsale.getCurrentBonus()).should.be.bignumber.equal(10);
-
-		await crowdsale.buyTokens(bonusBuyer2, {from: buyer, value: ether(1)});
-
-		(await token.balanceOf(bonusBuyer2)).should.be.bignumber.equal(ether(11));
-	});
-
-
-	it('should calculate bonus (Round 3)', async function() {
-		await increaseTimeTo(startTime + duration.days(2));
-		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
-		(await crowdsale.getCurrentBonus()).should.be.bignumber.equal(5);
-
-		await crowdsale.buyTokens(bonusBuyer3, {from: buyer, value: ether(1)});
-
-		(await token.balanceOf(bonusBuyer3)).should.be.bignumber.equal(ether(10.5));
-	});
-
-
-	it('should calculate bonus (Round 4)', async function() {
-		await increaseTimeTo(startTime + duration.days(3));
-		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(4);
-		(await crowdsale.getCurrentBonus()).should.be.bignumber.equal(0);
-
-		await crowdsale.buyTokens(bonusBuyer4, {from: buyer, value: ether(1)});
-
-		(await token.balanceOf(bonusBuyer4)).should.be.bignumber.equal(ether(10));
-	});
-
 
 	it('should not allow finalization by anyone other than owner', async function() {
 		await crowdsale.finalize({from: admin}).should.be.rejectedWith('revert');
