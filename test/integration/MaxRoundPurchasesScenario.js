@@ -73,11 +73,11 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 
 	it('should sell max amount of tokens to a tier 1 whitelisted user during round 1', async function() {
-		tokenBuyerAmountTier1 = (await config.AET_RATE()).mul(config.MAX_TIER_1());
+		tokenBuyerAmountTier1 = (await config.AET_RATE()).mul(await config.MAX_TIER_1());
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: config.MAX_TIER_1()}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: (await config.MAX_TIER_1())}).should.be.fulfilled;
 
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountTier1);
@@ -89,12 +89,12 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 
 	it('should sell max amount of tokens to a tier 1 and 2 whitelisted user during round 2', async function() {
-		tokenBuyerAmountTier2 = (await config.AET_RATE()).mul(config.MAX_TIER_2());
+		tokenBuyerAmountTier2 = (await config.AET_RATE()).mul(await config.MAX_TIER_2());
 		await increaseTimeTo(startTime+ duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: config.MAX_TIER_1()}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: config.MAX_TIER_2()}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: (await config.MAX_TIER_1())}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: (await config.MAX_TIER_2())}).should.be.fulfilled;
 
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountTier1);
@@ -108,17 +108,17 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 	});
 
 	it('should sell max amount of tokens to any whitelisted user during round 3', async function() {
-		tokenBuyerAmountTier3 = (await config.AET_RATE()).mul(config.MAX_CONTRIBUTION_VALUE());
+		tokenBuyerAmountTier3 = (await config.AET_RATE()).mul(await config.MAX_CONTRIBUTION_VALUE());
 		await increaseTimeTo(startTime+ duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 
-		let tier1BuyerContribution = config.MAX_CONTRIBUTION_VALUE().sub(config.MAX_TIER_1());
-		let tier2BuyerContribution = config.MAX_CONTRIBUTION_VALUE().sub(config.MAX_TIER_2());
+		let tier1BuyerContribution = config.MAX_CONTRIBUTION_VALUE().sub((await config.MAX_TIER_1()));
+		let tier2BuyerContribution = config.MAX_CONTRIBUTION_VALUE().sub((await config.MAX_TIER_2()));
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: tier1BuyerContribution}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: tier1BuyerContribution}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: tier2BuyerContribution}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: config.MAX_CONTRIBUTION_VALUE()}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: (await config.MAX_CONTRIBUTION_VALUE())}).should.be.fulfilled;
 
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountTier3);
