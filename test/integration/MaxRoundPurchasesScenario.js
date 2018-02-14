@@ -29,7 +29,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 	let token, crowdsale, whitelist, config;
 	let presaleAllocations, teamAllocations, advisorsAllocations;
 	let startTime, endTime, afterEndTime;
-	let tokenBuyerAmountTier1, tokenBuyerAmountRound1Tier2, tokenBuyerAmountTier3;
+	let tokenBuyerAmountTier1, tokenBuyerAmountTier2, tokenBuyerAmountTier3;
 
 	before(async function () {
 		// Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
@@ -67,7 +67,6 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 	it('should deploy config and crowdsale and connect to token and allocations contracts', async function() {
 		config = await SaleConfiguration.new().should.be.fulfilled;
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await crowdsale.setAdmin(admin);
 		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
 		await crowdsale.setToken(token.address).should.be.fulfilled;
 	});
