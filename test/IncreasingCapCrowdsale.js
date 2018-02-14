@@ -4,7 +4,7 @@ import latestTime from './tools/latestTime';
 
 const AkropolisToken = artifacts.require('./AkropolisToken.sol');
 const AkropolisCrowdsale = artifacts.require('./AkropolisCrowdsale.sol');
-const IncreasingCapCrowdsale = artifacts.require('./IncreasingCapCrowdsale.sol');
+const IncreasingCapCrowdsale = artifacts.require('./TieredCrowdsale.sol');
 const Whitelist = artifacts.require('./Whitelist.sol');
 const SaleConfigurationMock = artifacts.require('./SaleConfigurationMock.sol');
 

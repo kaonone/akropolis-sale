@@ -2,14 +2,15 @@ pragma solidity ^0.4.18;
 
 import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
+import "zeppelin-solidity/contracts/crowdsale/CappedCrowdsale.sol";
 import "./AkropolisToken.sol";
 import "./WhitelistedCrowdsale.sol";
-import "./IncreasingCapCrowdsale.sol";
+import "./Whitelist.sol";
 import "./SaleConfiguration.sol";
 import "./AllocationsManager.sol";
 
 
-contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
+contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, WhitelistedCrowdsale {
 
     event WalletChange(address wallet);
 
@@ -31,16 +32,18 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     uint256 _startTime,
     uint256 _endTime,
     address _wallet,
-    address _whitelist,
+    Whitelist _whitelist,
     SaleConfiguration _config
     ) public
-        IncreasingCapCrowdsale(_config.HARD_CAP())
+        Crowdsale(_startTime, _endTime, _config.AET_RATE(), _wallet)
+        CappedCrowdsale(_config.HARD_CAP())
         FinalizableCrowdsale()
-        WhitelistedCrowdsale(_startTime, _endTime, _config.AET_RATE(), _wallet, _whitelist)
+        WhitelistedCrowdsale(_startTime, _endTime, _whitelist, _config)
     {
         require(address(_config) != 0x0);
+        require(address(_whitelist) != 0x0);
         require(_wallet != 0x0);
-        
+
         config = _config;
         require(config.AET_RATE() > 0);
     }
@@ -81,7 +84,10 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     // overriding Crowdsale#validPurchase to add checking if a buyer is within the cap
     // @return true if buyers can buy at the moment
     function validPurchase() internal constant returns (bool) {
-        return super.validPurchase() && msg.value <= getAvailableCap(msg.sender);
+        bool isAdmitted = isBuyerAdmitted(msg.sender);
+        bool isAboveMin = msg.value >= getMin(msg.sender);
+        bool isBelowCap = msg.value <= getAvailableCap(msg.sender);
+        return super.validPurchase() && isAdmitted && isAboveMin && isBelowCap;
     }
 
     /**
@@ -135,21 +141,6 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
         token.transferOwnership(owner);
     }
 
-    /**
-    * @dev Returns the bonus at the current moment in percents
-    */
-    function getCurrentBonus() public view returns(uint256) {
-        uint256 round = getCurrentRound();
-        if (round == 1) {
-            return 20;
-        } else if (round == 2) {
-            return 10;
-        } else if (round == 3) {
-            return 5;
-        }
-        return 0;
-    }
-
     function setPresaleAllocations(AllocationsManager _presaleAllocations) public onlyOwner {
         presaleAllocations = _presaleAllocations;
     }
@@ -179,10 +170,10 @@ contract AkropolisCrowdsale is IncreasingCapCrowdsale, FinalizableCrowdsale, Whi
     *      including the early participants bonus
     */
     function calculateTokens(uint256 _amountInWei) internal view returns(uint256) {
-        return _amountInWei.mul(config.AET_RATE()).mul(getCurrentBonus().add(100)).div(100);
+        return _amountInWei.mul(config.AET_RATE());
     }
 
     function getAvailableCap(address _buyer) public view returns(uint256) {
-        return getCurrentCap().sub(contributions[_buyer]);
+        return getCap(_buyer).sub(contributions[_buyer]);
     }
 }
