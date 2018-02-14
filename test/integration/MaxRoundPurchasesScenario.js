@@ -126,8 +126,8 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		(await crowdsale.isBuyerAdmitted(buyer3)).should.be.equal(true);
 		(await crowdsale.isBuyerAdmitted(buyer4)).should.be.equal(true);
 
-		let tier1BuyerContribution = await config.MAX_CONTRIBUTION_VALUE().sub(ether(10));
-		let tier2BuyerContribution = await config.MAX_CONTRIBUTION_VALUE().sub(ether(5));
+		let tier1BuyerContribution = await config.MAX_CONTRIBUTION_VALUE().minus(ether(10));
+		let tier2BuyerContribution = await config.MAX_CONTRIBUTION_VALUE().minus(ether(5));
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: tier1BuyerContribution}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: tier1BuyerContribution}).should.be.fulfilled;
