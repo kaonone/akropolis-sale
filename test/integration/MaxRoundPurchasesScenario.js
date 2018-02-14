@@ -77,9 +77,12 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 
+		(await crowdsale.isBuyerAdmitted(buyer1)).should.be.equal(true);
+		(await crowdsale.isBuyerAdmitted(buyer2)).should.be.equal(true);
+		(await crowdsale.isBuyerAdmitted(buyer3)).should.be.equal(false);
+		(await crowdsale.isBuyerAdmitted(buyer4)).should.be.equal(false);
+
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: ether(10)}).should.be.fulfilled;
-
-
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountTier1);
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: 1}).should.be.rejectedWith('revert');
@@ -93,6 +96,11 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await increaseTimeTo(startTime+ duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 
+		(await crowdsale.isBuyerAdmitted(buyer1)).should.be.equal(true);
+		(await crowdsale.isBuyerAdmitted(buyer2)).should.be.equal(true);
+		(await crowdsale.isBuyerAdmitted(buyer3)).should.be.equal(true);
+		(await crowdsale.isBuyerAdmitted(buyer4)).should.be.equal(false);
+
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: ether(10)}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(5)}).should.be.fulfilled;
 
@@ -105,6 +113,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: 1}).should.be.rejectedWith('revert');
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: 1}).should.be.rejectedWith('revert');
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: 1}).should.be.rejectedWith('revert');
+
 	});
 
 	it('should sell max amount of tokens to any whitelisted user during round 3', async function() {
@@ -112,8 +121,13 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await increaseTimeTo(startTime+ duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 
-		let tier1BuyerContribution = config.MAX_CONTRIBUTION_VALUE().sub(ether(10));
-		let tier2BuyerContribution = config.MAX_CONTRIBUTION_VALUE().sub(ether(5));
+		(await crowdsale.isBuyerAdmitted(buyer1)).should.be.equal(true);
+		(await crowdsale.isBuyerAdmitted(buyer2)).should.be.equal(true);
+		(await crowdsale.isBuyerAdmitted(buyer3)).should.be.equal(true);
+		(await crowdsale.isBuyerAdmitted(buyer4)).should.be.equal(true);
+
+		let tier1BuyerContribution = await config.MAX_CONTRIBUTION_VALUE().sub(ether(10));
+		let tier2BuyerContribution = await config.MAX_CONTRIBUTION_VALUE().sub(ether(5));
 
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: tier1BuyerContribution}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: tier1BuyerContribution}).should.be.fulfilled;
