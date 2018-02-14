@@ -91,7 +91,6 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 	});
 
 
-
 	it('should accept whitelisted users and update available cap', async function() {
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer, 1, {from: admin});
@@ -111,6 +110,10 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 
 	it('should not allow exceeding the available cap', async function() {
 		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(8.01)}).should.be.rejectedWith('revert');
+	});
+
+	it('should not allow buying below the minimal limit', async function() {
+		await crowdsale.buyTokens(buyer, {from: buyer, value: ether(1.99)}).should.be.rejectedWith('revert');
 	});
 
 	it('should not allow finalization by anyone other than owner', async function() {
