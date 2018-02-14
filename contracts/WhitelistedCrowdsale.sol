@@ -22,8 +22,8 @@ contract WhitelistedCrowdsale is Ownable{
     Whitelist whitelist;
     SaleConfiguration config;
 
-    uint256[] min = new uint[](3);
-    uint256[] max = new uint[](3);
+    uint256[] min = new uint[](4);
+    uint256[] max = new uint[](4);
 
     uint256 startTime;
     uint256 endTime;
@@ -38,11 +38,12 @@ contract WhitelistedCrowdsale is Ownable{
 
         setCapsPerTier(1, config.MIN_TIER_1(), config.MAX_TIER_1());
         setCapsPerTier(2, config.MIN_TIER_2(), config.MAX_TIER_2());
+        setCapsPerTier(3, 0, config.MAX_CONTRIBUTION_VALUE());
         setRoundDuration(config.ROUND_DURATION());
     }
 
     function setCapsPerTier(uint8 _tier, uint256 _min, uint256 _max) public onlyOwner {
-        require(_min > 0);
+        require(_min >= 0);
         require(_max  >= _min);
         require(_max  <= config.MAX_CONTRIBUTION_VALUE());
         min[_tier] = _min;
