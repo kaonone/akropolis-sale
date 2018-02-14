@@ -23,7 +23,7 @@ function ether (n) {
 //This integration test seeks to explore reaching the hard cap for ether sent in exchange for tokens
 //This test affirms that if we can finalize the public sale if we reach the ether sales limit
 //In this test we reach the sales limit in Round 1
-contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
+contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
 																						reserveFund, bountyFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
@@ -49,8 +49,6 @@ contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, w
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
 		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
-		await whitelist.addToWhitelist(buyer3, 1, {from: admin});
-		await whitelist.addToWhitelist(buyer4, 1, {from: admin});
 
 		presaleAllocations = await AllocationsManager.new();
 		await presaleAllocations.setToken(token.address);
@@ -96,13 +94,9 @@ contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, w
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: ether(10)}).should.be.fulfilled;
 		await crowdsale.buyTokens(buyer2, {from: buyer2, value: ether(10)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(10)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: ether(10)}).should.be.fulfilled;
 
 		(await token.balanceOf(buyer1)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 		(await token.balanceOf(buyer2)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound1);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound1);
 	});
 
 

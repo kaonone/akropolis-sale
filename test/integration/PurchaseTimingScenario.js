@@ -38,7 +38,7 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		await advanceBlock();
 
 		startTime = latestTime() + duration.weeks(1);
-		endTime = startTime + duration.days(4);
+		endTime = startTime + duration.days(9);
 		afterEndTime = endTime + duration.seconds(1);
 		token = await AkropolisToken.new();
 		await token.pause();
