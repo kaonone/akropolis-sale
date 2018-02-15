@@ -21,6 +21,7 @@ function ether (n) {
 contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer3, wallet, notAdded]) {
 
 	let whitelist, crowdsale, config, startTime;
+	let minTier1, minTier2, maxTier1, maxTier2, maxContribution;
 
 	before(async function () {
 		// Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
@@ -32,6 +33,13 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 		config = await SaleConfigurationMock.new();
 		whitelist = await Whitelist.new();
 		crowdsale = await WhitelistedCrowdsale.new(startTime, endTime, whitelist.address, config.address);
+
+		minTier1 = (await config.MIN_TIER_1());
+		minTier2 = (await config.MIN_TIER_2());
+		maxTier1 = (await config.MAX_TIER_1());
+		maxTier2 = (await config.MAX_TIER_2());
+		maxContribution = (await config.MAX_CONTRIBUTION_VALUE());
+
 		await increaseTimeTo(startTime);
 	});
 
@@ -48,18 +56,18 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 	});
 
 
-	it('should have correct caps in round 1', async function () {
+	it('should have correct caps and admissions in round 1', async function () {
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 
 		(await crowdsale.isBuyerAdmitted(buyer1)).should.be.equal(true);
 		(await crowdsale.isBuyerAdmitted(buyer2)).should.be.equal(false);
 		(await crowdsale.isBuyerAdmitted(buyer3)).should.be.equal(false);
 
-		(await crowdsale.getMin(buyer1)).should.be.bignumber.equal(ether(2));
-		(await crowdsale.getCap(buyer1)).should.be.bignumber.equal(ether(10));
+		(await crowdsale.getMin(buyer1)).should.be.bignumber.equal(minTier1);
+		(await crowdsale.getCap(buyer1)).should.be.bignumber.equal(maxTier1);
 	});
 
-	it('should have correct caps in round 2', async function () {
+	it('should have correct caps and admissions in round 2', async function () {
 		await increaseTimeTo(startTime + duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 
@@ -67,13 +75,13 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 		(await crowdsale.isBuyerAdmitted(buyer2)).should.be.equal(true);
 		(await crowdsale.isBuyerAdmitted(buyer3)).should.be.equal(false);
 
-		(await crowdsale.getMin(buyer1)).should.be.bignumber.equal(ether(2));
-		(await crowdsale.getCap(buyer1)).should.be.bignumber.equal(ether(10));
-		(await crowdsale.getMin(buyer2)).should.be.bignumber.equal(ether(1));
-		(await crowdsale.getCap(buyer2)).should.be.bignumber.equal(ether(5));
+		(await crowdsale.getMin(buyer1)).should.be.bignumber.equal(minTier1);
+		(await crowdsale.getCap(buyer1)).should.be.bignumber.equal(maxTier1);
+		(await crowdsale.getMin(buyer2)).should.be.bignumber.equal(minTier2);
+		(await crowdsale.getCap(buyer2)).should.be.bignumber.equal(maxTier2);
 	});
 
-	it('should have correct caps in round 3', async function () {
+	it('should have correct caps and admissions in round 3', async function () {
 		await increaseTimeTo(startTime + duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 
@@ -81,12 +89,12 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 		(await crowdsale.isBuyerAdmitted(buyer2)).should.be.equal(true);
 		(await crowdsale.isBuyerAdmitted(buyer3)).should.be.equal(true);
 
-		(await crowdsale.getMin(buyer1)).should.be.bignumber.equal(ether(0));
-		(await crowdsale.getCap(buyer1)).should.be.bignumber.equal(ether(15));
-		(await crowdsale.getMin(buyer2)).should.be.bignumber.equal(ether(0));
-		(await crowdsale.getCap(buyer2)).should.be.bignumber.equal(ether(15));
-		(await crowdsale.getMin(buyer3)).should.be.bignumber.equal(ether(0));
-		(await crowdsale.getCap(buyer3)).should.be.bignumber.equal(ether(15));
+		(await crowdsale.getMin(buyer1)).should.be.bignumber.equal(0);
+		(await crowdsale.getCap(buyer1)).should.be.bignumber.equal(maxContribution);
+		(await crowdsale.getMin(buyer2)).should.be.bignumber.equal(0);
+		(await crowdsale.getCap(buyer2)).should.be.bignumber.equal(maxContribution);
+		(await crowdsale.getMin(buyer3)).should.be.bignumber.equal(0);
+		(await crowdsale.getCap(buyer3)).should.be.bignumber.equal(maxContribution);
 	});
 
 
