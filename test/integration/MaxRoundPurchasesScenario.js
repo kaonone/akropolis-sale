@@ -39,8 +39,6 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		endTime = startTime + duration.days(9);
 		afterEndTime = endTime + duration.seconds(1);
 
-		token = await AkropolisToken.new().should.be.fulfilled;
-		await token.pause().should.be.fulfilled;
 
 		whitelist = await Whitelist.new().should.be.fulfilled;
 
@@ -51,24 +49,29 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await whitelist.addToWhitelist(buyer3, 2, {from: admin});
 		await whitelist.addToWhitelist(buyer4, 3, {from: admin});
 
-		//Assign Allocations
-		presaleAllocations = await AllocationsManager.new();
-		await presaleAllocations.setToken(token.address);
-		await presaleAllocations.setAdmin(admin);
-		teamAllocations = await AllocationsManager.new();
-		await teamAllocations.setToken(token.address);
-		await teamAllocations.setAdmin(admin);
-		advisorsAllocations = await AllocationsManager.new();
-		await advisorsAllocations.setToken(token.address);
-		await advisorsAllocations.setAdmin(admin);
+
 	});
 
 
 	it('should deploy config and crowdsale and connect to token and allocations contracts', async function() {
 		config = await SaleConfiguration.new().should.be.fulfilled;
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
-		await crowdsale.setToken(token.address).should.be.fulfilled;
+		token = await AkropolisToken.at(await crowdsale.token());
+	});
+
+
+	it('should register allocations', async function() {
+		presaleAllocations = await AllocationsManager.new();
+		await presaleAllocations.setToken(token.address);
+		await presaleAllocations.setAdmin(admin);
+
+		teamAllocations = await AllocationsManager.new();
+		await teamAllocations.setToken(token.address);
+		await teamAllocations.setAdmin(admin);
+
+		advisorsAllocations = await AllocationsManager.new();
+		await advisorsAllocations.setToken(token.address);
+		await advisorsAllocations.setAdmin(admin);
 	});
 
 

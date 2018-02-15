@@ -40,8 +40,7 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.days(9);
 		afterEndTime = endTime + duration.seconds(1);
-		token = await AkropolisToken.new();
-		await token.pause();
+
 		whitelist = await Whitelist.new();
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
@@ -49,6 +48,18 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		await whitelist.addToWhitelist(buyer3, 1, {from: admin});
 		await whitelist.addToWhitelist(buyer4, 1, {from: admin});
 
+
+		config = await SaleConfiguration.new();
+	});
+
+
+	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
+		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
+		token = await AkropolisToken.at(await crowdsale.token());
+	});
+
+
+	it('should register allocations', async function() {
 		presaleAllocations = await AllocationsManager.new();
 		await presaleAllocations.setToken(token.address);
 		await presaleAllocations.setAdmin(admin);
@@ -60,14 +71,6 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		advisorsAllocations = await AllocationsManager.new();
 		await advisorsAllocations.setToken(token.address);
 		await advisorsAllocations.setAdmin(admin);
-		config = await SaleConfiguration.new();
-	});
-
-
-	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
-		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
-		await crowdsale.setToken(token.address).should.be.fulfilled;
 	});
 
 

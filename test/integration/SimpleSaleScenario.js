@@ -49,12 +49,6 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		afterEndTime = endTime + duration.seconds(1);
 	});
 
-	it('should deploy AET token', async function () {
-		token = await AkropolisToken.new().should.be.fulfilled;
-		await token.pause().should.be.fulfilled;
-	});
-
-
 	it('should deploy Whitelist', async function () {
 		whitelist = await Whitelist.new().should.be.fulfilled;
 	});
@@ -68,23 +62,19 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	});
 
 
-	it('should deploy pre-sale allocations', async function() {
+	it('should register allocations', async function() {
 		presaleAllocations = await AllocationsManager.new().should.be.fulfilled;
-		await presaleAllocations.setToken(token.address);
-
+		await presaleAllocations.setAdmin(admin);
 
 		teamAllocations = await AllocationsManager.new().should.be.fulfilled;
-		await teamAllocations.setToken(token.address);
 		await teamAllocations.setAdmin(admin);
 
 		advisorsAllocations = await AllocationsManager.new().should.be.fulfilled;
-		await advisorsAllocations.setToken(token.address);
 		await advisorsAllocations.setAdmin(admin);
 	});
 
 
 	it('should register 3 presale investors', async function() {
-		await presaleAllocations.setAdmin(admin);
 		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin}).should.be.fulfilled;
 		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), VESTING_CLIFF * 2, (VESTING_PERIOD * 2), {from: admin}).should.be.fulfilled;
 		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, 0, {from: admin}).should.be.fulfilled;
@@ -99,8 +89,11 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
-		await crowdsale.setToken(token.address).should.be.fulfilled;
+		token = await AkropolisToken.at(await crowdsale.token());
+
+		await presaleAllocations.setToken(token.address);
+		await teamAllocations.setToken(token.address);
+		await advisorsAllocations.setToken(token.address);
 	});
 
 
