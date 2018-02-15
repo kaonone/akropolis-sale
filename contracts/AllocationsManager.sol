@@ -4,12 +4,13 @@ import "zeppelin-solidity/contracts/crowdsale/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/Crowdsale.sol";
 import "zeppelin-solidity/contracts/crowdsale/FinalizableCrowdsale.sol";
 import "zeppelin-solidity/contracts/token/SafeERC20.sol";
+import './Administrable.sol';
 import "./AkropolisToken.sol";
 import "./LinearTokenVesting.sol";
 import "./SaleConfiguration.sol";
 
 
-contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
+contract AllocationsManager is Administrable, Pausable, SaleConfiguration {
     using SafeERC20 for AkropolisToken;
     using SafeMath for uint256;
 
@@ -39,29 +40,17 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
     //Array of addresses stored in addition order
     address[] public indexedAllocations;
 
-    //Total value of all allocations
+    //Total value of all allocations (including of the vesting)
     uint256 public totalAllocated;
 
-    //A role that is responsible for recording allocations,
-    address public admin;
-
     /**
-    * @dev Throws if called by any account other than the admin.
+    * @dev Sets the token that going to be distributed based on allocations
     */
-    modifier onlyAdmin() {
-        require(msg.sender == admin);
-        _;
-    }
-
     function setToken(AkropolisToken _token) public onlyOwner {
         require(address(_token) != 0x0);
         token = _token;
     }
 
-    function setAdmin(address _admin) public onlyOwner {
-        require(address(_admin) != 0x0);
-        admin = _admin;
-    }
 
     /**
     * @dev Register the amount of tokens allocated for an investor.
@@ -78,11 +67,11 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
 
 
         uint256 index = indexedAllocations.length;
-        if (allocations[_investor].value > 0) {
+        if (allocations[_investor].value > 0) { //Update mode
             totalAllocated = totalAllocated.sub(allocations[_investor].value);
             totalAllocated = totalAllocated.sub(allocations[_investor].vestingValue);
             index = allocations[_investor].index;
-        } else {
+        } else { //Insert mode
             indexedAllocations.push(_investor);
         }
 
@@ -115,6 +104,8 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
 
     /**
     * @dev Releases the tokens that were allocated for distribution
+    * This is an emergency procedure to avoid freezing tokens if
+    * they cannot be successfully distributed
     */
     function reclaimTokens(address _newTokenOwner) public onlyOwner {
         uint256 total = token.balanceOf(this);
@@ -177,8 +168,6 @@ contract AllocationsManager is Ownable, Pausable, SaleConfiguration {
         delete allocations[_investor];
         return true;
     }
-
-
 
 }
 

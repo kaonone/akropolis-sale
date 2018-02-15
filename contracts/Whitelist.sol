@@ -71,11 +71,18 @@ contract Whitelist is Administrable {
     }
 
 
+    /**
+    * @return total number of whitelisted users
+    */
     function getWhitelistedCount() public view returns(uint256) {
         return indexedWhitelist.length;
     }
 
 
+    /**
+    * A helper method that may be used to list all of the whitelisted addresses
+    * @return address of whitelisted user with a given index
+    */
     function getWhitelistedAddress(uint256 _index) public view returns(address) {
         return indexedWhitelist[_index];
     }

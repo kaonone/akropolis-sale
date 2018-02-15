@@ -1,21 +1,21 @@
 'use strict'
 
-const AkropolisToken = artifacts.require('./AkropolisToken.sol')
-const AllocationsManager = artifacts.require('./AllocationsManager.sol')
-const LinearTokenVesting = artifacts.require('./LinearTokenVesting.sol')
+const AkropolisToken = artifacts.require('./AkropolisToken.sol');
+const AllocationsManager = artifacts.require('./AllocationsManager.sol');
+const LinearTokenVesting = artifacts.require('./LinearTokenVesting.sol');
 
 const BigNumber = web3.BigNumber;
 
 const should = require('chai')
 	.use(require('chai-as-promised'))
 	.use(require('chai-bignumber')(BigNumber))
-	.should()
+	.should();
 
 function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 
-contract('AllocationsManager', function ([owner, admin, investor, investorWithVesting, foundation, other]) {
+contract('AllocationsManager', function ([owner, admin, investor, investorWithVesting, investor3, foundation, other]) {
 
 	const ALLOCATED_VALUE = 100;
 	const UPDATED_VALUE = 200;
@@ -27,7 +27,7 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 	let allocations;
 
 	before(async function () {
-		token = await AkropolisToken.new()
+		token = await AkropolisToken.new();
 		allocations = await AllocationsManager.new();
 	});
 
@@ -135,6 +135,34 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 	});
 
 
+	it('should allow the admin to remove allocation starting from the middle', async function () {
+		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin});
+		await allocations.registerAllocation(investor, UPDATED_VALUE, 0, 0, 0, {from: admin});
+		await allocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, 0, {from: admin});
+
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(3);
+		(await allocations.getAllocationAddress(0)).should.be.equal(investorWithVesting);
+		(await allocations.getAllocationAddress(1)).should.be.equal(investor);
+		(await allocations.getAllocationAddress(2)).should.be.equal(investor3);
+		(await allocations.totalAllocated()).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING + ALLOCATED_VALUE + UPDATED_VALUE);
+
+		await allocations.removeAllocation(investor);
+
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(2);
+		(await allocations.getAllocationAddress(0)).should.be.equal(investorWithVesting);
+		(await allocations.getAllocationAddress(1)).should.be.equal(investor3);
+		(await allocations.totalAllocated()).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING + ALLOCATED_VALUE);
+
+		await allocations.removeAllocation(investorWithVesting);
+
+		(await allocations.getAllocationsCount()).should.be.bignumber.equal(1);
+		(await allocations.getAllocationAddress(0)).should.be.equal(investor3);
+		(await allocations.totalAllocated()).should.be.bignumber.equal(ALLOCATED_VALUE);
+
+		await allocations.removeAllocation(investor3);
+	});
+
+
 	it('should allow the admin to add allocations after removal', async function () {
 		await allocations.registerAllocation(investor, UPDATED_VALUE, 0, 0, 0, {from: admin});
 		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin});
@@ -229,6 +257,10 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 	it('should not allow to register allocation for investor that already has a distributed status', async function () {
 		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD,
 			{from: admin}).should.be.rejectedWith('revert');
+	});
+
+	it('should NOT allow to ditribute allocation twice', async function () {
+		await allocations.distributeAllocation(investorWithVesting, {from: owner}).should.be.rejectedWith('revert');
 	});
 
 
