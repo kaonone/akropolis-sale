@@ -60,6 +60,7 @@ contract AllocationsManager is Administrable, Pausable, SaleConfiguration {
         require(_investor != 0x0);
         require(_value > 0 || _vestingValue > 0);
         require(_cliff <= _vestingPeriod);
+        require(MAX_ALLOCATION_VALUE > 0);
         require(_value <= MAX_ALLOCATION_VALUE);
         require( (_vestingValue == 0 && _vestingPeriod == 0) || (_vestingValue > 0 && _vestingPeriod > 0) );
 

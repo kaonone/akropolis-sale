@@ -44,8 +44,18 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
         require(address(_whitelist) != 0x0);
         require(_wallet != 0x0);
 
+        //Validate configuration
         config = _config;
-        require(config.AET_RATE() > 0);
+        require(config.PUBLIC_SALE_SUPPLY() > 0);
+        require(config.PRESALE_SUPPLY() > 0);
+        require(config.TEAM_SUPPLY() > 0);
+        require(config.ADVISORS_SUPPLY() > 0);
+
+        require(config.RESERVE_FUND_VALUE() > 0);
+        require(config.BOUNTY_FUND_VALUE() > 0);
+        require(config.DEVELOPMENT_FUND_VALUE() > 0);
+
+        require(config.PRESALE_SUPPLY())
 
         token = new AkropolisToken();
         AkropolisToken(token).pause();
