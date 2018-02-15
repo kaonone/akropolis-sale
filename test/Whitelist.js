@@ -7,7 +7,7 @@ const should = require('chai')
 	.use(require('chai-bignumber')(BigNumber))
 	.should();
 
-contract('Whitelist', function ([owner, admin, buyer, buyer2, wallet, notAdded]) {
+contract('Whitelist', function ([owner, admin, buyer1, buyer2, buyer3, wallet, notAdded]) {
 
 	let whitelist;
 
@@ -17,7 +17,7 @@ contract('Whitelist', function ([owner, admin, buyer, buyer2, wallet, notAdded])
 
 
 	it('should not allow anyone but the owner to define an admin for whitelist', async function () {
-		await whitelist.setAdmin(admin, {from: buyer}).should.be.rejectedWith('revert');
+		await whitelist.setAdmin(admin, {from: buyer1}).should.be.rejectedWith('revert');
 		await whitelist.setAdmin(admin, {from: wallet}).should.be.rejectedWith('revert');
 		await whitelist.setAdmin(admin, {from: admin}).should.be.rejectedWith('revert');
 	});
@@ -29,8 +29,8 @@ contract('Whitelist', function ([owner, admin, buyer, buyer2, wallet, notAdded])
 
 
 	it('should not allow anyone but the admin to add to whitelist', async function () {
-		await whitelist.addToWhitelist(buyer, 1, {from: buyer}).should.be.rejectedWith('revert');
-		await whitelist.addToWhitelist(buyer, 1, {from: wallet}).should.be.rejectedWith('revert');
+		await whitelist.addToWhitelist(buyer1, 1, {from: buyer1}).should.be.rejectedWith('revert');
+		await whitelist.addToWhitelist(buyer1, 1, {from: wallet}).should.be.rejectedWith('revert');
 		await whitelist.addToWhitelist(wallet, 1, {from: owner}).should.be.rejectedWith('revert');
 	});
 
@@ -45,30 +45,30 @@ contract('Whitelist', function ([owner, admin, buyer, buyer2, wallet, notAdded])
 	});
 
 	it('should allow adding a buyer to the whitelist tier 1', async function () {
-		await whitelist.addToWhitelist(buyer, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
 
-		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
-		(await whitelist.getWhitelistedAddress(0)).should.be.equal(buyer);
-		(await whitelist.getTier(buyer)).should.be.bignumber.equal(1);
+		(await whitelist.getWhitelistedAddress(0)).should.be.equal(buyer1);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
 	});
 
 
 	it('should not allow adding the same user to the whitelist twice', async function () {
-		await whitelist.addToWhitelist(buyer, 1, {from: admin}).should.be.rejectedWith('revert');
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin}).should.be.rejectedWith('revert');
 	});
 
 
 	it('should not allow anyone but the admin to remove addresses from whitelist', async function () {
-		await whitelist.removeFromWhitelist(buyer, {from: buyer}).should.be.rejectedWith('revert');
-		await whitelist.removeFromWhitelist(buyer, {from: wallet}).should.be.rejectedWith('revert');
-		await whitelist.removeFromWhitelist(buyer, {from: owner}).should.be.rejectedWith('revert');
+		await whitelist.removeFromWhitelist(buyer1, {from: buyer1}).should.be.rejectedWith('revert');
+		await whitelist.removeFromWhitelist(buyer1, {from: wallet}).should.be.rejectedWith('revert');
+		await whitelist.removeFromWhitelist(buyer1, {from: owner}).should.be.rejectedWith('revert');
 	});
 
 
 	it('should allow admin to remove buyer from the whitelist', async function () {
-		await whitelist.removeFromWhitelist(buyer, {from: admin});
-		(await whitelist.isWhitelisted(buyer)).should.be.equal(false);
+		await whitelist.removeFromWhitelist(buyer1, {from: admin});
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(false);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
 	});
 
@@ -83,9 +83,10 @@ contract('Whitelist', function ([owner, admin, buyer, buyer2, wallet, notAdded])
 	});
 
 	it('should add two users to whitelist and then remove them in the same order', async function () {
-		await whitelist.addToWhitelist(buyer, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
 
-		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
 
 		await whitelist.addToWhitelist(buyer2, 2, {from: admin});
@@ -94,9 +95,11 @@ contract('Whitelist', function ([owner, admin, buyer, buyer2, wallet, notAdded])
 		(await whitelist.getTier(buyer2)).should.be.bignumber.equal(2);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(2);
 
-		await whitelist.removeFromWhitelist(buyer, {from: admin});
+		await whitelist.removeFromWhitelist(buyer1, {from: admin});
 
-		(await whitelist.isWhitelisted(buyer)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(true);
+		(await whitelist.getTier(buyer2)).should.be.bignumber.equal(2);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
 
 		await whitelist.removeFromWhitelist(buyer2, {from: admin});
@@ -107,24 +110,100 @@ contract('Whitelist', function ([owner, admin, buyer, buyer2, wallet, notAdded])
 	});
 
 	it('should add two users to whitelist and then remove them in the reverse order', async function () {
-		await whitelist.addToWhitelist(buyer, 1, {from: admin});
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
 
-		(await whitelist.isWhitelisted(buyer)).should.be.equal(true);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
 
 		await whitelist.addToWhitelist(buyer2, 2, {from: admin});
 
 		(await whitelist.isWhitelisted(buyer2)).should.be.equal(true);
+		(await whitelist.getTier(buyer2)).should.be.bignumber.equal(2);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(2);
 
 		await whitelist.removeFromWhitelist(buyer2, {from: admin});
 
 		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
 
-		await whitelist.removeFromWhitelist(buyer, {from: admin});
+		await whitelist.removeFromWhitelist(buyer1, {from: admin});
 
-		(await whitelist.isWhitelisted(buyer)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
+
+	});
+
+	it('should add two users to whitelist and then remove them in the reverse order', async function () {
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.addToWhitelist(buyer2, 2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(true);
+		(await whitelist.getTier(buyer2)).should.be.bignumber.equal(2);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(2);
+
+		await whitelist.removeFromWhitelist(buyer2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.removeFromWhitelist(buyer1, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
+
+	});
+
+	it('should add three users to whitelist and then remove starting from the middle one', async function () {
+		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.addToWhitelist(buyer2, 2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(true);
+		(await whitelist.getTier(buyer2)).should.be.bignumber.equal(2);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(2);
+
+		await whitelist.addToWhitelist(buyer3, 3, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer3)).should.be.equal(true);
+		(await whitelist.getTier(buyer3)).should.be.bignumber.equal(3);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(3);
+
+		await whitelist.removeFromWhitelist(buyer2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.isWhitelisted(buyer3)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
+		(await whitelist.getTier(buyer3)).should.be.bignumber.equal(3);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(2);
+
+		await whitelist.removeFromWhitelist(buyer1, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer3)).should.be.equal(true);
+		(await whitelist.getTier(buyer3)).should.be.bignumber.equal(3);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.removeFromWhitelist(buyer3, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer3)).should.be.equal(false);
 		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
 
 	});
