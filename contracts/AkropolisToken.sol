@@ -10,7 +10,7 @@ import "zeppelin-solidity/contracts/token/PausableToken.sol";
 
 contract AkropolisToken is MintableToken, PausableToken {
 
-    string public name = "Akropolis Token";
+    string public name = "Akropolis External Token";
 
     uint8 public decimals = 18;
 
