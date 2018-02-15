@@ -10,7 +10,7 @@ module.exports = async function(deployer, network, accounts) {
 	let presaleAddress = '0xdf3c3fdb7bfea5874c856b6c00fe4da0d561e47e';
 	let teamAddress = '0x5ad2b7338efad08f9e7260a6ed4b329dd888b4e5';
 	let salesConfigAddress = '0x41d7cb4ebcba3318e1bfbdf473bb8e92e24f521b';
-	let whitelistAddress = '0x3b28c1dafb30271663906439313f47f60d6e3295';
+	let whitelistAddress = '0x9c50cffe59b67bbeacc1f8c72dd92d882b1a9519';
 
 	let bountyFundAddress = '0x6E5244E929BA540Cd83774B6BFee940A197c2A09';
 	let developmentFundAddress = '0x447C00fBE180d99969eaBDc643042B3848c2595C';

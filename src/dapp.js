@@ -65,10 +65,11 @@ window.Dapp = {
 	addToWhitelist: function() {
 		var self = this;
 		var address = document.getElementById("buyer-address").value;
+		var tier = document.getElementById("buyer-tier").value;
 		console.log("Adding to whitelist: " + address);
 		Whitelist.deployed().then(function(instance) {
 			self.setAlert("Adding to the whitelist...");
-			return instance.addToWhitelist(address, {from: adminAccount});
+			return instance.addToWhitelist(address,tier, {from: adminAccount});
 		}).then(function() {
 			self.setWhitelistedCount();
 			self.setAlert("Buyer was added!", "success");
@@ -118,8 +119,10 @@ window.Dapp = {
 		var self = this;
 		if (index<max) {
 			contract.getWhitelistedAddress(index).then(function (value) {
-				element.innerHTML = element.innerHTML + value + "<br/>";
-				return self.fetchWhitelistedAddress(index+1, max, contract, element);
+				contract.getTier(value).then(function(tier) {
+					element.innerHTML = element.innerHTML + value + " Tier: "+ tier + "<br/>";
+					return self.fetchWhitelistedAddress(index+1, max, contract, element);
+				});
 			}).catch(function(err) {
 				console.log(err);
 			});
