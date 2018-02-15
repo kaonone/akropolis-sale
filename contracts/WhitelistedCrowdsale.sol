@@ -57,6 +57,7 @@ contract WhitelistedCrowdsale is Ownable{
     }
 
     function getCurrentRound() public view returns(uint256) {
+        require(now >= startTime);
         uint256 round = now.sub(startTime).div(roundDuration).add(1);
         if (round > 3) {
             round = 3;
