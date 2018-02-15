@@ -94,11 +94,25 @@ contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 		(await token.balanceOf(beneficiary)).should.be.bignumber.equal(50);
 	});
 
+	it('should handle multiple release requests', async function () {
+		await increaseTimeTo(start + 0.6 * DURATION);
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(60);
+		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(10);
+
+		await vesting.release(token.address);
+		await vesting.release(token.address).should.be.rejectedWith('revert');
+
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(60);
+		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
+		(await token.balanceOf(vesting.address)).should.be.bignumber.equal(40);
+		(await token.balanceOf(beneficiary)).should.be.bignumber.equal(60);
+	});
+
 
 	it('should release total vesting', async function () {
 		await increaseTimeTo(start + DURATION);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
-		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(50);
+		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(40);
 
 		await vesting.release(token.address);
 
@@ -118,6 +132,21 @@ contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 	it('should not vest more than the total vested amount, after the duration', async function() {
 		await increaseTimeTo(start + 1.5 * DURATION);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT);
+	});
+
+
+	it('should claim tokens accidently send after the vesting', async function() {
+		await token.mint(vesting.address, 100);
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT + 100);
+		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(100);
+
+		await vesting.release(token.address);
+
+		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT + 100);
+		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
+		(await token.balanceOf(vesting.address)).should.be.bignumber.equal(0);
+		(await token.balanceOf(beneficiary)).should.be.bignumber.equal(VESTING_AMOUNT + 100);
+
 	});
 
 });
