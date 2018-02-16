@@ -8,7 +8,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
 /**
  * @title LinearTokenVesting
  * @dev A token holder contract that can release its tokens pro-rata with the passing time
- * after the cliff period
+ * starting after the cliff period
  */
 contract LinearTokenVesting is Ownable {
     using SafeMath for uint256;

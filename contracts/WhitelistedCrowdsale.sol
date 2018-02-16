@@ -42,20 +42,31 @@ contract WhitelistedCrowdsale is Ownable{
         setRoundDuration(config.ROUND_DURATION());
     }
 
+    /**
+    * @dev Sets max and min contribution values per user tier
+    */
     function setCapsPerTier(uint8 _tier, uint256 _min, uint256 _max) public onlyOwner {
+        require(_tier >=1 && _tier <= 3);
         require(_min >= 0);
         require(_max  >= _min);
         require(_max  <= config.MAX_CONTRIBUTION_VALUE());
+
         min[_tier] = _min;
         max[_tier] = _max;
     }
 
+    /**
+    * @dev Sets duration of a single round
+    */
     function setRoundDuration(uint256 _roundDuration) public onlyOwner {
         require(_roundDuration > 0);
         require(_roundDuration.mul(3) <= endTime.sub(startTime));
         roundDuration = _roundDuration;
     }
 
+    /**
+    * @dev Get the number of the current round
+    */
     function getCurrentRound() public view returns(uint256) {
         require(now >= startTime);
         uint256 round = now.sub(startTime).div(roundDuration).add(1);
@@ -65,6 +76,9 @@ contract WhitelistedCrowdsale is Ownable{
         return round;
     }
 
+    /**
+    * @dev Get the of a buyer in the current round
+    */
     function getCap(address _buyer) public view returns(uint256) {
         if (getCurrentRound() >= 3) {
             return config.MAX_CONTRIBUTION_VALUE();
@@ -73,6 +87,9 @@ contract WhitelistedCrowdsale is Ownable{
         }
     }
 
+    /**
+    * @dev Get the of a buyer in the current round
+    */
     function getMin(address _buyer) public view returns(uint256) {
         if (getCurrentRound() >= 3) {
             return 0;
@@ -81,7 +98,11 @@ contract WhitelistedCrowdsale is Ownable{
         }
     }
 
+    /**
+    * @dev checks if the buyer can participate in the current round
+    */
     function isBuyerAdmitted(address _buyer) public view returns(bool) {
+        require(whitelist.isWhitelisted(_buyer));
         uint8 tier = whitelist.getTier(_buyer);
         return tier <= getCurrentRound();
     }

@@ -43,13 +43,24 @@ contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, w
 		startTime = latestTime() + duration.weeks(1);
 		endTime = startTime + duration.days(9);
 		afterEndTime = endTime + duration.seconds(1);
-		token = await AkropolisToken.new();
-		await token.pause();
+
 		whitelist = await Whitelist.new();
 		await whitelist.setAdmin(admin);
 		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
 		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
 
+	});
+
+
+	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
+		config = await SaleConfigurationMock.new().should.be.fulfilled;
+		await config.setHARD_CAP(ether(20)).should.be.fulfilled;
+		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
+		token = await AkropolisToken.at(await crowdsale.token());
+	});
+
+
+	it('should register allocations', async function () {
 		presaleAllocations = await AllocationsManager.new();
 		await presaleAllocations.setToken(token.address);
 		await presaleAllocations.setAdmin(admin);
@@ -66,15 +77,6 @@ contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, w
 		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin});
 		await presaleAllocations.registerAllocation(investor2, (ALLOCATED_VALUE * 2), (ALLOCATED_VESTING * 10), VESTING_CLIFF, (VESTING_PERIOD * 2), {from: admin});
 		await presaleAllocations.registerAllocation(investor3, ALLOCATED_VALUE, 0, 0, 0, {from: admin});
-	});
-
-
-	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
-		config = await SaleConfigurationMock.new().should.be.fulfilled;
-		await config.setHARD_CAP(ether(20)).should.be.fulfilled;
-		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
-		await token.transferOwnership(crowdsale.address).should.be.fulfilled;
-		await crowdsale.setToken(token.address).should.be.fulfilled;
 	});
 
 
