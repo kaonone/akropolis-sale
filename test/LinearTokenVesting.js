@@ -135,7 +135,7 @@ contract('Linear Token Vesting', function ([owner, beneficiary, unknown]) {
 	});
 
 
-	it('should claim tokens accidently send after the vesting', async function() {
+	it('should claim tokens accidentally sent after the vesting', async function() {
 		await token.mint(vesting.address, 100);
 		(await vesting.vestedAmount(token.address)).should.be.bignumber.equal(VESTING_AMOUNT + 100);
 		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(100);

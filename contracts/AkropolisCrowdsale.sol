@@ -62,7 +62,6 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
     }
 
 
-
     // low level token purchase function
     function buyTokens(address beneficiary) public payable {
         require(beneficiary != 0x0);

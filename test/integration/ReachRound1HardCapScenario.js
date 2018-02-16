@@ -71,7 +71,7 @@ contract('Akropolis Round 1 Hard Cap Reach Scenario', function ([owner, admin, w
 
 		advisorsAllocations = await AllocationsManager.new();
 		await advisorsAllocations.setToken(token.address);
-		await advisorsAllocations.setAdmin(admin)
+		await advisorsAllocations.setAdmin(admin);
 
 		//Register some investors
 		await presaleAllocations.registerAllocation(investor1, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin});
