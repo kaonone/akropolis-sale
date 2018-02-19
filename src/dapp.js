@@ -281,7 +281,6 @@ window.addEventListener("load", function() {
 			Dapp.throwError("Connect an account!");
 		}
 		adminAccount = accounts[0];
-		Allocations.deployed().then(function(instance) {
 
 			//Set allocations
 			Dapp.allocations["TEAM"] = teamAllocation;
@@ -289,6 +288,6 @@ window.addEventListener("load", function() {
 			Dapp.allocations["PRESALE"] = presaleAllocation;
 
 			Dapp.start();
-		});
+
 	});
 });
