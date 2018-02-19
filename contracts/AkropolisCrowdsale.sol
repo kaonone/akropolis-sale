@@ -77,7 +77,7 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
 
         require(token.mint(beneficiary, tokens));
 
-        contributions[beneficiary] = contributions[beneficiary].add(weiAmount);
+        contributions[msg.sender] = contributions[msg.sender].add(weiAmount);
         tokensSold = tokensSold.add(tokens);
         require(tokensSold <= config.PUBLIC_SALE_SUPPLY());
         
