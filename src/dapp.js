@@ -6,9 +6,9 @@ require("bootstrap");
 
 var account;
 
-var allocationsMode = "TEAM";
+var allocationsMode = "Presale";
 
-var teamAllocation = Allocations.at("0x5ad2b7338efad08f9e7260a6ed4b329dd888b4e5");
+var teamAllocation = Allocations.at("0xecfd84c7579032663c9fd028e795debe95226b27");
 var advisorsAllocation = Allocations.at("0xefc08b5e6c3ba5ada5b483eb0529f3b2d1b55afc");
 var presaleAllocation = Allocations.at("0xdf3c3fdb7bfea5874c856b6c00fe4da0d561e47e");
 
@@ -44,6 +44,30 @@ window.Dapp = {
 	start: function() {
 		this.setWhitelistedCount();
 		this.setAllocationsSummary();
+		this.listAllAllocations();
+		var element = document.getElementById("allocation_title");
+		element.innerHTML = "<h1>"  +  allocationsMode + " Allocations</h1>";
+	},
+
+	setAlert: function(message, type) {
+		type = type || "info";
+		var element = document.getElementById("alerts");
+		element.innerHTML = "<div class='alert alert-" + type + "'>" + message + "</div>";
+	},
+
+	setPresaleAllocations: function(){
+		allocationsMode = "Presale";
+		this.start();
+	},
+
+	setTeamAllocations: function(){
+		allocationsMode = "Team";
+		this.start();
+	},
+
+	setAdvisorsAllocations: function(){
+		allocationsMode = "Advisors";
+		this.start();
 	},
 
 	setAlert: function(message, type) {
@@ -283,9 +307,9 @@ window.addEventListener("load", function() {
 		adminAccount = accounts[0];
 
 			//Set allocations
-			Dapp.allocations["TEAM"] = teamAllocation;
-			Dapp.allocations["ADVISORS"] = advisorsAllocation;
-			Dapp.allocations["PRESALE"] = presaleAllocation;
+			Dapp.allocations["Team"] = teamAllocation;
+			Dapp.allocations["Advisors"] = advisorsAllocation;
+			Dapp.allocations["Presale"] = presaleAllocation;
 
 			Dapp.start();
 

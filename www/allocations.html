@@ -20,7 +20,7 @@
 <div class="container theme-showcase" role="main">
 
     <div class="starter-template">
-        <h1>Allocations</h1>
+        <div id="allocation_title"><h1>Allocations</h1></div>
         <p class="lead">Admin panel for managing token allocations</p>
     </div>
 
@@ -98,6 +98,10 @@
 
 
     <a href="index.html"><button class="btn btn-primary">Go To Whitelist</button></a>
+
+    <button type="button" class="btn btn-primary" style="margin: 15px;" onclick="Dapp.setPresaleAllocations()">Set Presale Allocations</button>
+    <button type="button" class="btn btn-primary" style="margin: 15px;" onclick="Dapp.setTeamAllocations()">Set Team Allocations</button>
+    <button type="button" class="btn btn-primary" style="margin: 15px;" onclick="Dapp.setAdvisorsAllocations()">Set Advisors Allocations</button>
 
 </div><!--/.container -->
 
