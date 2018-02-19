@@ -6,6 +6,12 @@ require("bootstrap");
 
 var account;
 
+var allocationsMode = "TEAM";
+
+var teamAllocation = Allocations.at("0x5ad2b7338efad08f9e7260a6ed4b329dd888b4e5");
+var advisorsAllocation = Allocations.at("0xefc08b5e6c3ba5ada5b483eb0529f3b2d1b55afc");
+var presaleAllocation = Allocations.at("0xdf3c3fdb7bfea5874c856b6c00fe4da0d561e47e");
+
 function show(element, text) {
 	var element = document.getElementById(element);
 	if (element) {
@@ -145,13 +151,13 @@ window.Dapp = {
 	},
 
 	setAllocationsSummary: function() {
-		this.allocations.totalAllocated().then(function(total){
+		this.allocations[allocationsMode].totalAllocated().then(function(total){
 			show("allocations-total", weiToEther(total).valueOf());
 		}).catch(function(err) {
 			console.log(err);
 		});
 
-		this.allocations.getAllocationsCount().then(function(count) {
+		this.allocations[allocationsMode].getAllocationsCount().then(function(count) {
 			show("allocations-count", count.valueOf());
 		}).catch(function(err) {
 			console.log(err);
@@ -169,7 +175,7 @@ window.Dapp = {
 		var vestingPeriod = duration.days(document.getElementById("allocation-vesting-period").value);
 		console.log("Adding allocation: " + address);
 		self.setAlert("Adding allocation...");
-		self.allocations.registerAllocation(address, value, vestingValue, vestingCliff, vestingPeriod, {from: adminAccount, gas: 200000}).then(function(tx) {
+		self.allocations[allocationsMode].registerAllocation(address, value, vestingValue, vestingCliff, vestingPeriod, {from: adminAccount, gas: 200000}).then(function(tx) {
 			self.setAllocationsSummary();
 			self.listAllAllocations();
 			self.setAlert("Allocation was added. Transaction hash: " + tx.tx, "success");
@@ -184,7 +190,7 @@ window.Dapp = {
 		var address = document.getElementById("allocation-address").value;
 		console.log("Checking address: " + address);
 		self.setAlert("Looking for allocation: " + address);
-			self.allocations.getAllocation(address, {from: adminAccount}).then(function(result) {
+			self.allocations[allocationsMode].getAllocation(address, {from: adminAccount}).then(function(result) {
 			console.log(result);
 			if (result && result[0].valueOf()>0) {
 				self.setAlert("Address: " + address + " has an allocation.", "success");
@@ -207,9 +213,9 @@ window.Dapp = {
 		var address;
 
 		if (index<max) {
-			return self.allocations.getAllocationAddress(index).then(function (value) {
+			return self.allocations[allocationsMode].getAllocationAddress(index).then(function (value) {
 				address = value;
-				return self.allocations.getAllocation(address).then(function (allocation) {
+				return self.allocations[allocationsMode].getAllocation(address).then(function (allocation) {
 					var row = table.insertRow();
 					row.insertCell(0).innerHTML = index;
 					row.insertCell(1).innerHTML = address;
@@ -231,7 +237,7 @@ window.Dapp = {
 		while (table.rows.length> 1) {
 			table.deleteRow(1);
 		}
-		self.allocations.getAllocationsCount().then(function(max) {
+		self.allocations[allocationsMode].getAllocationsCount().then(function(max) {
 			return self.fetchAllocation(0, max.toNumber(), table);
 		}).catch(function(err) {
 			console.log(err);
@@ -242,7 +248,7 @@ window.Dapp = {
 		var self = this;
 		var address = document.getElementById("allocation-remove-address").value;
 		self.setAlert("Removing the allocation " + address);
-		self.allocations.removeAllocation(address, {from: adminAccount}).then(function(tx) {
+		self.allocations[allocationsMode].removeAllocation(address, {from: adminAccount}).then(function(tx) {
 			console.log(tx);
 			self.setAllocationsSummary();
 			self.listAllAllocations();
@@ -276,7 +282,12 @@ window.addEventListener("load", function() {
 		}
 		adminAccount = accounts[0];
 		Allocations.deployed().then(function(instance) {
-			Dapp.allocations = instance;
+
+			//Set allocations
+			Dapp.allocations["TEAM"] = teamAllocation;
+			Dapp.allocations["ADVISORS"] = advisorsAllocation;
+			Dapp.allocations["PRESALE"] = presaleAllocation;
+
 			Dapp.start();
 		});
 	});
