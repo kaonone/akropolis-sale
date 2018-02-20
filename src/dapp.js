@@ -12,6 +12,8 @@ var teamAllocation = Allocations.at("0xecfd84c7579032663c9fd028e795debe95226b27"
 var advisorsAllocation = Allocations.at("0xefc08b5e6c3ba5ada5b483eb0529f3b2d1b55afc");
 var presaleAllocation = Allocations.at("0xdf3c3fdb7bfea5874c856b6c00fe4da0d561e47e");
 
+var connectedWhitelist = Whitelist.at("0x9c50cffe59b67bbeacc1f8c72dd92d882b1a9519");
+
 function show(element, text) {
 	var element = document.getElementById(element);
 	if (element) {
@@ -46,7 +48,9 @@ window.Dapp = {
 		this.setAllocationsSummary();
 		this.listAllAllocations();
 		var element = document.getElementById("allocation_title");
-		element.innerHTML = "<h1>"  +  allocationsMode + " Allocations</h1>";
+		if(element!=null) {
+			element.innerHTML = "<h1>" + allocationsMode + " Allocations</h1>";
+		}
 	},
 
 	setAlert: function(message, type) {
@@ -84,7 +88,7 @@ window.Dapp = {
 
 	setWhitelistedCount: function() {
 		Whitelist.deployed().then(function(instance) {
-			return instance.getWhitelistedCount.call();
+			return connectedWhitelist.getWhitelistedCount.call();
 		}).then(function(value) {
 			show("whitelisted-count", value.valueOf());
 		}).catch(function(err) {
@@ -99,7 +103,7 @@ window.Dapp = {
 		console.log("Adding to whitelist: " + address);
 		Whitelist.deployed().then(function(instance) {
 			self.setAlert("Adding to the whitelist...");
-			return instance.addToWhitelist(address,tier, {from: adminAccount});
+			return connectedWhitelist.addToWhitelist(address,tier, {from: adminAccount});
 		}).then(function() {
 			self.setWhitelistedCount();
 			self.setAlert("Buyer was added!", "success");
@@ -115,7 +119,7 @@ window.Dapp = {
 		console.log("Removing from whitelist: " + address);
 		Whitelist.deployed().then(function(instance) {
 			self.setAlert("Removing from the whitelist...");
-			return instance.removeFromWhitelist(address, {from: adminAccount});
+			return connectedWhitelist.removeFromWhitelist(address, {from: adminAccount});
 		}).then(function() {
 			self.setWhitelistedCount();
 			self.setAlert("Buyer was removed!", "success");
@@ -131,7 +135,7 @@ window.Dapp = {
 		console.log("Checking address: " + address);
 		Whitelist.deployed().then(function(instance) {
 			self.setAlert("Checking address...");
-			return instance.isWhitelisted(address, {from: adminAccount});
+			return connectedWhitelist.isWhitelisted(address, {from: adminAccount});
 		}).then(function(result) {
 			console.log(result);
 			if (result) {
@@ -165,8 +169,8 @@ window.Dapp = {
 		var element = document.getElementById("whitelisted-list");
 		element.innerHTML = "";
 		Whitelist.deployed().then(function(instance) {
-			contract = instance;
-			return instance.getWhitelistedCount.call();
+			contract = connectedWhitelist;
+			return connectedWhitelist.getWhitelistedCount.call();
 		}).then(function(max) {
 			return self.fetchWhitelistedAddress(0, max, contract, element);
 		}).catch(function(err) {
@@ -247,13 +251,15 @@ window.Dapp = {
 			return self.allocations[allocationsMode].getAllocationAddress(index).then(function (value) {
 				address = value;
 				return self.allocations[allocationsMode].getAllocation(address).then(function (allocation) {
-					var row = table.insertRow();
-					row.insertCell(0).innerHTML = index;
-					row.insertCell(1).innerHTML = address;
-					row.insertCell(2).innerHTML = weiToEther(allocation[0]);
-					row.insertCell(3).innerHTML = weiToEther(allocation[1]);
-					row.insertCell(4).innerHTML = allocation[2].valueOf() / duration.days(1);
-					row.insertCell(5).innerHTML = allocation[3].valueOf() / duration.days(1);
+					if(table != null) {
+						var row = table.insertRow();
+						row.insertCell(0).innerHTML = index;
+						row.insertCell(1).innerHTML = address;
+						row.insertCell(2).innerHTML = weiToEther(allocation[0]);
+						row.insertCell(3).innerHTML = weiToEther(allocation[1]);
+						row.insertCell(4).innerHTML = allocation[2].valueOf() / duration.days(1);
+						row.insertCell(5).innerHTML = allocation[3].valueOf() / duration.days(1);
+					}
 					return self.fetchAllocation(index+1, max, table);
 				});
 			}).catch(function(err) {
@@ -265,7 +271,7 @@ window.Dapp = {
 	listAllAllocations: function() {
 		var self = this;
 		var table = document.getElementById("allocations-table");
-		while (table.rows.length> 1) {
+		while (table != null && table.rows.length> 1) {
 			table.deleteRow(1);
 		}
 		self.allocations[allocationsMode].getAllocationsCount().then(function(max) {
