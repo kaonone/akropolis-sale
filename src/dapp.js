@@ -197,16 +197,23 @@ window.Dapp = {
 		var vestingValue = etherToWei(document.getElementById("allocation-vesting-value").value);
 		var vestingCliff = duration.days(document.getElementById("allocation-vesting-cliff").value);
 		var vestingPeriod = duration.days(document.getElementById("allocation-vesting-period").value);
-		console.log("Adding allocation: " + address);
-		self.setAlert("Adding allocation...");
-		self.allocations[allocationsMode].registerAllocation(address, value, vestingValue, vestingCliff, vestingPeriod, {from: adminAccount, gas: 200000}).then(function(tx) {
-			self.setAllocationsSummary();
-			self.listAllAllocations();
-			self.setAlert("Allocation was added. Transaction hash: " + tx.tx, "success");
-		}).catch(function(err) {
-			Dapp.throwError("Cannot add allocation!");
-			console.log(err);
-		});
+		if(vestingCliff > vestingPeriod) {
+			Dapp.throwError("The vesting cliff must not be greater than the period of vesting");
+		} else {
+			console.log("Adding allocation: " + address);
+			self.setAlert("Adding allocation...");
+			self.allocations[allocationsMode].registerAllocation(address, value, vestingValue, vestingCliff, vestingPeriod, {
+				from: adminAccount,
+				gas: 200000
+			}).then(function (tx) {
+				self.setAllocationsSummary();
+				self.listAllAllocations();
+				self.setAlert("Allocation was added. Transaction hash: " + tx.tx, "success");
+			}).catch(function (err) {
+				Dapp.throwError("Cannot add allocation!");
+				console.log(err);
+			});
+		}
 	},
 
 	findAllocation: function() {
