@@ -24,7 +24,7 @@ function ether (n) {
 //This test affirms that if we can finalize the public sale if we reach the ether sales limit
 //In this test we reach the public sales cap limit in Round 2
 contract('Akropolis Round 2 Public Sale Cap Reach Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
-																						reserveFund, bountyFund, developmentFund, unknown]) {
+																						reserveFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
@@ -123,7 +123,6 @@ contract('Akropolis Round 2 Public Sale Cap Reach Scenario', function ([owner, a
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;

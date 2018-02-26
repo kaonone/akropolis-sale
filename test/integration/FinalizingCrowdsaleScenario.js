@@ -24,7 +24,7 @@ function ether (n) {
 //Test sets up a simple crowdsale which does not reach the public sale supply of tokens nor the maximum ether contribution
 //We test to ensure that the crowdsale will not finalize until the time of the 4 round durations is over
 contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, investor1, investor2, investor3,
-																						reserveFund, bountyFund, developmentFund, unknown]) {
+																						reserveFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
@@ -117,7 +117,6 @@ contract('Akropolis Finalizing Crowdsale Scenario', function ([owner, admin, wal
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;

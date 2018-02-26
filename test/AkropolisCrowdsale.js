@@ -20,7 +20,7 @@ function ether (n) {
 
 contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuyer1, bonusBuyer2, bonusBuyer3, bonusBuyer4,
 																					 presaleAllocations, teamAllocations, advisorsAllocations,
-																					 reserveFund, bountyFund, developmentFund]) {
+																					 reserveFund, developmentFund]) {
 
 	let token, crowdsale, whitelist, config;
 	let startTime, endTime, afterEndTime;
@@ -133,9 +133,6 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
-
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.finalize({from: owner}).should.be.rejectedWith('revert');
 
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});

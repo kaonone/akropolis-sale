@@ -25,7 +25,7 @@ function ether (n) {
 //It seeks to correctly set up related contracts for the token generation event
 //The test explores allocations, public token sales, vesting, reserve fund, finalization, and final token transfer
 contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, investor1, investor2, investor3,
-																						reserveFund, bountyFund, developmentFund, unknown]) {
+																						reserveFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
@@ -150,7 +150,6 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
@@ -163,9 +162,6 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 		//Test advisors allocations
 		(await token.balanceOf(advisorsAllocations.address)).should.be.bignumber.equal((await config.ADVISORS_SUPPLY()));
-
-		//Test bounty fund
-		(await token.balanceOf(bountyFund)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
 
 		//Test dev fund
 		(await token.balanceOf(developmentFund)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));

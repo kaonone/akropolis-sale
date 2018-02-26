@@ -22,7 +22,6 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
     AllocationsManager public advisorsAllocations;
 
     address public reserveFund;
-    address public bountyFund;
     address public developmentFund;
 
 
@@ -52,7 +51,6 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
         require(config.ADVISORS_SUPPLY() > 0);
 
         require(config.RESERVE_FUND_VALUE() > 0);
-        require(config.BOUNTY_FUND_VALUE() > 0);
         require(config.DEVELOPMENT_FUND_VALUE() > 0);
 
         require(config.PRESALE_SUPPLY() > 0);
@@ -128,9 +126,8 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
         token.mint(advisorsAllocations, config.ADVISORS_SUPPLY());
 
         //Mint special purpose funds
-        require(reserveFund != 0x0 && bountyFund != 0x0 && developmentFund != 0x0);
+        require(reserveFund != 0x0 && developmentFund != 0x0);
         token.mint(reserveFund, config.RESERVE_FUND_VALUE());
-        token.mint(bountyFund, config.BOUNTY_FUND_VALUE());
         token.mint(developmentFund, config.DEVELOPMENT_FUND_VALUE());
 
 
@@ -160,10 +157,6 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
 
     function setReserveFund(address _reserveFund) public onlyOwner {
         reserveFund = _reserveFund;
-    }
-
-    function setBountyFund(address _bountyFund) public onlyOwner {
-        bountyFund = _bountyFund;
     }
 
     function setDevelopmentFund(address _developmentFund) public onlyOwner {

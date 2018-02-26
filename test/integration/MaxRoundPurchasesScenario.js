@@ -24,7 +24,7 @@ function ether (n) {
 //The test ensures that they can buy up to the maximum individual cap for each round and afterwards not 1 more
 //We ensure that the crowdsale completes correctly and tokens can be transferred
 contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4,
-																						reserveFund, bountyFund, developmentFund, unknown]) {
+																						reserveFund, developmentFund, unknown]) {
 
 	let token, crowdsale, whitelist, config;
 	let presaleAllocations, teamAllocations, advisorsAllocations;
@@ -164,7 +164,6 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;

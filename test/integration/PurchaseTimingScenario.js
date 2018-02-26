@@ -24,7 +24,7 @@ function ether (n) {
 //We check that the crowdsale is set up, tokens are bought and finalizes as normal
 //This test ensures we cannot buy tokens before round 1 or after the sale has been finalized
 contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4,
-																						reserveFund, bountyFund, developmentFund, unknown]) {
+																						reserveFund, developmentFund, unknown]) {
 
 	const CONTRIBUTION_AMOUNT = ether(2);
 
@@ -121,7 +121,6 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;

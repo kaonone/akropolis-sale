@@ -24,7 +24,7 @@ function ether (n) {
 //The specific permissions we ensure are revoked during the sale include setting admin, token assigning, whitelist duties
 //Also included is not allowing unknown users to finalize crowdsale
 contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, buyer4, buyer5, investor1, investor2, investor3,
-																						reserveFund, bountyFund, developmentFund, unknown]) {
+																						reserveFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
@@ -128,7 +128,6 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: unknown}).should.be.rejectedWith('revert');
 
 		await crowdsale.setReserveFund(reserveFund, {from: unknown}).should.be.rejectedWith('revert');
-		await crowdsale.setBountyFund(bountyFund, {from: unknown}).should.be.rejectedWith('revert');
 		await crowdsale.setDevelopmentFund(developmentFund, {from: unknown}).should.be.rejectedWith('revert');
 	});
 
@@ -145,7 +144,6 @@ contract('Akropolis Unknown Permissioning Scenario', function ([owner, admin, wa
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
