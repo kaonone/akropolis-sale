@@ -21,7 +21,7 @@ function ether (n) {
 contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer3, wallet, notAdded]) {
 
 	let whitelist, crowdsale, config, startTime;
-	let minTier1, minTier2, maxTier1, maxTier2, maxContribution;
+	let minTier1, minTier2, minTier3, maxTier1, maxTier2, maxTier3;
 
 	before(async function () {
 		// Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
@@ -36,9 +36,10 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 
 		minTier1 = (await config.MIN_TIER_1());
 		minTier2 = (await config.MIN_TIER_2());
+		minTier3 = (await config.MIN_TIER_3());
 		maxTier1 = (await config.MAX_TIER_1());
 		maxTier2 = (await config.MAX_TIER_2());
-		maxContribution = (await config.MAX_CONTRIBUTION_VALUE());
+		maxTier3 = (await config.MAX_TIER_3());
 
 		await increaseTimeTo(startTime);
 	});
@@ -90,11 +91,11 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 		(await crowdsale.isBuyerAdmitted(buyer3)).should.be.equal(true);
 
 		(await crowdsale.getMin(buyer1)).should.be.bignumber.equal(0);
-		(await crowdsale.getCap(buyer1)).should.be.bignumber.equal(maxContribution);
+		(await crowdsale.getCap(buyer1)).should.be.bignumber.equal(maxTier1);
 		(await crowdsale.getMin(buyer2)).should.be.bignumber.equal(0);
-		(await crowdsale.getCap(buyer2)).should.be.bignumber.equal(maxContribution);
+		(await crowdsale.getCap(buyer2)).should.be.bignumber.equal(maxTier2);
 		(await crowdsale.getMin(buyer3)).should.be.bignumber.equal(0);
-		(await crowdsale.getCap(buyer3)).should.be.bignumber.equal(maxContribution);
+		(await crowdsale.getCap(buyer3)).should.be.bignumber.equal(maxTier3);
 	});
 
 

@@ -49,13 +49,13 @@ contract('Akropolis Round 3 Public Sale Cap Reach Scenario', function ([owner, a
 		await whitelist.addToWhitelist(buyer1, 1, {from: admin});
 		await whitelist.addToWhitelist(buyer2, 1, {from: admin});
 		await whitelist.addToWhitelist(buyer3, 2, {from: admin});
-		await whitelist.addToWhitelist(buyer4, 2, {from: admin});
+		await whitelist.addToWhitelist(buyer4, 3, {from: admin});
 	});
 
 
 	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
 		config = await SaleConfigurationMock.new().should.be.fulfilled;
-		await config.setPUBLIC_SALE_SUPPLY(ether(400)).should.be.fulfilled;
+		await config.setPUBLIC_SALE_SUPPLY(ether(280)).should.be.fulfilled;
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
 		token = await AkropolisToken.at(await crowdsale.token());
 	});
@@ -108,20 +108,18 @@ contract('Akropolis Round 3 Public Sale Cap Reach Scenario', function ([owner, a
 		await increaseTimeTo(startTime+ duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(5)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: ether(5)}).should.be.fulfilled;
 
 		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound2);
-		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound2);
 	});
 
 
 	it('should sell tokens to whitelisted users during round 3', async function() {
-		let tokenBuyerAmountRound3 = (await config.AET_RATE()).mul(ether(15));
+		let tokenBuyerAmountRound3 = (await config.AET_RATE()).mul(ether(3));
 		await increaseTimeTo(startTime+ duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(10)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: ether(3)}).should.be.fulfilled;
 
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(tokenBuyerAmountRound3);
+		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 	});
 
 

@@ -121,13 +121,13 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	it('should sell tokens to whitelisted users during round 3', async function() {
 		await increaseTimeTo(startTime + duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: ether(11)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: ether(14)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(15)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: ether(6)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: ether(4)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(3)}).should.be.fulfilled;
 
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(ether(15).mul(rate));
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(ether(15).mul(rate));
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(ether(15).mul(rate));
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(ether(10).mul(rate));
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(ether(5).mul(rate));
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(ether(3).mul(rate));
 	});
 
 

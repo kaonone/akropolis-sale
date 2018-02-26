@@ -56,7 +56,7 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 
 	it('should deploy crowdsale and connect to token and allocations contracts', async function() {
 		config = await SaleConfigurationMock.new().should.be.fulfilled;
-		await config.setHARD_CAP(ether(40)).should.be.fulfilled;
+		await config.setHARD_CAP(ether(10+10+5+3)).should.be.fulfilled;
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.fulfilled;
 		token = await AkropolisToken.at(await crowdsale.token());
 	});
@@ -115,10 +115,10 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 
 
 	it('should sell tokens to whitelisted users during round 3', async function() {
-		let tokenBuyerAmountRound3 = (await config.AET_RATE()).mul(ether(15));
+		let tokenBuyerAmountRound3 = (await config.AET_RATE()).mul(ether(3));
 		await increaseTimeTo(startTime + duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
-		await crowdsale.buyTokens(buyer4, {from: buyer4, value: ether(15)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer4, {from: buyer4, value: ether(3)}).should.be.fulfilled;
 
 		(await token.balanceOf(buyer4)).should.be.bignumber.equal(tokenBuyerAmountRound3);
 	});

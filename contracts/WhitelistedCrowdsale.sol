@@ -38,7 +38,7 @@ contract WhitelistedCrowdsale is Ownable{
 
         setCapsPerTier(1, config.MIN_TIER_1(), config.MAX_TIER_1());
         setCapsPerTier(2, config.MIN_TIER_2(), config.MAX_TIER_2());
-        setCapsPerTier(3, 0, config.MAX_CONTRIBUTION_VALUE());
+        setCapsPerTier(3, config.MIN_TIER_3(), config.MAX_TIER_3());
         setRoundDuration(config.ROUND_DURATION());
     }
 
@@ -49,7 +49,6 @@ contract WhitelistedCrowdsale is Ownable{
         require(_tier >=1 && _tier <= 3);
         require(_min >= 0);
         require(_max  >= _min);
-        require(_max  <= config.MAX_CONTRIBUTION_VALUE());
 
         min[_tier] = _min;
         max[_tier] = _max;
@@ -80,11 +79,7 @@ contract WhitelistedCrowdsale is Ownable{
     * @dev Get the of a buyer in the current round
     */
     function getCap(address _buyer) public view returns(uint256) {
-        if (getCurrentRound() >= 3) {
-            return config.MAX_CONTRIBUTION_VALUE();
-        } else {
-            return max[whitelist.getTier(_buyer)];
-        }
+        return max[whitelist.getTier(_buyer)];
     }
 
     /**
