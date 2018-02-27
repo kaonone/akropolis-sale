@@ -14,13 +14,12 @@ contract SaleConfiguration {
 
     uint256 public TOTAL_SUPPLY = 900000000 ether;
     uint256 public PUBLIC_SALE_SUPPLY = 90000000 ether;
-    uint256 public constant PRESALE_SUPPLY = 360000000 ether;
-    uint256 public constant TEAM_SUPPLY = 135000000 ether;
+    uint256 public constant PRESALE_SUPPLY = 180000000 ether;
+    uint256 public constant TEAM_SUPPLY = 180000000 ether;
     uint256 public constant ADVISORS_SUPPLY = 49500000 ether;
 
-    uint256 public constant RESERVE_FUND_VALUE = 135000000 ether;
-    uint256 public constant BOUNTY_FUND_VALUE = 18000000 ether;
-    uint256 public constant DEVELOPMENT_FUND_VALUE = 112500000 ether;
+    uint256 public constant RESERVE_FUND_VALUE = 180000000 ether;
+    uint256 public constant DEVELOPMENT_FUND_VALUE = 220500000 ether;
 
     uint256 public constant MIN_TIER_1 = 2 ether;
     uint256 public constant MAX_TIER_1 = 10 ether;
