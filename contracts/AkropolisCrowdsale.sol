@@ -179,4 +179,5 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
     function getAvailableCap(address _buyer) public view returns(uint256) {
         return getCap(_buyer).sub(contributions[_buyer]);
     }
+
 }

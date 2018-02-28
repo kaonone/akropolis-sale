@@ -20,7 +20,7 @@ function ether (n) {
 
 contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer3, wallet, notAdded]) {
 
-	let whitelist, crowdsale, config, startTime;
+	let whitelist, crowdsale, config, startTime, endTime, roundDuration;
 	let minTier1, minTier2, minTier3, maxTier1, maxTier2, maxTier3;
 
 	before(async function () {
@@ -28,9 +28,10 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 		await advanceBlock();
 
 		startTime = latestTime() + duration.weeks(1);
-		var endTime = startTime + duration.weeks(2);
+		endTime = startTime + duration.weeks(2);
 
 		config = await SaleConfigurationMock.new();
+		roundDuration = parseInt(await config.ROUND_DURATION());
 		whitelist = await Whitelist.new();
 		crowdsale = await WhitelistedCrowdsale.new(startTime, endTime, whitelist.address, config.address);
 
@@ -42,6 +43,13 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 		maxTier3 = (await config.MAX_TIER_3());
 
 		await increaseTimeTo(startTime);
+	});
+
+	it('should define correct round end times', async function () {
+		(await crowdsale.startTime()).should.be.bignumber.equal(startTime);
+		(await crowdsale.round1EndTime()).should.be.bignumber.equal(startTime + roundDuration);
+		(await crowdsale.round2EndTime()).should.be.bignumber.equal(startTime + roundDuration + roundDuration);
+		(await crowdsale.endTime()).should.be.bignumber.equal(endTime);
 	});
 
 
@@ -82,6 +90,11 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 		(await crowdsale.getCap(buyer2)).should.be.bignumber.equal(maxTier2);
 	});
 
+	it('should be able to modify round 1 end time', async function () {
+		(await crowdsale.setRound1EndTime(startTime + duration.days(4)));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
+	});
+
 	it('should have correct caps and admissions in round 3', async function () {
 		await increaseTimeTo(startTime + duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
@@ -98,6 +111,9 @@ contract('Whitelisted Crowdsale', function ([owner, admin, buyer1, buyer2, buyer
 		(await crowdsale.getCap(buyer3)).should.be.bignumber.equal(maxTier3);
 	});
 
-
+	it('should be able to modify round 2 end time', async function () {
+		(await crowdsale.setRound2EndTime(startTime + duration.days(7)));
+		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
+	});
 
 });
