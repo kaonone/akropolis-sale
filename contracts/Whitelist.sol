@@ -32,6 +32,13 @@ contract Whitelist is Administrable {
         tiers[_buyer] = _tier;
     }
 
+    function addMultipleToWhitelist(address[] buyerAddresses, uint8[] buyerTiers) public onlyAdmin {
+        require(buyerAddresses.length == buyerTiers.length);
+        for(uint i=0; i < buyerAddresses.length; i++){
+            addToWhitelist(buyerAddresses[i], buyerTiers[i]);
+        }
+    }
+
     /**
     * @dev Removes a buyer with a given address from whitelisted users
     */
