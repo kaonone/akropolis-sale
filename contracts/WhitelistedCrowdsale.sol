@@ -16,7 +16,7 @@ import "./SaleConfiguration.sol";
  * Tier 3: Can enter the crowdsale from round 3, there are no limits for this tier
  * Limits are awarded per user not per round
  */
-contract WhitelistedCrowdsale is Ownable{
+contract WhitelistedCrowdsale is Ownable {
     using SafeMath for uint256;
 
     Whitelist whitelist;
@@ -25,9 +25,11 @@ contract WhitelistedCrowdsale is Ownable{
     uint256[] min = new uint[](4);
     uint256[] max = new uint[](4);
 
-    uint256 startTime;
-    uint256 endTime;
-    uint256 roundDuration;
+    uint256 public startTime;
+    uint256 public round1EndTime;
+    uint256 public round2EndTime;
+    uint256 public endTime;
+    uint256 public roundDuration;
 
     function WhitelistedCrowdsale(uint256 _startTime, uint256 _endTime, Whitelist _whitelist, SaleConfiguration _config) public {
         startTime = _startTime;
@@ -38,8 +40,9 @@ contract WhitelistedCrowdsale is Ownable{
 
         setCapsPerTier(1, config.MIN_TIER_1(), config.MAX_TIER_1());
         setCapsPerTier(2, config.MIN_TIER_2(), config.MAX_TIER_2());
-        setCapsPerTier(3, 0, config.MAX_CONTRIBUTION_VALUE());
-        setRoundDuration(config.ROUND_DURATION());
+        setCapsPerTier(3, config.MIN_TIER_3(), config.MAX_TIER_3());
+        setRound1EndTime(startTime.add(config.ROUND_DURATION()));
+        setRound2EndTime(round1EndTime.add(config.ROUND_DURATION()));
     }
 
     /**
@@ -49,19 +52,28 @@ contract WhitelistedCrowdsale is Ownable{
         require(_tier >=1 && _tier <= 3);
         require(_min >= 0);
         require(_max  >= _min);
-        require(_max  <= config.MAX_CONTRIBUTION_VALUE());
 
         min[_tier] = _min;
         max[_tier] = _max;
     }
 
     /**
-    * @dev Sets duration of a single round
+    * @dev Sets the end time of round 1
     */
-    function setRoundDuration(uint256 _roundDuration) public onlyOwner {
-        require(_roundDuration > 0);
-        require(_roundDuration.mul(3) <= endTime.sub(startTime));
-        roundDuration = _roundDuration;
+    function setRound1EndTime(uint256 _round1EndTime) public onlyOwner {
+        require(_round1EndTime > startTime);
+        require(round2EndTime == 0 || _round1EndTime < round2EndTime);
+        round1EndTime = _round1EndTime;
+    }
+
+
+    /**
+    * @dev Sets the end time of round 2
+    */
+    function setRound2EndTime(uint256 _round2EndTime) public onlyOwner {
+        require(_round2EndTime > round1EndTime);
+        require(_round2EndTime < endTime);
+        round2EndTime = _round2EndTime;
     }
 
     /**
@@ -69,22 +81,20 @@ contract WhitelistedCrowdsale is Ownable{
     */
     function getCurrentRound() public view returns(uint256) {
         require(now >= startTime);
-        uint256 round = now.sub(startTime).div(roundDuration).add(1);
-        if (round > 3) {
-            round = 3;
+        if (now >= round2EndTime) {
+            return 3;
+        } else if (now >= round1EndTime) {
+            return 2;
+        } else {
+            return 1;
         }
-        return round;
     }
 
     /**
     * @dev Get the of a buyer in the current round
     */
     function getCap(address _buyer) public view returns(uint256) {
-        if (getCurrentRound() >= 3) {
-            return config.MAX_CONTRIBUTION_VALUE();
-        } else {
-            return max[whitelist.getTier(_buyer)];
-        }
+        return max[whitelist.getTier(_buyer)];
     }
 
     /**

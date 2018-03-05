@@ -25,7 +25,7 @@ function ether (n) {
 //It seeks to correctly set up related contracts for the token generation event
 //The test explores allocations, public token sales, vesting, reserve fund, finalization, and final token transfer
 contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buyer2, buyer3, investor1, investor2, investor3,
-																						reserveFund, bountyFund, developmentFund, unknown]) {
+																						reserveFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
@@ -121,13 +121,13 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 	it('should sell tokens to whitelisted users during round 3', async function() {
 		await increaseTimeTo(startTime + duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
-		await crowdsale.buyTokens(buyer1, {from: buyer1, value: ether(11)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer2, {from: buyer2, value: ether(14)}).should.be.fulfilled;
-		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(15)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer1, {from: buyer1, value: ether(6)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer2, {from: buyer2, value: ether(4)}).should.be.fulfilled;
+		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(3)}).should.be.fulfilled;
 
-		(await token.balanceOf(buyer1)).should.be.bignumber.equal(ether(15).mul(rate));
-		(await token.balanceOf(buyer2)).should.be.bignumber.equal(ether(15).mul(rate));
-		(await token.balanceOf(buyer3)).should.be.bignumber.equal(ether(15).mul(rate));
+		(await token.balanceOf(buyer1)).should.be.bignumber.equal(ether(10).mul(rate));
+		(await token.balanceOf(buyer2)).should.be.bignumber.equal(ether(5).mul(rate));
+		(await token.balanceOf(buyer3)).should.be.bignumber.equal(ether(3).mul(rate));
 	});
 
 
@@ -150,7 +150,6 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;
@@ -163,9 +162,6 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 		//Test advisors allocations
 		(await token.balanceOf(advisorsAllocations.address)).should.be.bignumber.equal((await config.ADVISORS_SUPPLY()));
-
-		//Test bounty fund
-		(await token.balanceOf(bountyFund)).should.be.bignumber.equal((await config.BOUNTY_FUND_VALUE()));
 
 		//Test dev fund
 		(await token.balanceOf(developmentFund)).should.be.bignumber.equal((await config.DEVELOPMENT_FUND_VALUE()));

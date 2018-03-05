@@ -24,7 +24,7 @@ function ether (n) {
 //Test will whitelist investor 1 and 2. They buy every round of the crowdsale along with buyer 1 and 2
 //At the completion of the crowdsale the investors also receive the allocated and vested value without issues
 contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, admin, wallet, buyer1, buyer2, investor1, investor2, investor3,
-																						reserveFund, bountyFund, developmentFund, unknown]) {
+																						reserveFund, developmentFund, unknown]) {
 
 	const ALLOCATED_VALUE = 100;
 	const ALLOCATED_VESTING = 200;
@@ -136,7 +136,6 @@ contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, 
 		await crowdsale.setAdvisorsAllocations(advisorsAllocations.address, {from: owner});
 
 		await crowdsale.setReserveFund(reserveFund, {from: owner});
-		await crowdsale.setBountyFund(bountyFund, {from: owner});
 		await crowdsale.setDevelopmentFund(developmentFund, {from: owner});
 
 		await crowdsale.finalize({from: owner}).should.be.fulfilled;

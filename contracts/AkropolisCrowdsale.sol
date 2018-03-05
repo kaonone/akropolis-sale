@@ -22,7 +22,6 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
     AllocationsManager public advisorsAllocations;
 
     address public reserveFund;
-    address public bountyFund;
     address public developmentFund;
 
 
@@ -52,10 +51,14 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
         require(config.ADVISORS_SUPPLY() > 0);
 
         require(config.RESERVE_FUND_VALUE() > 0);
-        require(config.BOUNTY_FUND_VALUE() > 0);
         require(config.DEVELOPMENT_FUND_VALUE() > 0);
 
         require(config.PRESALE_SUPPLY() > 0);
+
+        uint256 totalDistribution = config.PUBLIC_SALE_SUPPLY().add(config.PRESALE_SUPPLY());
+        totalDistribution = totalDistribution.add(config.TEAM_SUPPLY()).add(config.ADVISORS_SUPPLY());
+        totalDistribution = totalDistribution.add(config.RESERVE_FUND_VALUE()).add(config.DEVELOPMENT_FUND_VALUE());
+        require(totalDistribution == config.TOTAL_SUPPLY());
 
         token = new AkropolisToken();
         AkropolisToken(token).pause();
@@ -128,9 +131,8 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
         token.mint(advisorsAllocations, config.ADVISORS_SUPPLY());
 
         //Mint special purpose funds
-        require(reserveFund != 0x0 && bountyFund != 0x0 && developmentFund != 0x0);
+        require(reserveFund != 0x0 && developmentFund != 0x0);
         token.mint(reserveFund, config.RESERVE_FUND_VALUE());
-        token.mint(bountyFund, config.BOUNTY_FUND_VALUE());
         token.mint(developmentFund, config.DEVELOPMENT_FUND_VALUE());
 
 
@@ -162,10 +164,6 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
         reserveFund = _reserveFund;
     }
 
-    function setBountyFund(address _bountyFund) public onlyOwner {
-        bountyFund = _bountyFund;
-    }
-
     function setDevelopmentFund(address _developmentFund) public onlyOwner {
         developmentFund = _developmentFund;
     }
@@ -181,4 +179,5 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
     function getAvailableCap(address _buyer) public view returns(uint256) {
         return getCap(_buyer).sub(contributions[_buyer]);
     }
+
 }
