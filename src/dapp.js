@@ -2,6 +2,8 @@ var Web3 = require("web3");
 var contract = require("truffle-contract");
 var Whitelist = contract(require("../build/contracts/Whitelist.json"));
 var Allocations = contract(require("../build/contracts/AllocationsManager.json"));
+
+var importer = require("../importWhitelist");
 require("bootstrap");
 
 var account;
@@ -12,7 +14,7 @@ var teamAllocation = Allocations.at("0xecfd84c7579032663c9fd028e795debe95226b27"
 var advisorsAllocation = Allocations.at("0xefc08b5e6c3ba5ada5b483eb0529f3b2d1b55afc");
 var presaleAllocation = Allocations.at("0xdf3c3fdb7bfea5874c856b6c00fe4da0d561e47e");
 
-var connectedWhitelist = Whitelist.at("0x9c50cffe59b67bbeacc1f8c72dd92d882b1a9519");
+var connectedWhitelist = Whitelist.at("0x52d96b96ed64faa9ef2164fcd617eeaa85368a62");
 
 function show(element, text) {
 	var element = document.getElementById(element);
@@ -285,6 +287,11 @@ window.Dapp = {
 		});
 	},
 
+	addBulkAdditionsToWhitelist: function() {
+			var buyerInfo = importer.buyerArrays();
+			console.log(buyerInfo.buyerAddressing);
+			console.log(buyerInfo.buyerTierAssignment);
+		}
 
 
 };
