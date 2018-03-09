@@ -1,22 +1,17 @@
 var mysql = require('mysql');
 var express = require('express');
 var bodyParser = require("body-parser"); // Body parser for fetch posted data
-var con = mysql.createConnection({
+var connection = mysql.createConnection({
 	host: "akropoliswhitelist-cluster-1.cluster-c0fjtlecu7ih.eu-west-2.rds.amazonaws.com",
 	user: "akropoli_db1",
 	password: "Anonymous",
 	database: "akropoli_db1"
 });
 
-var app = module.exports= express.createServer();
+var app = module.exports= express();
 //Setup a config
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-//Set main file
-app.get('/', function(req, res) {
-	res.sendfile(_dirname + '/whitelistimport.html');
-});
 
 connection.query('USE akropoli_db1', function (err) {
 	if (err) throw err;
@@ -36,8 +31,7 @@ app.get('/kycReadyUsers', function (req, res) {
 			data["Data"] = 'No data found';
 			res.json(data);
 		}
-		res.send();
 	});
 });
 
-app.listen(8080);
+app.listen(3000);
