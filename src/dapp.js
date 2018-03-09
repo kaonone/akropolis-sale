@@ -306,7 +306,7 @@ window.addEventListener("load", function() {
 		if (accounts.length == 0) {
 			Dapp.throwError("Connect an account!");
 		}
-		adminAccount = accounts[0];
+		adminAccount = accounts[1];
 
 			//Set allocations
 			Dapp.allocations["Team"] = teamAllocation;
