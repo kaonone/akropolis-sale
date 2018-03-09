@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 var express = require('express');
+var cors = require('cors');
 var bodyParser = require("body-parser"); // Body parser for fetch posted data
 var connection = mysql.createConnection({
 	host: "akropoliswhitelist-cluster-1.cluster-c0fjtlecu7ih.eu-west-2.rds.amazonaws.com",
@@ -17,7 +18,7 @@ connection.query('USE akropoli_db1', function (err) {
 	if (err) throw err;
 });
 
-app.get('/kycReadyUsers', function (req, res) {
+app.get('/kycReadyUsers', cors(), function (req, res) {
 	var data = {
 		"Data":""
 	};

@@ -3,7 +3,6 @@ var contract = require("truffle-contract");
 var Whitelist = contract(require("../build/contracts/Whitelist.json"));
 var Allocations = contract(require("../build/contracts/AllocationsManager.json"));
 
-var importer = require("../importWhitelist");
 require("bootstrap");
 
 var account;

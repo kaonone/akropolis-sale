@@ -55,11 +55,12 @@
 				alert("2");
 				$.ajax({
 
-					url: '/importWhitelist/kycReadyUsers',
+					url: 'http://localhost:3000/kycReadyUsers',
 					type: 'GET',
 					dataType: 'JSON',
 					success: function(data){
 						alert("3");
+						console.log(data);
 						$(data).each(function(){
 							$('#tbody').append('<tr><td>' + this.EthAddress + '</td><td>' + this.PocStatement + '</td><td>' + this.Tier + '</td></tr>')
 						});
