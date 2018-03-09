@@ -87,9 +87,7 @@ window.Dapp = {
 	},
 
 	setWhitelistedCount: function() {
-		Whitelist.deployed().then(function(instance) {
-			return connectedWhitelist.getWhitelistedCount.call();
-		}).then(function(value) {
+			return connectedWhitelist.getWhitelistedCount.call().then(function(value) {
 			show("whitelisted-count", value.valueOf());
 		}).catch(function(err) {
 			console.log(err);
@@ -100,11 +98,8 @@ window.Dapp = {
 		var self = this;
 		var address = document.getElementById("buyer-address").value;
 		var tier = document.getElementById("buyer-tier").value;
-		console.log("Adding to whitelist: " + address);
-		Whitelist.deployed().then(function(instance) {
-			self.setAlert("Adding to the whitelist...");
-			return connectedWhitelist.addToWhitelist(address,tier, {from: adminAccount});
-		}).then(function() {
+		self.setAlert("Adding to the whitelist..." + address);
+		return connectedWhitelist.addToWhitelist(address,tier, {from: adminAccount}).then(function() {
 			self.setWhitelistedCount();
 			self.setAlert("Buyer was added!", "success");
 		}).catch(function(err) {
@@ -117,10 +112,8 @@ window.Dapp = {
 		var self = this;
 		var address = document.getElementById("remove-address").value;
 		console.log("Removing from whitelist: " + address);
-		Whitelist.deployed().then(function(instance) {
-			self.setAlert("Removing from the whitelist...");
-			return connectedWhitelist.removeFromWhitelist(address, {from: adminAccount});
-		}).then(function() {
+		self.setAlert("Removing from the whitelist...");
+		return connectedWhitelist.removeFromWhitelist(address, {from: adminAccount}).then(function() {
 			self.setWhitelistedCount();
 			self.setAlert("Buyer was removed!", "success");
 		}).catch(function(err) {
@@ -133,10 +126,8 @@ window.Dapp = {
 		var self = this;
 		var address = document.getElementById("check-address").value;
 		console.log("Checking address: " + address);
-		Whitelist.deployed().then(function(instance) {
-			self.setAlert("Checking address...");
-			return connectedWhitelist.isWhitelisted(address, {from: adminAccount});
-		}).then(function(result) {
+		self.setAlert("Checking address...");
+		return connectedWhitelist.isWhitelisted(address, {from: adminAccount}).then(function(result) {
 			console.log(result);
 			if (result) {
 				self.setAlert("Address: " + address + " is whitelisted.", "success");
@@ -168,10 +159,8 @@ window.Dapp = {
 		var contract;
 		var element = document.getElementById("whitelisted-list");
 		element.innerHTML = "";
-		Whitelist.deployed().then(function(instance) {
 			contract = connectedWhitelist;
-			return connectedWhitelist.getWhitelistedCount.call();
-		}).then(function(max) {
+			return connectedWhitelist.getWhitelistedCount.call().then(function(max) {
 			return self.fetchWhitelistedAddress(0, max, contract, element);
 		}).catch(function(err) {
 			console.log(err);
