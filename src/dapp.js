@@ -288,9 +288,6 @@ window.Dapp = {
 	},
 
 	addBulkAdditionsToWhitelist: function() {
-			var buyerInfo = importer.buyerArrays();
-			console.log(buyerInfo.buyerAddressing);
-			console.log(buyerInfo.buyerTierAssignment);
 		}
 
 

@@ -8,6 +8,8 @@
     <link rel="icon" type="image/png" href="https://akropolis.io/wp-content/uploads/2017/12/favico.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha256-ZT4HPpdCOt2lvDkXokHuhJfdOKSPFLzeAJik5U/Q+l4=" crossorigin="anonymous" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
 
@@ -31,7 +33,7 @@
             <h3 class="panel-title">Add to the Whitelist Bulk Addition</h3>
         </div>
         <div class="panel-body form-inline">
-            <table class="table">
+            <table class="table" id="content">
                 <thead>
                 <tr>
                     <th>EthAddress</th>
@@ -40,29 +42,37 @@
                     <th>Toggle</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr>
-                    <td>0x123</td>
-                    <td>Savvy Investor</td>
-                    <td>3</td>
-                    <td><label><input type="radio" >Toggle</label></td>
-                </tr>
-                <tr>
-                    <td>0x543</td>
-                    <td>Test POC</td>
-                    <td>1</td>
-                    <td><label><input type="radio" >Toggle</label></td>
-                </tr>
-                <tr >
-                    <td>0x111</td>
-                    <td>Tech Enthusiast</td>
-                    <td>2</td>
-                    <td><label><input type="radio" >Toggle</label></td>
-                </tr>
-
+                <tbody id="users">
                 </tbody>
             </table>
         </div>
+
+        <script>
+
+			$(document).ready(function(){
+				alert("1");
+				var data = $("#Data").val();
+				alert("2");
+				$.ajax({
+
+					url: '/importWhitelist/kycReadyUsers',
+					type: 'GET',
+					dataType: 'JSON',
+					success: function(data){
+						alert("3");
+						$(data).each(function(){
+							$('#tbody').append('<tr><td>' + this.EthAddress + '</td><td>' + this.PocStatement + '</td><td>' + this.Tier + '</td></tr>')
+						});
+					},
+
+					error: function(data){
+						alert("4");
+					}
+
+				});
+			});
+
+        </script>
         <button type="button" class="btn btn-primary" style="margin-left: 15px; margin-bottom: 15px;" onclick="Dapp.addBulkAdditionsToWhitelist()">Add all KYC and Tiered Users</button>
         <div id="whitelisted-list" style="margin-left:15px;"></div>
     </div><!--/#overview -->

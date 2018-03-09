@@ -57,6 +57,7 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^2.0.1",
+    "express": "^4.16.2",
     "ganache-cli": "^6.0.3",
     "mysql": "^2.15.0",
     "node-mysql": "^0.4.2",
