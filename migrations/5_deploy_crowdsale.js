@@ -4,7 +4,8 @@ function ether (n) {
 	return new web3.BigNumber(web3.toWei(n, 'ether'));
 }
 module.exports = async function(deployer, network, accounts) {
-	const startTime = 1518203941; //Custom time, set to UNIX (Epoch) Standard Seconds
+
+	const startTime = (new Date().getTime()/1000 | 0) + 3600; //Custom time 1hr from now, set to UNIX (Epoch) Standard Seconds
 	const endTime = startTime + 36200; // 10 days
 	let advisorsAddress = '0xefc08b5e6c3ba5ada5b483eb0529f3b2d1b55afc';
 	let presaleAddress = '0xdf3c3fdb7bfea5874c856b6c00fe4da0d561e47e';
@@ -27,5 +28,4 @@ module.exports = async function(deployer, network, accounts) {
 	await crowdsale.setAdvisorsAllocations(advisorsAddress);
 	await crowdsale.setPresaleAllocations(presaleAddress);
 	await crowdsale.setTeamAllocations(teamAddress);
-
 };
