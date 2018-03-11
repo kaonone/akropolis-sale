@@ -25,9 +25,8 @@ app.get('/kycReadyUsers', cors(), function (req, res) {
 	connection.query('select * from whitelist WHERE AddedToSmartContract IS NULL and CommflagWhitelistResult = 1', function (err, rows, fields) {
 		if (err) throw err;
 		if(rows.length != 0) {
-			data["Data"] = rows;
 			console.log(data["Data"]);
-			res.json(data);
+			res.json(rows);
 		}else {
 			data["Data"] = 'No data found';
 			res.json(data);
