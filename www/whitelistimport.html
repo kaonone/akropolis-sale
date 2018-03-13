@@ -39,7 +39,6 @@
                     <th>EthAddress</th>
                     <th>POC Statement</th>
                     <th>Tier</th>
-                    <th>Toggle</th>
                 </tr>
                 </thead>
                 <tbody id="users">
@@ -58,7 +57,19 @@
 					dataType: 'JSON',
 					success: function(data){
 						$(data).each(function(){
-							$('tbody#users').append('<tr><td>' + this.EthAddress + '</td><td>' + this.PocStatement + '</td><td>' + this.Tier + '</td></tr>')
+							$('tbody#users').append(
+								'<tr style="font-size: x-large">' +
+                                '<td>' + this.EthAddress + '</td>' +
+                                '<td>' + this.PocStatement + '</td>' +
+                                '<td>' +
+                                '<select id="dropdown-tier'+this.EthAddress + '" name="select" >' +
+								'<option value="1">1</option>'+
+								'<option value="2">2</option>'+
+								'<option value="3">3</option>'+
+								'</select>' + '</td>' +
+                                '</tr>');
+							$('#dropdown-tier'+this.EthAddress).val(this.Tier);
+							
 						});
 					},
 
