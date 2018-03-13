@@ -2,11 +2,12 @@ var mysql = require('mysql');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require("body-parser"); // Body parser for fetch posted data
+var credentials = require('./credentials');
 var connection = mysql.createConnection({
-	host: "akropoliswhitelist-cluster-1.cluster-c0fjtlecu7ih.eu-west-2.rds.amazonaws.com",
-	user: "akropoli_db1",
-	password: "Anonymous",
-	database: "akropoli_db1"
+	host: credentials.host,
+	user: credentials.user,
+	password: credentials.password,
+	database: credentials.database
 });
 
 var app = module.exports= express();
