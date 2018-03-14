@@ -35,4 +35,27 @@ app.get('/kycReadyUsers', cors(), function (req, res) {
 	});
 });
 
+//Update individual tiers of users when they are updated from the admin panel
+//Example input, Tier: 1 and EthAddress : 0x00...
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.post('/updateEthAddressTier', cors(), function (req, res) {
+	connection.query('UPDATE whitelist set Tier = \''+ req.body.Tier +'\' WHERE EthAddress =' + req.body.EthAddress,
+		function (err, result) {
+			if (err) throw err;
+			res.send('User tier of EthAddress '+ req.params + ' Updated to tier' + req.query);
+		});
+});
+
+//Set added to smart contract to 1 for true, where eth address is equal to any number of passed in comma delimited eth addresses
+//Example input EthAddresses: '0x00...', '0x11...', '0x22..'
+app.post('/updateAddedToSmartContractEntries', cors(), function (req, res) {
+	connection.query('UPDATE whitelist set AddedToSmartContract = \'1\' WHERE EthAddress in ('+ req.body.EthAddresses + ')',
+		function (err, result) {
+		if (err) throw err;
+		res.send('User added to smart contract with EthAddress in: ' + req.body.EthAddresses + ' has been reflected in DB');
+	});
+});
+
 app.listen(3000);
