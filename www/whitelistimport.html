@@ -69,7 +69,23 @@
 								'</select>' + '</td>' +
                                 '</tr>');
 							$('#dropdown-tier'+this.EthAddress).val(this.Tier);
-							
+                            var thisAddress = this.EthAddress;
+							$('#dropdown-tier'+this.EthAddress).change(function(){
+								var dataPkg = {
+									'Tier': this.value,
+									'EthAddress' : thisAddress
+								};
+								$.ajax({
+
+									url: 'http://localhost:3000/updateEthAddressTier',
+									type: 'POST',
+                                    headers: {
+									    'Content-Type' : 'application/x-www-form-urlencoded;charset=UTF-8'
+                                    },
+									dataType: 'json',
+                                    data: dataPkg
+								});
+                            });
 						});
 					},
 
