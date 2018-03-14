@@ -3,18 +3,18 @@ var express = require('express');
 var cors = require('cors');
 var bodyParser = require("body-parser"); // Body parser for fetch posted data
 var credentials = require('./credentials');
-var connection = mysql.createConnection({
-	host: credentials.host,
-	user: credentials.user,
-	password: credentials.password,
-	database: credentials.database
-});
 
 var app = module.exports= express();
 //Setup a config
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+var connection = mysql.createConnection({
+	host: credentials.host,
+	user: credentials.user,
+	password: credentials.password,
+	database: credentials.database
+});
 connection.query('USE akropoli_db1', function (err) {
 	if (err) throw err;
 });
@@ -37,11 +37,11 @@ app.get('/kycReadyUsers', cors(), function (req, res) {
 
 //Update individual tiers of users when they are updated from the admin panel
 //Example input, Tier: 1 and EthAddress : 0x00...
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: true}));
 
 app.post('/updateEthAddressTier', cors(), function (req, res) {
-	connection.query('UPDATE whitelist set Tier = \''+ req.body.Tier +'\' WHERE EthAddress =' + req.body.EthAddress,
+	var sqlQuery = 'UPDATE whitelist set Tier = \''+ req.body.Tier +'\' WHERE EthAddress =\'' + req.body.EthAddress+ '\'';
+	console.log(sqlQuery);
+	connection.query(sqlQuery,
 		function (err, result) {
 			if (err) throw err;
 			res.send('User tier of EthAddress '+ req.params + ' Updated to tier' + req.query);
@@ -57,5 +57,3 @@ app.post('/updateAddedToSmartContractEntries', cors(), function (req, res) {
 		res.send('User added to smart contract with EthAddress in: ' + req.body.EthAddresses + ' has been reflected in DB');
 	});
 });
-
-app.listen(3000);
