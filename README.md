@@ -51,6 +51,14 @@ Alternatively, you may also call the truffle command directly:
 
     truffle test
 
+### Adding your Credentials
+
+In order to run a successful migration of the project, you should add 3 addresses into the migrations/migrationAddresses/fundAddresses.js file to configure the crowdsale.
+This includes the Reserve Fund, Bounty Fund, and Development Fund.
+
+In order to run the server/importWhitelist module for bulk importing addresses from an external mysql database to the smart contract bulk whitelisting,
+you will need to fill in your mysql server credentials in server/credentials.js
+
 ## License
 
 MIT License
