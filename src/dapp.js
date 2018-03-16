@@ -287,6 +287,17 @@ window.Dapp = {
 	},
 
 	addBulkAdditionsToWhitelist: function() {
+			//This function persists out to the database on a correct response from the smart contract
+			var rows = document.getElementsByTagName("table")[0].rows;
+			var addresses = [];
+			var tiers = [];
+			for (var i = 1; i < rows.length; i++)
+			{
+				addresses[i] = rows[i].cells[0].innerHTML;
+				console.log("address" +addresses[i]);
+				tiers [i] = document.getElementById('dropdown-tier'+ addresses[i]).value;
+				console.log("The address : " + addresses[i] + "Will be added to whitelist with tier: " + tiers[i]);
+			}
 		}
 
 
