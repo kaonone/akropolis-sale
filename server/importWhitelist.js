@@ -57,3 +57,5 @@ app.post('/updateAddedToSmartContractEntries', cors(), function (req, res) {
 		res.send('User added to smart contract with EthAddress in: ' + req.body.EthAddresses + ' has been reflected in DB');
 	});
 });
+
+app.listen(3000);
