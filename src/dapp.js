@@ -291,12 +291,32 @@ window.Dapp = {
 			var rows = document.getElementsByTagName("table")[0].rows;
 			var addresses = [];
 			var tiers = [];
-			for (var i = 1; i < rows.length; i++)
+			for (var i = 1; i < rows.length; i++) //First row is title column, iterate through other rows
 			{
 				addresses[i] = rows[i].cells[0].innerHTML;
 				console.log("address" +addresses[i]);
-				tiers [i] = document.getElementById('dropdown-tier'+ addresses[i]).value;
+				tiers[i] = document.getElementById('dropdown-tier'+ addresses[i]).value;
 				console.log("The address : " + addresses[i] + "Will be added to whitelist with tier: " + tiers[i]);
+			}
+
+			if(addresses.length === tiers.length && addresses.length > 0) //Ensure we have 1 to 1 mapping address to tier
+			{
+				var stringWithAddresses = addresses[1];
+				for(var j= 2; j < addresses.length; j++)
+				{
+					stringWithAddresses += "," + addresses[j]; //Comma delimited list
+				}
+				console.log(stringWithAddresses);
+				axios.post('http://localhost:3000/updateAddedToSmartContractEntries',
+					 {body:{
+					EthAddresses: stringWithAddresses}
+				})
+					.then(function (response) {
+						console.log(response);
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
 			}
 		}
 
