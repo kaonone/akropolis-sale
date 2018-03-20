@@ -108,13 +108,19 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 	});
 
 
+	it('should not allow anyone else than an admin to remove an allocation', async function () {
+		await allocations.removeAllocation(investor, {from: owner}).should.be.rejectedWith('revert');;
+		await allocations.removeAllocation(investor, {from: investor}).should.be.rejectedWith('revert');
+	});
+
+
 	it('should allow the admin to remove allocation in the order of additions', async function () {
-		await allocations.removeAllocation(investor);
+		await allocations.removeAllocation(investor, {from: admin});
 
 		(await allocations.getAllocationsCount()).should.be.bignumber.equal(1);
 		(await allocations.getAllocationAddress(0)).should.be.equal(investorWithVesting);
 
-		await allocations.removeAllocation(investorWithVesting);
+		await allocations.removeAllocation(investorWithVesting, {from: admin});
 		(await allocations.getAllocationsCount()).should.be.bignumber.equal(0);
 		(await allocations.totalAllocated()).should.be.bignumber.equal(0);
 	});
@@ -124,12 +130,12 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		await allocations.registerAllocation(investorWithVesting, ALLOCATED_VALUE, ALLOCATED_VESTING, VESTING_CLIFF, VESTING_PERIOD, {from: admin});
 		await allocations.registerAllocation(investor, UPDATED_VALUE, 0, 0, 0, {from: admin});
 
-		await allocations.removeAllocation(investor);
+		await allocations.removeAllocation(investor, {from: admin});
 
 		(await allocations.getAllocationsCount()).should.be.bignumber.equal(1);
 		(await allocations.getAllocationAddress(0)).should.be.equal(investorWithVesting);
 
-		await allocations.removeAllocation(investorWithVesting);
+		await allocations.removeAllocation(investorWithVesting, {from: admin});
 		(await allocations.getAllocationsCount()).should.be.bignumber.equal(0);
 		(await allocations.totalAllocated()).should.be.bignumber.equal(0);
 	});
@@ -146,20 +152,20 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		(await allocations.getAllocationAddress(2)).should.be.equal(investor3);
 		(await allocations.totalAllocated()).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING + ALLOCATED_VALUE + UPDATED_VALUE);
 
-		await allocations.removeAllocation(investor);
+		await allocations.removeAllocation(investor, {from: admin});
 
 		(await allocations.getAllocationsCount()).should.be.bignumber.equal(2);
 		(await allocations.getAllocationAddress(0)).should.be.equal(investorWithVesting);
 		(await allocations.getAllocationAddress(1)).should.be.equal(investor3);
 		(await allocations.totalAllocated()).should.be.bignumber.equal(ALLOCATED_VALUE + ALLOCATED_VESTING + ALLOCATED_VALUE);
 
-		await allocations.removeAllocation(investorWithVesting);
+		await allocations.removeAllocation(investorWithVesting, {from: admin});
 
 		(await allocations.getAllocationsCount()).should.be.bignumber.equal(1);
 		(await allocations.getAllocationAddress(0)).should.be.equal(investor3);
 		(await allocations.totalAllocated()).should.be.bignumber.equal(ALLOCATED_VALUE);
 
-		await allocations.removeAllocation(investor3);
+		await allocations.removeAllocation(investor3, {from: admin});
 	});
 
 

@@ -155,7 +155,7 @@ contract AllocationsManager is Administrable, Pausable, SaleConfiguration {
     /**
     * @dev Removes an allocation for a given address
     */
-    function removeAllocation(address _investor) public returns(bool) {
+    function removeAllocation(address _investor) public onlyAdmin returns(bool) {
         require(allocations[_investor].value > 0);
 
         uint256 removalIndex = allocations[_investor].index;
