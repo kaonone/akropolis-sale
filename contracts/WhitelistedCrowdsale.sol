@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
-import 'zeppelin-solidity/contracts/crowdsale/Crowdsale.sol';
-import 'zeppelin-solidity/contracts/crowdsale/Crowdsale.sol';
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 import './Whitelist.sol';
 import "./SaleConfiguration.sol";
