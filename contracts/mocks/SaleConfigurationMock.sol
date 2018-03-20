@@ -1,23 +1,28 @@
 pragma solidity ^0.4.18;
 
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+
 /**
  * @title SaleConfigurationMock
  * @dev Set of parameters configuring the sale process
  */
 contract SaleConfigurationMock {
+    using SafeMath for uint256;
+
+    uint256 public constant DECIMALS_FACTOR = 10**uint256(18);
 
     uint256 public AET_RATE = 10;
     uint256 public HARD_CAP = 10000 ether;
-    uint256 public constant MAX_ALLOCATION_VALUE = 1000 ether;
+    uint256 public constant MAX_ALLOCATION_VALUE = DECIMALS_FACTOR.mul(1000);
 
-    uint256 public TOTAL_SUPPLY = 100000 ether;
-    uint256 public PUBLIC_SALE_SUPPLY = 10000 ether;
-    uint256 public constant PRESALE_SUPPLY = 20000 ether;
-    uint256 public constant TEAM_SUPPLY = 20000 ether;
-    uint256 public constant ADVISORS_SUPPLY = 5500 ether;
+    uint256 public TOTAL_SUPPLY = DECIMALS_FACTOR.mul(100000);
+    uint256 public PUBLIC_SALE_SUPPLY = DECIMALS_FACTOR.mul(10000);
+    uint256 public constant PRESALE_SUPPLY = DECIMALS_FACTOR.mul(20000);
+    uint256 public constant TEAM_SUPPLY = DECIMALS_FACTOR.mul(20000);
+    uint256 public constant ADVISORS_SUPPLY = DECIMALS_FACTOR.mul(5500);
 
-    uint256 public constant RESERVE_FUND_VALUE = 20000 ether;
-    uint256 public constant DEVELOPMENT_FUND_VALUE = 24500 ether;
+    uint256 public constant RESERVE_FUND_VALUE = DECIMALS_FACTOR.mul(20000);
+    uint256 public constant DEVELOPMENT_FUND_VALUE = DECIMALS_FACTOR.mul(24500);
 
     uint256 public constant MIN_TIER_1 = 2 ether;
     uint256 public constant MAX_TIER_1 = 10 ether;
