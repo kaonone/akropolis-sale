@@ -17,7 +17,7 @@ module.exports = function(deployer, network, accounts) {
 	deployer.then(function(){
 		return AkropolisCrowdsale.deployed();
 	}).then(function(instance){
-		process.deployment.AkropolisCrowdsale = crowdsale.address;
+		process.deployment.AkropolisCrowdsale = instance.address;
 		instance.setBountyFund(bountyFundAddress);
 		instance.setDevelopmentFund(developmentFundAddress);
 		instance.setReserveFund(reserveFundAddress);
