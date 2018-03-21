@@ -1,20 +1,29 @@
 const Allocations = artifacts.require('./AllocationsManager.sol');
 
-module.exports = async function(deployer, network, accounts) {
-	await deployer.deploy(Allocations);
-	let presaleAllocations = await Allocations.deployed();
-	await presaleAllocations.setAdmin(accounts[0]);
-	process.deployment.PresaleAllocations = presaleAllocations.address;
+module.exports = function(deployer, network, accounts) {
+	deployer.deploy(Allocations);
+	deployer.then(function(){
+		return Allocations.deployed();
+	}).then(function(instance){
+		instance.setAdmin(accounts[1]);
+		process.deployment.PresaleAllocations = instance.address;
+	});
 
-	await deployer.deploy(Allocations);
-	let teamAllocations = await Allocations.deployed();
-	await teamAllocations.setAdmin(accounts[0]);
-	process.deployment.TeamAllocations = teamAllocations.address;
+	deployer.deploy(Allocations);
+	deployer.then(function(){
+		return Allocations.deployed();
+	}).then(function(instance){
+		instance.setAdmin(accounts[1]);
+		process.deployment.TeamAllocations = instance.address;
+	});
 
-	await deployer.deploy(Allocations);
-	let advisorsAllocations = await Allocations.deployed();
-	await advisorsAllocations.setAdmin(accounts[0]);
-	process.deployment.AdvisorsAllocations = advisorsAllocations.address;
+	deployer.deploy(Allocations);
+	deployer.then(function(){
+		return Allocations.deployed();
+	}).then(function(instance){
+		instance.setAdmin(accounts[1]);
+		process.deployment.AdvisorsAllocations = instance.address;
+	});
 };
 
 
