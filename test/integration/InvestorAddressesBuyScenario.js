@@ -168,14 +168,14 @@ contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, 
 		let vestingStart1 = await vesting1.start();
 
 		await increaseTimeTo(vestingStart1.add(VESTING_PERIOD).add(1));
-		await vesting1.release(token.address);
+		await vesting1.release();
 
 		(await token.balanceOf(investor1)).should.be.bignumber.equal(investor1Crowdsale.add(ALLOCATED_VALUE + ALLOCATED_VESTING));
 
 		//Determine investor 2 token balance
 		let vestingAddress2 = await presaleAllocations.getVesting(investor2);
 		let vesting2 = await LinearTokenVesting.at(vestingAddress2);
-		await vesting2.release(token.address);
+		await vesting2.release();
 
 		(await token.balanceOf(investor2)).should.be.bignumber.equal(investor2Crowdsale.add((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 5)));
 
@@ -185,7 +185,7 @@ contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, 
 		let vestingStart2 = await vesting2.start();
 
 		await increaseTimeTo(vestingStart2.add(VESTING_PERIOD * 2).add(1));
-		await vesting2.release(token.address);
+		await vesting2.release();
 
 		(await token.balanceOf(investor2)).should.be.bignumber.equal(investor2Crowdsale.add((ALLOCATED_VALUE * 2) + (ALLOCATED_VESTING * 10)));
 	});

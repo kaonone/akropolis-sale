@@ -286,7 +286,7 @@ contract('AllocationsManager', function ([owner, admin, investor, investorWithVe
 		(await vesting.duration()).should.be.bignumber.equal(VESTING_PERIOD);
 		(await vesting.cliff()).should.be.bignumber.equal(VESTING_CLIFF);
 		(await token.balanceOf(vesting.address)).should.be.bignumber.equal(ALLOCATED_VESTING);
-		(await vesting.releasableAmount(token.address)).should.be.bignumber.equal(0);
+		(await vesting.releasableAmount()).should.be.bignumber.equal(0);
 	});
 
 

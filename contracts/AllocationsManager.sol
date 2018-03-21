@@ -93,7 +93,7 @@ contract AllocationsManager is Administrable, Pausable, SaleConfiguration {
 
         token.safeTransfer(_investor, allocation.value);
         if (allocation.vestingValue > 0) {
-            LinearTokenVesting vesting = new LinearTokenVesting(_investor, allocation.cliff, allocation.vestingPeriod);
+            LinearTokenVesting vesting = new LinearTokenVesting(token, _investor, allocation.cliff, allocation.vestingPeriod);
             vesting.transferOwnership(owner);
             token.safeTransfer(address(vesting), allocation.vestingValue);
             allocation.vestingContract = address(vesting);
