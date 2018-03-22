@@ -10,11 +10,11 @@ import "zeppelin-solidity/contracts/token/PausableToken.sol";
 
 contract AkropolisToken is MintableToken, PausableToken {
 
-    string public name = "Akropolis External Token";
+    string public constant name = "Akropolis External Token";
 
-    uint8 public decimals = 18;
+    uint8 public constant decimals = 18;
 
-    string public symbol = "AET";
+    string public constant symbol = "AET";
 
-    string public version = "AET 1.0";
+    string public constant version = "AET 1.0";
 }
