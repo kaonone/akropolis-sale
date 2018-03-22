@@ -10,7 +10,7 @@ import "./LinearTokenVesting.sol";
 import "./SaleConfiguration.sol";
 
 
-contract AllocationsManager is Administrable, Pausable, SaleConfiguration {
+contract AllocationsManager is Administrable, SaleConfiguration {
     using SafeERC20 for AkropolisToken;
     using SafeMath for uint256;
 
