@@ -93,7 +93,7 @@ contract AllocationsManager is Administrable, Pausable, SaleConfiguration {
 
         token.safeTransfer(_investor, allocation.value);
         if (allocation.vestingValue > 0) {
-            LinearTokenVesting vesting = new LinearTokenVesting(_investor, allocation.cliff, allocation.vestingPeriod);
+            LinearTokenVesting vesting = new LinearTokenVesting(token, _investor, allocation.cliff, allocation.vestingPeriod);
             vesting.transferOwnership(owner);
             token.safeTransfer(address(vesting), allocation.vestingValue);
             allocation.vestingContract = address(vesting);
@@ -155,7 +155,7 @@ contract AllocationsManager is Administrable, Pausable, SaleConfiguration {
     /**
     * @dev Removes an allocation for a given address
     */
-    function removeAllocation(address _investor) public returns(bool) {
+    function removeAllocation(address _investor) public onlyAdmin returns(bool) {
         require(allocations[_investor].value > 0);
 
         uint256 removalIndex = allocations[_investor].index;
