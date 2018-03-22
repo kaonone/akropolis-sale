@@ -22,8 +22,8 @@ contract WhitelistedCrowdsale is Ownable {
     Whitelist whitelist;
     SaleConfiguration config;
 
-    uint256[] min = new uint[](4);
-    uint256[] max = new uint[](4);
+    uint256[] public min = new uint[](4);
+    uint256[] public max = new uint[](4);
 
     uint256 public startTime;
     uint256 public round1EndTime;
