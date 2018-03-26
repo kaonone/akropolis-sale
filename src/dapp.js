@@ -255,13 +255,11 @@ window.Dapp = {
 };
 
 window.addEventListener("load", function() {
-	//TODO: Connect to inected web3 once deployed on testnet
-
-	// if (typeof web3 !== "undefined") {
-	// 	window.web3 = new Web3(web3.currentProvider);
-	// } else {
-	// 	window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-	// }
+	if (typeof web3 !== "undefined") {
+		window.web3 = new Web3(web3.currentProvider);
+	} else {
+	window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+	}
 
 	window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
