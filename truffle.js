@@ -23,7 +23,7 @@ module.exports = {
             return new HDWalletProvider(config.mnemonic, "http://localhost:8545", 0, 3)
           },
           network_id: 42,
-          gas: 7000000, // <-- Use this high gas value
+          gas: 6500000, // <-- Use this high gas value
           gasPrice: 0x05
         },
         solc: {
