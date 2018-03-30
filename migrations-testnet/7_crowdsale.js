@@ -14,7 +14,7 @@ module.exports = function(deployer, network, accounts) {
 	var endTime = startTime + duration.days(7);
 	var wallet = accounts[2];
 
-	deployer.deploy(AkropolisCrowdsale, startTime, endTime, wallet, process.deployment.Whitelist, process.deployment.SaleConfiguration, {gas: 7000000});
+	deployer.deploy(AkropolisCrowdsale, startTime, endTime, wallet, process.deployment.Whitelist, process.deployment.SaleConfiguration, {gas: 6500000});
 	deployer.then(function() {
 		return process.deployment.AkropolisCrowdsale = AkropolisCrowdsale.address;
 	}).then(function() {
