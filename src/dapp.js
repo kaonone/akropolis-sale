@@ -2,7 +2,6 @@ var Web3 = require("web3");
 var contract = require("truffle-contract");
 var Whitelist = contract(require("../build/contracts/Whitelist.json"));
 var Allocations = contract(require("../build/contracts/AllocationsManager.json"));
-var axios = require('axios');
 
 require("bootstrap");
 
@@ -280,37 +279,6 @@ window.Dapp = {
 		});
 	},
 
-	 setWhitelistAdmin: function() {
-		var self = this;
-		var address = document.getElementById("whitelist-admin-address").value;
-		console.log("Setting admin to: " + address);
-		Whitelist.deployed().then(function(instance) {
-		    self.setAlert("Set the whitelist admin...");
-		    return instance.setAdmin(address, {from: adminAccount});
-		}).then(function() {
-		    self.setAlert("Admin was set!", "success");
-		}).catch(function(err) {
-		    Dapp.throwError("Cannot change admin!");
-		    console.log(err);
-		});
-	    },
-
-
-	    setAllocationsAdmin: function() {
-		var self = this;
-		var address = document.getElementById("allocations-admin-address").value;
-		console.log("Setting admin to: " + address);
-		Allocations.deployed().then(function(instance) {
-		    self.setAlert("Set the allocations admin...");
-		    return instance.setAdmin(address, {from: adminAccount});
-		}).then(function() {
-		    self.setAlert("Admin was set!", "success");
-		}).catch(function(err) {
-		    Dapp.throwError("Cannot change admin!");
-		    console.log(err);
-		});
-	    },
-
 	addBulkAdditionsToWhitelist: function() {
 		//This function persists out to the database on a correct response from the smart contract
 		var rows = document.getElementsByTagName("table")[0].rows;
@@ -351,7 +319,7 @@ window.addEventListener("load", function() {
 		if (accounts.length == 0) {
 			Dapp.throwError("Connect an account!");
 		}
-		adminAccount = accounts[0];
+		adminAccount = accounts[1];
 
 		//Set allocations
 		Dapp.allocations["Team"] = teamAllocation;

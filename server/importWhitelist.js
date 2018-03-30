@@ -1,6 +1,6 @@
+var mysql = require('mysql2');
 
 require('dotenv').config();
-var mysql = require('mysql');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require("body-parser"); // Body parser for fetch posted data
@@ -52,7 +52,6 @@ app.get('/kycReadyUsers', cors(corsOptions), function (req, res) {
 
 app.post('/updateEthAddressTier', cors(corsOptions), function (req, res) {
 	var sqlQuery = 'UPDATE whitelist set Tier = ? WHERE EthAddress = ?';
-
 	console.log(sqlQuery);
 	connection.query(sqlQuery, [req.body.Tier, req.body.EthAddress],
 		function (err, result) {
@@ -65,7 +64,6 @@ app.post('/updateEthAddressTier', cors(corsOptions), function (req, res) {
 //Example input EthAddresses: '0x00...', '0x11...', '0x22..'
 app.post('/updateAddedToSmartContractEntries', cors(corsOptions), function (req, res) {
 	connection.query('UPDATE whitelist set AddedToSmartContract = \'1\' WHERE EthAddress in (?)',req.body.EthAddresses, 
-
 		function (err, result) {
 		if (err) throw err;
 		res.send('User added to smart contract with EthAddress in: ' + req.body.EthAddresses + ' has been reflected in DB');
