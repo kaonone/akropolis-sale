@@ -1,19 +1,20 @@
-var mysql = require('mysql2');
+
+require('dotenv').config();
+var mysql = require('mysql');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require("body-parser"); // Body parser for fetch posted data
-var credentials = require('./credentials');
-
 var app = module.exports= express();
 //Setup a config
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+//The connection details can be specified in .env file
 var connection = mysql.createConnection({
-	host: credentials.host,
-	user: credentials.user,
-	password: credentials.password,
-	database: credentials.database
+	host: process.env.DB_HOST,
+	user: process.env.DB_USER,
+	password: process.env.DB_PASSWORD,
+	database: process.env.DB_DATABASE,
 });
 
 var corsOptions = {
@@ -24,6 +25,11 @@ var corsOptions = {
 connection.query('USE akropoli_db1', function (err) {
 	if (err) throw err;
 });
+
+var corsOptions = {
+	origin: 'http://localhost', // This can only be pinged locally for now
+	optionsSuccessStatus: 200,
+};
 
 app.get('/kycReadyUsers', cors(corsOptions), function (req, res) {
 	var data = {
@@ -46,6 +52,7 @@ app.get('/kycReadyUsers', cors(corsOptions), function (req, res) {
 
 app.post('/updateEthAddressTier', cors(corsOptions), function (req, res) {
 	var sqlQuery = 'UPDATE whitelist set Tier = ? WHERE EthAddress = ?';
+
 	console.log(sqlQuery);
 	connection.query(sqlQuery, [req.body.Tier, req.body.EthAddress],
 		function (err, result) {
@@ -58,6 +65,7 @@ app.post('/updateEthAddressTier', cors(corsOptions), function (req, res) {
 //Example input EthAddresses: '0x00...', '0x11...', '0x22..'
 app.post('/updateAddedToSmartContractEntries', cors(corsOptions), function (req, res) {
 	connection.query('UPDATE whitelist set AddedToSmartContract = \'1\' WHERE EthAddress in (?)',req.body.EthAddresses, 
+
 		function (err, result) {
 		if (err) throw err;
 		res.send('User added to smart contract with EthAddress in: ' + req.body.EthAddresses + ' has been reflected in DB');
