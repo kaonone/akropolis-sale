@@ -2,16 +2,17 @@ var Web3 = require("web3");
 var contract = require("truffle-contract");
 var Whitelist = contract(require("../build/contracts/Whitelist.json"));
 var Allocations = contract(require("../build/contracts/AllocationsManager.json"));
+var axios = require('axios');
 
 require("bootstrap");
 
 var allocationsMode = "Presale";
 
-var teamAllocation = Allocations.at("0xecfd84c7579032663c9fd028e795debe95226b27");
-var advisorsAllocation = Allocations.at("0xefc08b5e6c3ba5ada5b483eb0529f3b2d1b55afc");
-var presaleAllocation = Allocations.at("0xdf3c3fdb7bfea5874c856b6c00fe4da0d561e47e");
+var teamAllocation = Allocations.at("0x3de1ba8967e32a60c4f79aeaf3ddcffb84c77842");
+var advisorsAllocation = Allocations.at("0xe5d36cc642a0819b9ac9a017b27737fbdb29a7b8");
+var presaleAllocation = Allocations.at("0x1e00861d84e0ac28e751af7ce39e587023b2b12d");
 
-var connectedWhitelist = Whitelist.at("0x093268cc78c709f86925437b2bbf5c529a7df515");
+var connectedWhitelist = Whitelist.at("0x04850d4a4b85d8440f41af005349bea95649b704");
 
 function show(element, text) {
 	var element = document.getElementById(element);
@@ -73,11 +74,6 @@ window.Dapp = {
 		this.start();
 	},
 
-	setAlert: function(message, type) {
-		type = type || "info";
-		var element = document.getElementById("alerts");
-		element.innerHTML = "<div class='alert alert-" + type + "'>" + message + "</div>";
-	},
 
 	throwError: function(message, err) {
 		err = err || message;
@@ -284,6 +280,37 @@ window.Dapp = {
 		});
 	},
 
+	 setWhitelistAdmin: function() {
+		var self = this;
+		var address = document.getElementById("whitelist-admin-address").value;
+		console.log("Setting admin to: " + address);
+		Whitelist.deployed().then(function(instance) {
+		    self.setAlert("Set the whitelist admin...");
+		    return instance.setAdmin(address, {from: adminAccount});
+		}).then(function() {
+		    self.setAlert("Admin was set!", "success");
+		}).catch(function(err) {
+		    Dapp.throwError("Cannot change admin!");
+		    console.log(err);
+		});
+	    },
+
+
+	    setAllocationsAdmin: function() {
+		var self = this;
+		var address = document.getElementById("allocations-admin-address").value;
+		console.log("Setting admin to: " + address);
+		Allocations.deployed().then(function(instance) {
+		    self.setAlert("Set the allocations admin...");
+		    return instance.setAdmin(address, {from: adminAccount});
+		}).then(function() {
+		    self.setAlert("Admin was set!", "success");
+		}).catch(function(err) {
+		    Dapp.throwError("Cannot change admin!");
+		    console.log(err);
+		});
+	    },
+
 	addBulkAdditionsToWhitelist: function() {
 		//This function persists out to the database on a correct response from the smart contract
 		var rows = document.getElementsByTagName("table")[0].rows;
@@ -291,21 +318,19 @@ window.Dapp = {
 		var tiers = [];
 		for (var i = 1; i < rows.length; i++) //First row is title column, iterate through other rows
 		{
-			addresses[i] = rows[i].cells[0].innerHTML;
-			console.log("address" +addresses[i]);
-			tiers[i] = document.getElementById('dropdown-tier'+ addresses[i]).value;
-			console.log("The address : " + addresses[i] + "Will be added to whitelist with tier: " + tiers[i]);
+			var thisAddress = rows[i].cells[0].innerHTML;
+			addresses.push(thisAddress);
+			tiers.push(parseInt(document.getElementById('dropdown-tier'+ thisAddress).value));
 		}
+		console.log("Adding bulk to the whitelist..." + tiers + addresses);
+		return connectedWhitelist.addMultipleToWhitelist(addresses,tiers, {from: adminAccount}).then(function() {
+			self.setWhitelistedCount();
+			self.setAlert("Buyers were added!", "success");
+		}).catch(function(err) {
+			Dapp.throwError("Cannot add to the whitelist!");
+			console.log(err);
+		});
 
-		if(addresses.length === tiers.length && addresses.length > 0) //Ensure we have 1 to 1 mapping address to tier
-		{
-			var stringWithAddresses = addresses[1];
-			for(var j= 2; j < addresses.length; j++)
-			{
-				stringWithAddresses += "," + addresses[j]; //Comma delimited list
-			}
-			console.log(stringWithAddresses);
-		}
 	}
 };
 
@@ -326,7 +351,7 @@ window.addEventListener("load", function() {
 		if (accounts.length == 0) {
 			Dapp.throwError("Connect an account!");
 		}
-		adminAccount = accounts[1];
+		adminAccount = accounts[0];
 
 		//Set allocations
 		Dapp.allocations["Team"] = teamAllocation;

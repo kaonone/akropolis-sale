@@ -34,7 +34,8 @@ contract Whitelist is Administrable {
 
     function addMultipleToWhitelist(address[] buyerAddresses, uint8[] buyerTiers) public onlyAdmin {
         require(buyerAddresses.length == buyerTiers.length);
-        for(uint i=0; i < buyerAddresses.length; i++){
+	require(buyerAddresses.length<=50); //Limit set at 50
+        for(uint i=0; i<buyerAddresses.length; i++){
             addToWhitelist(buyerAddresses[i], buyerTiers[i]);
         }
     }

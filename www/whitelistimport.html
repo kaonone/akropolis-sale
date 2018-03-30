@@ -37,6 +37,7 @@
                 <thead>
                 <tr>
                     <th>EthAddress</th>
+		    <th>Email</th>
                     <th>POC Statement</th>
                     <th>Tier</th>
                 </tr>
@@ -60,6 +61,7 @@
 							$('tbody#users').append(
 								'<tr style="font-size: x-large">' +
                                 '<td>' + this.EthAddress + '</td>' +
+                                '<td>' + this.EmailAddress + '</td>' +
                                 '<td>' + this.PocStatement + '</td>' +
                                 '<td>' +
                                 '<select id="dropdown-tier'+this.EthAddress + '" name="select" >' +
