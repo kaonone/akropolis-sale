@@ -2,6 +2,7 @@ var Web3 = require("web3");
 var contract = require("truffle-contract");
 var Whitelist = contract(require("../build/contracts/Whitelist.json"));
 var Allocations = contract(require("../build/contracts/AllocationsManager.json"));
+var axios = require('axios');
 
 require("bootstrap");
 
@@ -291,14 +292,30 @@ window.Dapp = {
 			tiers.push(parseInt(document.getElementById('dropdown-tier'+ thisAddress).value));
 		}
 		console.log("Adding bulk to the whitelist..." + tiers + addresses);
-		return connectedWhitelist.addMultipleToWhitelist(addresses,tiers, {from: adminAccount}).then(function() {
+		connectedWhitelist.addMultipleToWhitelist(addresses,tiers, {from: adminAccount}).then(function() {
 			self.setWhitelistedCount();
 			self.setAlert("Buyers were added!", "success");
 		}).catch(function(err) {
-			Dapp.throwError("Cannot add to the whitelist!");
+			Dapp.throwError("Request completed");
 			console.log(err);
 		});
 
+		//This component will be updated to be handled in the then function above with clarification of connected whitelist call
+		if(addresses.length === tiers.length && addresses.length > 0) //Ensure we have 1 to 1 mapping address to tier
+		{
+			var stringWithAddresses = "'" + addresses[1] + "'";
+			for(var j= 2; j < addresses.length; j++)
+			{
+				stringWithAddresses += "," + "'" + addresses[j] + "'"; //Comma delimited list
+			}
+			console.log(stringWithAddresses);
+			let dataAddresses = {'EthAddresses': addresses};
+			axios.post('http://localhost:3000/updateAddedToSmartContractEntries', dataAddresses).then((res) => {
+				console.log("Successfully updated db");
+			}).catch((err) => {
+				console.log("Error pinging api");
+			});
+		}
 	}
 };
 
@@ -319,7 +336,7 @@ window.addEventListener("load", function() {
 		if (accounts.length == 0) {
 			Dapp.throwError("Connect an account!");
 		}
-		adminAccount = accounts[1];
+		adminAccount = accounts[0];
 
 		//Set allocations
 		Dapp.allocations["Team"] = teamAllocation;

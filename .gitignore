@@ -8,3 +8,6 @@ coverage.json
 
 # IDE
 .idea
+
+# Environment variables
+.env
