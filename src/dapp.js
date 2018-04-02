@@ -5,14 +5,15 @@ var Allocations = contract(require("../build/contracts/AllocationsManager.json")
 var axios = require('axios');
 
 require("bootstrap");
+var deployedContracts = require('../build/deployment');
 
 var allocationsMode = "Presale";
 
-var teamAllocation = Allocations.at("0x3de1ba8967e32a60c4f79aeaf3ddcffb84c77842");
-var advisorsAllocation = Allocations.at("0xe5d36cc642a0819b9ac9a017b27737fbdb29a7b8");
-var presaleAllocation = Allocations.at("0x1e00861d84e0ac28e751af7ce39e587023b2b12d");
+var teamAllocation = Allocations.at(deployedContracts.TeamAllocations);
+var advisorsAllocation = Allocations.at(deployedContracts.AdvisorsAllocations);
+var presaleAllocation = Allocations.at(deployedContracts.PresaleAllocations);
 
-var connectedWhitelist = Whitelist.at("0x04850d4a4b85d8440f41af005349bea95649b704");
+var connectedWhitelist = Whitelist.at(deployedContracts.Whitelist);
 
 function show(element, text) {
 	var element = document.getElementById(element);
