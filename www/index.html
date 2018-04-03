@@ -13,7 +13,7 @@
 
 <nav class="navbar navbar-inverse">
     <div class="container">
-        <img src="https://akropolis.io/wp-content/uploads/2017/11/akropolis-logo-mobile-retina.png" class="mobile-logo" data-retina="https://akropolis.io/wp-content/uploads/2017/11/akropolis-logo-mobile-retina.png" alt="Mobile logo">
+        <img src="https://akropolis.io/images/logo.png" class="mobile-logo" data-retina="https://akropolis.io/wp-content/uploads/2017/11/akropolis-logo-mobile-retina.png" alt="Mobile logo">
     </div>
 </nav><!--/.navbar -->
 
@@ -21,7 +21,7 @@
 
     <div class="starter-template">
         <h1>Whitelist</h1>
-        <p class="lead">Admin panel for managing whitelist subscriptions</p>
+        <p class="lead">Simple Admin panel for managing whitelist subscriptions</p>
     </div>
 
     <div id="alerts"></div>
@@ -46,6 +46,12 @@
         <div class="panel-body form-inline">
             <label for="buyer-address" class="sr-only">Buyer address</label>
             <input type="text" id="buyer-address" class="form-control" style="width: 400px;" placeholder="address"></input>
+            <label for="buyer-tier">Tier</label>
+            <select class="form-control" id="buyer-tier">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+            </select>
             <button type="button" class="btn btn-success" onclick="Dapp.addToWhitelist()">Add</button>
         </div>
     </div>
@@ -60,6 +66,10 @@
             <button type="button" class="btn btn-danger" onclick="Dapp.removeFromWhitelist()">Remove</button>
         </div>
     </div>
+
+
+    <a href="allocations.html"><button class="btn btn-primary">Go To Allocations</button></a>
+    <a href="whitelistimport.html"><button class="btn btn-primary">Go To Whitelist Bulk Import</button></a>
 
 </div><!--/.container -->
 

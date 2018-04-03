@@ -13,14 +13,14 @@
 
 <nav class="navbar navbar-inverse">
     <div class="container">
-        <img src="https://akropolis.io/wp-content/uploads/2017/11/akropolis-logo-mobile-retina.png" class="mobile-logo" data-retina="https://akropolis.io/wp-content/uploads/2017/11/akropolis-logo-mobile-retina.png" alt="Mobile logo">
+        <img src="https://akropolis.io/images/logo.png" class="mobile-logo" data-retina="https://akropolis.io/wp-content/uploads/2017/11/akropolis-logo-mobile-retina.png" alt="Mobile logo">
     </div>
 </nav><!--/.navbar -->
 
 <div class="container theme-showcase" role="main">
 
     <div class="starter-template">
-        <h1>Allocations</h1>
+        <div id="allocation_title"><h1>Allocations</h1></div>
         <p class="lead">Admin panel for managing token allocations</p>
     </div>
 
@@ -95,7 +95,12 @@
             <button type="button" class="btn btn-danger" onclick="Dapp.removeAllocation()">Remove</button>
         </div>
     </div>
+    <a href="index.html"><button class="btn btn-primary">Go To Whitelist</button></a>
+    <a href="whitelistimport.html"><button class="btn btn-primary">Go To Whitelist Bulk Import</button></a>
 
+    <button type="button" class="btn btn-primary" style="margin: 15px;" onclick="Dapp.setPresaleAllocations()">Set Presale Allocations</button>
+    <button type="button" class="btn btn-primary" style="margin: 15px;" onclick="Dapp.setTeamAllocations()">Set Team Allocations</button>
+    <button type="button" class="btn btn-primary" style="margin: 15px;" onclick="Dapp.setAdvisorsAllocations()">Set Advisors Allocations</button>
 </div><!--/.container -->
 
 <script src="./bundle.js"></script>

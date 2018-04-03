@@ -208,4 +208,50 @@ contract('Whitelist', function ([owner, admin, buyer1, buyer2, buyer3, wallet, n
 
 	});
 
+	it('should allow adding multiple whitelisted users and remove them afterwards', async function () {
+		var buyersAddresses = [buyer1, buyer2, buyer3];
+		var buyersTiers = [1,2,3];
+		await whitelist.addMultipleToWhitelist(buyersAddresses, buyersTiers, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(true);
+		(await whitelist.getTier(buyer2)).should.be.bignumber.equal(2);
+		(await whitelist.isWhitelisted(buyer3)).should.be.equal(true);
+		(await whitelist.getTier(buyer3)).should.be.bignumber.equal(3);
+
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(3);
+
+		await whitelist.removeFromWhitelist(buyer2, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(true);
+		(await whitelist.isWhitelisted(buyer3)).should.be.equal(true);
+		(await whitelist.getTier(buyer1)).should.be.bignumber.equal(1);
+		(await whitelist.getTier(buyer3)).should.be.bignumber.equal(3);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(2);
+
+		await whitelist.removeFromWhitelist(buyer1, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer3)).should.be.equal(true);
+		(await whitelist.getTier(buyer3)).should.be.bignumber.equal(3);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(1);
+
+		await whitelist.removeFromWhitelist(buyer3, {from: admin});
+
+		(await whitelist.isWhitelisted(buyer2)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer1)).should.be.equal(false);
+		(await whitelist.isWhitelisted(buyer3)).should.be.equal(false);
+		(await whitelist.getWhitelistedCount()).should.be.bignumber.equal(0);
+	});
+
+	it('should not allow adding multiple whitelisted users with differing lengths of addresses and tiers', async function () {
+		var buyersAddresses = [buyer1, buyer2, buyer3];
+		//Tiers not synchronized with addresses
+		var buyersTiers = [1,2];
+		await whitelist.addMultipleToWhitelist(buyersAddresses, buyersTiers, {from: admin}).should.be.rejectedWith('revert');
+	});
+
 });
