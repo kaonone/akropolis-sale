@@ -55,6 +55,7 @@
     "webpack-dev-server": "^2.10.1"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
@@ -62,9 +63,9 @@
     "chai-bignumber": "^2.0.1",
     "dotenv": "^5.0.1",
     "ganache-cli": "^6.0.3",
+    "mysql": "^2.15.0",
     "truffle-contract": "^3.0.1",
     "truffle-hdwallet-provider": "^0.0.3",
-    "mysql": "^2.15.0",
     "zeppelin-solidity": "^1.3.0"
   }
 }
