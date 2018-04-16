@@ -1,3 +1,4 @@
+const config = require('../deployment-config.json');
 const Whitelist = artifacts.require('./Whitelist.sol');
 
 module.exports = function(deployer, network, accounts) {
@@ -7,6 +8,6 @@ module.exports = function(deployer, network, accounts) {
 		process.deployment = {"Whitelist" : Whitelist.address};
 		return Whitelist.deployed();
 	}).then(function(instance) {
-		return instance.setAdmin(accounts[1]);
+		return instance.setAdmin(config.adminAccount);
 	});
 };
