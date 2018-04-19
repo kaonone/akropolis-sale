@@ -11,3 +11,5 @@ coverage.json
 
 # Environment variables
 .env
+/test-config.json
+/migrations-sale/before-sale-deployment.json
