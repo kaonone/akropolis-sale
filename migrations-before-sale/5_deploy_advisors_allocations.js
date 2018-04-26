@@ -12,7 +12,7 @@ module.exports = function(deployer, network, accounts) {
 		return instance.setAdmin(config.adminAccount);
 	}).then(function() {
 		console.log(process.deployment);
-		fs.writeFile('../migrations-sale/before-sale-deployment.json', JSON.stringify(process.deployment), 'utf8', function(err) {
+		fs.writeFile('./migrations-sale/before-sale-deployment.json', JSON.stringify(process.deployment), 'utf8', function(err) {
 			if (err) console.log("Error while writing deployment addresses: " + err);
 		});
 	});
