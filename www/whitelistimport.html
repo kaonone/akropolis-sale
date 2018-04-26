@@ -33,7 +33,7 @@
             <h3 class="panel-title">Add to the Whitelist Bulk Addition</h3>
         </div>
         <div class="panel-body form-inline">
-            <table class="table" id="content">
+            <table class="table" id="content" style="table-layout: fixed; word-wrap: break-word">
                 <thead>
                 <tr>
                     <th>EthAddress</th>
@@ -59,7 +59,7 @@
 					success: function(data){
 						$(data).each(function(){
 							$('tbody#users').append(
-								'<tr style="font-size: x-large">' +
+								'<tr style="font-size: small">' +
                                 '<td>' + this.EthAddress + '</td>' +
                                 '<td>' + this.EmailAddress + '</td>' +
                                 '<td>' + this.PocStatement + '</td>' +
