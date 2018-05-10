@@ -33,13 +33,12 @@
             <h3 class="panel-title">Add to the Whitelist Bulk Addition</h3>
         </div>
         <div class="panel-body form-inline">
-            <table class="table" id="content" style="table-layout: fixed; word-wrap: break-word">
+            <table class="table" id="content" style="table-layout: fixed; word-wrap: break-word; overflow-y:scroll; height:500px; display:block;">
                 <thead>
                 <tr>
-                    <th>EthAddress</th>
-		    <th>Email</th>
-                    <th>POC Statement</th>
-                    <th>Tier</th>
+                    <th>Contributor info</th>
+		    <th> </th>
+                    <th>POC Statements</th>
                 </tr>
                 </thead>
                 <tbody id="users">
@@ -59,17 +58,47 @@
 					success: function(data){
 						$(data).each(function(){
 							$('tbody#users').append(
-								'<tr style="font-size: small">' +
-                                '<td>' + this.EthAddress + '</td>' +
-                                '<td>' + this.EmailAddress + '</td>' +
+								'<tr style="font-size: small; border-top: 2px solid blue;">' +
+                                '<th>' + 'Ethereum Address' + '</td>' +
+                                '<th style="border-left: 2px solid blue;">' + 'Telegram' + '</td>' +
+                                '<td>' + this.Telegram + '</td>' +
+                                '</tr>'+
+				'<tr style="font-size: small">' +
+				'<td>' + this.EthAddress + '</td>' +
+                                '<th style="border-left: 2px solid blue;">' + 'POC Value' + '</td>' +
+                                '<td>' + this.PocStatement2 + '</td>' +
+                                '</tr>'+
+				'<tr style="font-size: small">' +
+				'<th>' + 'Email Address' + '</th>' +
+                                '<th style="border-left: 2px solid blue;">' + 'Eth Contribution' + '</td>' +
+                                '<td>' + this.Contribution + '</td>' +
+                                '</tr>'+
+				'<tr style="font-size: small">' +
+				'<td>' + this.EmailAddress + '</td>' +
+                                '<th style="border-left: 2px solid blue;">' + 'Incentive Program?' + '</td>' +
+                                '<td>' + this.PocStatement4 + '</td>' +
+                                '</tr>'+
+				'<tr style="font-size: small">' +
+				'<th>' + 'Tier' + '</th>' +
+                                '<th style="border-left: 2px solid blue;">' + 'POC Statement' + '</td>' +
                                 '<td>' + this.PocStatement + '</td>' +
-                                '<td>' +
+                                '</tr>'+
+				'<tr style="font-size: small">' +
+				'<td rowspan = "2">' +
                                 '<select id="dropdown-tier'+this.EthAddress + '" name="select" >' +
 								'<option value="1">1</option>'+
 								'<option value="2">2</option>'+
 								'<option value="3">3</option>'+
-								'</select>' + '</td>' +
-                                '</tr>');
+								'</select>' + '</td>' + 
+                                '<th style="border-left: 2px solid blue;">' + 'Social Media' + '</td>' +
+                                '<td>' + this.SocialReputation + '</td>' +
+                                '</tr>'+
+				'<tr style="font-size:small;">' +
+                                '<th style="border-left: 2px solid blue;">' + 'POC Contribution' + '</td>' +
+                                '<td>' + this.PocStatement3 + '</td>' +
+                                '</tr>'
+				
+				);
 							$('#dropdown-tier'+this.EthAddress).val(this.Tier);
                             var thisAddress = this.EthAddress;
 							$('#dropdown-tier'+this.EthAddress).change(function(){
