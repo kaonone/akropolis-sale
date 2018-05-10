@@ -58,44 +58,44 @@
 					success: function(data){
 						$(data).each(function(){
 							$('tbody#users').append(
-								'<tr style="font-size: small; border-top: 2px solid blue;">' +
+								'<tr style="font-size: small;">' +
                                 '<th>' + 'Ethereum Address' + '</td>' +
-                                '<th style="border-left: 2px solid blue;">' + 'Telegram' + '</td>' +
+                                '<th style="border-left: 2px solid blue;">' + 'Telegram' + '</th>' +
                                 '<td>' + this.Telegram + '</td>' +
                                 '</tr>'+
 				'<tr style="font-size: small">' +
 				'<td>' + this.EthAddress + '</td>' +
-                                '<th style="border-left: 2px solid blue;">' + 'POC Value' + '</td>' +
+                                '<th style="border-left: 2px solid blue;">' + 'POC Value' + '</th>' +
                                 '<td>' + this.PocStatement2 + '</td>' +
                                 '</tr>'+
 				'<tr style="font-size: small">' +
-				'<th>' + 'Email Address' + '</th>' +
-                                '<th style="border-left: 2px solid blue;">' + 'Eth Contribution' + '</td>' +
+				'<th style="vertical-align:bottom;">' + 'Email Address' + '</th>' +
+                                '<th style="border-left: 2px solid blue;">' + 'Eth Contribution' + '</th>' +
                                 '<td>' + this.Contribution + '</td>' +
                                 '</tr>'+
 				'<tr style="font-size: small">' +
 				'<td>' + this.EmailAddress + '</td>' +
-                                '<th style="border-left: 2px solid blue;">' + 'Incentive Program?' + '</td>' +
+                                '<th style="border-left: 2px solid blue;">' + 'Incentive Program?' + '</th>' +
                                 '<td>' + this.PocStatement4 + '</td>' +
                                 '</tr>'+
 				'<tr style="font-size: small">' +
-				'<th>' + 'Tier' + '</th>' +
-                                '<th style="border-left: 2px solid blue;">' + 'POC Statement' + '</td>' +
+				'<th style="vertical-align:bottom;">' + 'Tier' + '</th>' +
+                                '<th style="border-left: 2px solid blue;">' + 'POC Statement' + '</th>' +
                                 '<td>' + this.PocStatement + '</td>' +
                                 '</tr>'+
 				'<tr style="font-size: small">' +
-				'<td rowspan = "2">' +
+				'<td style="border-bottom: 2px solid blue;" rowspan = "2">' +
                                 '<select id="dropdown-tier'+this.EthAddress + '" name="select" >' +
 								'<option value="1">1</option>'+
 								'<option value="2">2</option>'+
 								'<option value="3">3</option>'+
 								'</select>' + '</td>' + 
-                                '<th style="border-left: 2px solid blue;">' + 'Social Media' + '</td>' +
+                                '<th style="border-left: 2px solid blue;">' + 'Social Media' + '</th>' +
                                 '<td>' + this.SocialReputation + '</td>' +
                                 '</tr>'+
 				'<tr style="font-size:small;">' +
-                                '<th style="border-left: 2px solid blue;">' + 'POC Contribution' + '</td>' +
-                                '<td>' + this.PocStatement3 + '</td>' +
+                                '<th style="border-left: 2px solid blue; border-bottom: 2px solid blue;">' + 'POC Contribution' + '</th>' +
+                                '<td style="border-bottom: 2px solid blue;">' + this.PocStatement3 + '</td>' +
                                 '</tr>'
 				
 				);
