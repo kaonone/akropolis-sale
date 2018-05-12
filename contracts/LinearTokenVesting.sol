@@ -16,7 +16,7 @@ contract LinearTokenVesting is Ownable {
 
     event Released(uint256 amount);
 
-    // AET token that is under vesting
+    // AKT token that is under vesting
     AkropolisToken public token;
 
     // beneficiary of tokens after they are released
@@ -31,13 +31,13 @@ contract LinearTokenVesting is Ownable {
     // time after which tokens begin to vest
     uint256 public cliff;
 
-    // amounts of the AET token that has been already released
+    // amounts of the AKT token that has been already released
     uint256 public released;
 
     /**
-     * @dev Creates a vesting contract that vests its balance of the AET token to the
+     * @dev Creates a vesting contract that vests its balance of the AKT token to the
      * _beneficiary, gradually in a linear fashion until _start + _duration.
-     * @param _token address of the AET token that is under vesting
+     * @param _token address of the AKT token that is under vesting
      * @param _beneficiary address of the beneficiary to whom vested tokens are transferred
      * @param _cliff duration in seconds after which tokens will begin to vest
      * @param _duration duration in seconds of the period in which the tokens will vest

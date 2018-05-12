@@ -12,7 +12,7 @@ contract SaleConfigurationMock {
     uint8 public constant DECIMALS = 18;
     uint256 public constant DECIMALS_FACTOR = 10**uint256(DECIMALS);
 
-    uint256 public AET_RATE = 10;
+    uint256 public AKT_RATE = 10;
     uint256 public HARD_CAP = 10000 ether;
     uint256 public constant MAX_ALLOCATION_VALUE = DECIMALS_FACTOR * 1000;
 
@@ -33,8 +33,8 @@ contract SaleConfigurationMock {
     uint256 public constant MAX_TIER_3 = 3 ether;
     uint256 public constant ROUND_DURATION = 3 days;
 
-    function setAET_RATE(uint256 _aetRate) public {
-        AET_RATE = _aetRate;
+    function setAKT_RATE(uint256 _aktRate) public {
+        AKT_RATE = _aktRate;
     }
 
     function setHARD_CAP(uint256 _hardCap) public {

@@ -76,7 +76,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 
 	it('should sell max amount of tokens to a tier 1 whitelisted user during round 1', async function() {
-		tokenBuyerAmountTier1 = (await config.AET_RATE()).mul(ether(10));
+		tokenBuyerAmountTier1 = (await config.AKT_RATE()).mul(ether(10));
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 
@@ -95,7 +95,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 
 
 	it('should sell max amount of tokens to a tier 1 and 2 whitelisted user during round 2', async function() {
-		tokenBuyerAmountTier2 = (await config.AET_RATE()).mul(ether(5));
+		tokenBuyerAmountTier2 = (await config.AKT_RATE()).mul(ether(5));
 		await increaseTimeTo(startTime+ duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 
@@ -120,7 +120,7 @@ contract('Akropolis Max Round Purchase Scenario', function ([owner, admin, walle
 	});
 
 	it('should sell max amount of tokens to any whitelisted user during round 3', async function() {
-		tokenBuyerAmountTier3 = (await config.AET_RATE()).mul(ether(3));
+		tokenBuyerAmountTier3 = (await config.AKT_RATE()).mul(ether(3));
 		await increaseTimeTo(startTime+ duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 

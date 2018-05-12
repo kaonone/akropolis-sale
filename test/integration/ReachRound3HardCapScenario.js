@@ -93,7 +93,7 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 
 
 	it('should sell tokens to whitelisted users during round 1', async function() {
-		let tokenBuyerAmountRound1 = (await config.AET_RATE()).mul(ether(10));
+		let tokenBuyerAmountRound1 = (await config.AKT_RATE()).mul(ether(10));
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: ether(10)}).should.be.fulfilled;
@@ -105,7 +105,7 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 
 
 	it('should sell tokens to whitelisted users during round 2', async function() {
-		let tokenBuyerAmountRound1 = (await config.AET_RATE()).mul(ether(5));
+		let tokenBuyerAmountRound1 = (await config.AKT_RATE()).mul(ether(5));
 		await increaseTimeTo(startTime+ duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(5)}).should.be.fulfilled;
@@ -115,7 +115,7 @@ contract('Akropolis Round 3 Hard Cap Reach Scenario', function ([owner, admin, w
 
 
 	it('should sell tokens to whitelisted users during round 3', async function() {
-		let tokenBuyerAmountRound3 = (await config.AET_RATE()).mul(ether(3));
+		let tokenBuyerAmountRound3 = (await config.AKT_RATE()).mul(ether(3));
 		await increaseTimeTo(startTime + duration.days(6));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(3);
 		await crowdsale.buyTokens(buyer4, {from: buyer4, value: ether(3)}).should.be.fulfilled;

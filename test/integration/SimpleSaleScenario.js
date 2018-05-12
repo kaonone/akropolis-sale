@@ -83,7 +83,7 @@ contract('Akropolis TGE Scenario', function ([owner, admin, wallet, buyer1, buye
 
 	it('should deploy Config', async function () {
 		config = await SaleConfiguration.new().should.be.fulfilled;
-		rate = (await config.AET_RATE());
+		rate = (await config.AKT_RATE());
 	});
 
 

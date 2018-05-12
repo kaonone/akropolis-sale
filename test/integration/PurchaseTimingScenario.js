@@ -79,7 +79,7 @@ contract('Akropolis Buying Timing Scenario', function ([owner, admin, wallet, bu
 
 
 	it('should sell tokens to whitelisted users during round 1', async function() {
-		tokenBuyerAmount = (await config.AET_RATE()).mul(CONTRIBUTION_AMOUNT);
+		tokenBuyerAmount = (await config.AKT_RATE()).mul(CONTRIBUTION_AMOUNT);
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: CONTRIBUTION_AMOUNT}).should.be.fulfilled;

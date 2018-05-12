@@ -94,7 +94,7 @@ contract('Akropolis Round 2 Public Sale Cap Reach Scenario', function ([owner, a
 
 
 	it('should sell tokens to whitelisted users during round 1', async function() {
-		let tokenBuyerAmountRound1 = (await config.AET_RATE()).mul(ether(10));
+		let tokenBuyerAmountRound1 = (await config.AKT_RATE()).mul(ether(10));
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 		await crowdsale.buyTokens(buyer1, {from: buyer1, value: ether(10)}).should.be.fulfilled;
@@ -106,7 +106,7 @@ contract('Akropolis Round 2 Public Sale Cap Reach Scenario', function ([owner, a
 
 
 	it('should sell tokens to whitelisted users during round 2', async function() {
-		let tokenBuyerAmountRound2 = (await config.AET_RATE()).mul(ether(5));
+		let tokenBuyerAmountRound2 = (await config.AKT_RATE()).mul(ether(5));
 		await increaseTimeTo(startTime+ duration.days(3));
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(2);
 		await crowdsale.buyTokens(buyer3, {from: buyer3, value: ether(5)}).should.be.fulfilled;

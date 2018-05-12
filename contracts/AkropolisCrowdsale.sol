@@ -34,7 +34,7 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
     Whitelist _whitelist,
     SaleConfiguration _config
     ) public
-        Crowdsale(_startTime, _endTime, _config.AET_RATE(), _wallet)
+        Crowdsale(_startTime, _endTime, _config.AKT_RATE(), _wallet)
         CappedCrowdsale(_config.HARD_CAP())
         FinalizableCrowdsale()
         WhitelistedCrowdsale(_startTime, _endTime, _whitelist, _config)
@@ -169,11 +169,11 @@ contract AkropolisCrowdsale is CappedCrowdsale, FinalizableCrowdsale, Whiteliste
     }
 
     /**
-    * @dev Returns the number of AET tokens per contributed amount in wei
+    * @dev Returns the number of AKT tokens per contributed amount in wei
     *      including the early participants bonus
     */
     function calculateTokens(uint256 _amountInWei) internal view returns(uint256) {
-        return _amountInWei.mul(config.AET_RATE());
+        return _amountInWei.mul(config.AKT_RATE());
     }
 
     function getAvailableCap(address _buyer) public view returns(uint256) {

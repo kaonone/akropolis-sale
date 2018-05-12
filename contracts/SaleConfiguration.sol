@@ -15,7 +15,7 @@ contract SaleConfiguration {
 
     //TODO: Update and verify values before going live
 
-    uint256 public constant AET_RATE = 10000;
+    uint256 public constant AKT_RATE = 10000;
     uint256 public constant HARD_CAP = 6000 ether;
     uint256 public constant MAX_ALLOCATION_VALUE = DECIMALS_FACTOR * 1000;
 

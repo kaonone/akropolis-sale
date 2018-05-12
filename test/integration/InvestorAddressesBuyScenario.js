@@ -84,7 +84,7 @@ contract('Akropolis Investors Buy Public Crowdsale Scenario', function ([owner, 
 
 
 	it('should sell max amount of tokens to whitelisted users during round 1', async function() {
-		tokenBuyerAmount = (await config.AET_RATE()).mul(BUYER_AMOUNT);
+		tokenBuyerAmount = (await config.AKT_RATE()).mul(BUYER_AMOUNT);
 		await increaseTimeTo(startTime);
 		(await crowdsale.getCurrentRound()).should.be.bignumber.equal(1);
 

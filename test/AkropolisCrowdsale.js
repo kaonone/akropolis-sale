@@ -38,14 +38,14 @@ contract('Akropolis Crowdsale', function ([owner, admin, buyer, wallet, bonusBuy
 		config = await SaleConfigurationMock.new();
 	});
 
-	it('should fail to validate configuration for AET_RATE == 0', async function () {
-		await config.setAET_RATE(0);
+	it('should fail to validate configuration for AKT_RATE == 0', async function () {
+		await config.setAKT_RATE(0);
 		await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address).should.be.rejectedWith('revert');
 	});
 
 
 	it('should create a crowdsale for valid configuration', async function () {
-		await config.setAET_RATE(10);
+		await config.setAKT_RATE(10);
 		crowdsale = await AkropolisCrowdsale.new(startTime, endTime, wallet, whitelist.address, config.address);
 		token = await AkropolisToken.at(await crowdsale.token());
 	});
