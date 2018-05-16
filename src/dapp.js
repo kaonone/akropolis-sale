@@ -5,7 +5,7 @@ var Allocations = contract(require("../build/contracts/AllocationsManager.json")
 var axios = require('axios');
 
 require("bootstrap");
-var deployedContracts = require('../build/deployment');
+var deployedContracts = require('../migrations-sale/before-sale-deployment.json');
 
 var allocationsMode = "Presale";
 
@@ -283,6 +283,7 @@ window.Dapp = {
 
 	addBulkAdditionsToWhitelist: function() {
 		//This function persists out to the database on a correct response from the smart contract
+		var self = this;		
 		var rows = document.getElementsByTagName("table")[0].rows;
 		var addresses = [];
 		var tiers = [];
@@ -293,30 +294,14 @@ window.Dapp = {
 			tiers.push(parseInt(document.getElementById('dropdown-tier'+ thisAddress).value));
 		}
 		console.log("Adding bulk to the whitelist..." + tiers + addresses);
-		connectedWhitelist.addMultipleToWhitelist(addresses,tiers, {from: adminAccount}).then(function() {
-			self.setWhitelistedCount();
+		return connectedWhitelist.addMultipleToWhitelist(addresses,tiers, {from: adminAccount}).then(function(txHash) {
 			self.setAlert("Buyers were added!", "success");
+			updateDBWhitelist(addresses, tiers)
 		}).catch(function(err) {
-			Dapp.throwError("Request completed");
+			Dapp.throwError("There has been an error with the panel, please send developer team link to transaction hash from Metamask");
 			console.log(err);
 		});
 
-		//This component will be updated to be handled in the then function above with clarification of connected whitelist call
-		if(addresses.length === tiers.length && addresses.length > 0) //Ensure we have 1 to 1 mapping address to tier
-		{
-			var stringWithAddresses = "'" + addresses[1] + "'";
-			for(var j= 2; j < addresses.length; j++)
-			{
-				stringWithAddresses += "," + "'" + addresses[j] + "'"; //Comma delimited list
-			}
-			console.log(stringWithAddresses);
-			let dataAddresses = {'EthAddresses': addresses};
-			axios.post('http://localhost:3000/updateAddedToSmartContractEntries', dataAddresses).then((res) => {
-				console.log("Successfully updated db");
-			}).catch((err) => {
-				console.log("Error pinging api");
-			});
-		}
 	}
 };
 
@@ -348,3 +333,22 @@ window.addEventListener("load", function() {
 
 	});
 });
+
+function updateDBWhitelist(addresses, tiers){
+//This component will be updated to be handled in the then function above with clarification of connected whitelist call
+		if(addresses.length === tiers.length && addresses.length > 0) //Ensure we have 1 to 1 mapping address to tier
+		{
+			var stringWithAddresses = "'" + addresses[1] + "'";
+			for(var j= 2; j < addresses.length; j++)
+			{
+				stringWithAddresses += "," + "'" + addresses[j] + "'"; //Comma delimited list
+			}
+			console.log(stringWithAddresses);
+			let dataAddresses = {'EthAddresses': addresses};
+			axios.post('http://localhost:3000/updateAddedToSmartContractEntries', dataAddresses).then((res) => {
+				console.log("Successfully updated db");
+			}).catch((err) => {
+				console.log("Error pinging api");
+			});
+		}
+}
