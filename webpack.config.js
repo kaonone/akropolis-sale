@@ -24,6 +24,7 @@ module.exports = {
 		})
 	],
 	devServer: {
+		disableHostCheck: true,
 		contentBase: www
 	}
 }
