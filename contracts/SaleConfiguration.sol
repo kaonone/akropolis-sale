@@ -13,8 +13,8 @@ contract SaleConfiguration {
     uint8 public constant DECIMALS = 18;
     uint256 public constant DECIMALS_FACTOR = 10**uint256(DECIMALS);
 
-    //Disclaimer: This file is subject to change prior to the ICO. 
-    //It will be updated with values just before Crowdsale goes live
+    //Disclaimer: This file is subject to change prior to the token generation. 
+    //It will be updated with values just before going live
 
     uint256 public constant AKT_RATE = 10000;
     uint256 public constant HARD_CAP = 30000 ether;
