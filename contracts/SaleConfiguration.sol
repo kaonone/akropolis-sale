@@ -21,9 +21,9 @@ contract SaleConfiguration {
     uint256 public constant MAX_ALLOCATION_VALUE = DECIMALS_FACTOR * 1000;
 
     uint256 public constant TOTAL_SUPPLY = DECIMALS_FACTOR * 900000000;
-    uint256 public constant PUBLIC_SALE_SUPPLY = DECIMALS_FACTOR * 180000000;
+    uint256 public constant PUBLIC_SALE_SUPPLY = DECIMALS_FACTOR * 54000000;
     uint256 public constant PRESALE_SUPPLY = DECIMALS_FACTOR * 306000000;
-    uint256 public constant TEAM_SUPPLY = DECIMALS_FACTOR * 54000000;
+    uint256 public constant TEAM_SUPPLY = DECIMALS_FACTOR * 180000000;
     uint256 public constant ADVISORS_SUPPLY = DECIMALS_FACTOR * 90000000;
 
     uint256 public constant RESERVE_FUND_VALUE = DECIMALS_FACTOR * 180000000;
