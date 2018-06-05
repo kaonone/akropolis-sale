@@ -51,6 +51,17 @@ Alternatively, you may also call the truffle command directly:
 
     truffle test
 
+### Smart Contract Audit
+
+Our smart contract audit has been performed by industry leading professional Bokky Poobah.
+
+
+It can be found in Bokky's repository below
+
+
+https://github.com/bokkypoobah/AkropolisSaleContractAudit
+
+
 ## License
 
 MIT License
