@@ -103,8 +103,8 @@
                             var thisAddress = this.EthAddress;
 							$('#dropdown-tier'+this.EthAddress).change(function(){
 								var dataPkg = {
-									'Tier': this.value,
-									'EthAddress' : thisAddress
+									'Tier': $('#dropdown-tier'+this.EthAddress + ' option:selected').val(),
+									'EthAddress' : this.EthAddress
 								};
 								$.ajax({
 
