@@ -287,7 +287,7 @@ window.Dapp = {
 		var rows = document.getElementsByTagName("table")[0].rows;
 		var addresses = [];
 		var tiers = [];
-		for (var i = 1; i < rows.length; i++) //First row is title column, iterate through other rows
+		for (var i = 2; i < rows.length; i= i+7) //First rows are title column, iterate through other rows
 		{
 			var thisAddress = rows[i].cells[0].innerHTML;
 			addresses.push(thisAddress);
